@@ -10,6 +10,7 @@ interface ModalProps {
     body?: React.ReactElement;
     disabled?: boolean;
     children?: React.ReactNode;
+    onChange?: (open: boolean) => void;
 }
 
 export const Modal = ({
@@ -18,7 +19,8 @@ export const Modal = ({
     title,
     body,
     disabled,
-    children
+    children,
+    onChange,
 }: ModalProps) => {
 
     const [showModal, setShowModal] = useState(isOpen);
@@ -45,7 +47,7 @@ export const Modal = ({
     return (
         <>
             <Dialog open={isOpen}
-                onOpenChange={handleClose}>
+                onOpenChange={onChange}>
                 <DialogContent>
                     <h2>{title}</h2>
                     {body}

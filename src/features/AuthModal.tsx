@@ -1,16 +1,20 @@
 "use client"
 
 import { Auth } from "@supabase/auth-ui-react";
+import { Modal } from "./Modal"
+import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { useModal } from "@/hooks/useModal";
-import { Modal } from "./Modal";
-import { Input } from "@/components/ui/input";
 
 
 export const AuthModal = () => {
     const supabaseClient = createClientComponentClient<Database>()
+    const router = useRouter()
+    const { session } = useSessionContext();
     const { onClose, isOpen } = useModal();
     const onChange = (open: boolean) => {
         if (!open) {
@@ -18,29 +22,54 @@ export const AuthModal = () => {
         }
     }
 
+    useEffect(() => {
+        if (session) {
+            onClose();
+            const createProfil =
+                async () => {
+                    const { data, error, status, count } = await supabaseClient
+                        .from("users")
+                        .upsert(
+                            {
+                                email: session.user.email ?? '',
+                                id: session.user.id ?? ''
+                            },
+                        )
+
+                    if (error && status !== 406) {
+                        console.log(error)
+                    }
+                };
+            createProfil();
+        }
+    }, [session, router, onClose])
+
     return (
-        <Modal
-            title="Welcome back!"
-            isOpen={isOpen}
-            onClose={onClose}>
-            <Auth
-                theme="dark"
-                magicLink={false}
-                providers={[]}
-                supabaseClient={supabaseClient}
-                appearance={{
-                    theme: ThemeSupa,
-                    variables: {
-                        default: {
-                            colors: {
-                                brand: '#854FF3',
-                                brandAccent: "#8e5cf1",
-                                inputText: "#FF",
+        <>
+            <Modal
+                title="Welcome back!"
+                isOpen={isOpen}
+                onClose={onClose}
+                onChange={onChange}>
+                <Auth
+                    theme="dark"
+                    magicLink={false}
+                    providers={[]}
+                    supabaseClient={supabaseClient}
+                    appearance={{
+                        theme: ThemeSupa,
+                        variables: {
+                            default: {
+                                colors: {
+                                    brand: '#854FF3',
+                                    brandAccent: "#8e5cf1",
+                                    inputText: "#FF",
+                                }
                             }
                         }
-                    }
-                }}
-            />
-        </Modal>
+                    }}
+                />
+            </Modal>
+        </>
     )
 }
