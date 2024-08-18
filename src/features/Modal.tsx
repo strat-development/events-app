@@ -40,6 +40,15 @@ export const Modal = ({
         }, 300)
     }, [onClose, disabled]);
 
+    const handleOpenChange = (open: boolean) => {
+        if (!open) {
+            handleClose();
+        }
+        if (onChange) {
+            onChange(open);
+        }
+    };
+
     if (!isOpen) {
         return null;
     }
@@ -47,7 +56,7 @@ export const Modal = ({
     return (
         <>
             <Dialog open={isOpen}
-                onOpenChange={onChange}>
+                onOpenChange={handleOpenChange}>
                 <DialogContent>
                     <h2>{title}</h2>
                     {body}
