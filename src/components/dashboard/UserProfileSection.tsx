@@ -8,8 +8,9 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useState } from "react";
 import { Toaster } from "../ui/toaster";
 import { toast } from "../ui/use-toast";
+import { UserData } from "@/types/types";
 
-type UserData = Database["public"]["Tables"]["users"]["Row"];
+
 
 export const UserProfileSection = () => {
     const supabase = createClientComponentClient<Database>();
@@ -40,6 +41,7 @@ export const UserProfileSection = () => {
 
             onError: () => {
                 toast({
+                    variant: "destructive",
                     title: "Error",
                     description: "There was an error creating the user"
                 });
