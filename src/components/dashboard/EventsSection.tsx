@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
@@ -13,6 +13,7 @@ import { Toaster } from "../ui/toaster"
 import { toast } from "../ui/use-toast";
 import { useUserContext } from "@/providers/UserContextProvider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { EventCard } from "./EventCard"
 
 export const EventsSection = () => {
     const [modalOpen, setModalOpen] = useState(false)
@@ -58,6 +59,7 @@ export const EventsSection = () => {
         }
     );
 
+
     const createEvent = useMutation(
         async (eventData: EventData) => {
             const { data, error } = await supabase
@@ -78,7 +80,6 @@ export const EventsSection = () => {
                 });
 
                 clearStates()
-
                 setModalOpen(false)
             },
 
@@ -91,9 +92,24 @@ export const EventsSection = () => {
             }
         })
 
-    useEffect(() => {
-        console.log("Selected group state updated:", selectedGroup);
-    }, [selectedGroup]);
+
+    useQuery(
+        ['events'],
+        async () => {
+            const { data, error } = await supabase
+                .from("events")
+                .select("*")
+                .eq("created_by", userId ?? "");
+            if (error) {
+                throw error;
+            }
+
+            return data;
+        },
+        {
+            enabled: !!userId,
+        }
+    )
 
     const bodyContent = (
         <div className="flex flex-col gap-4">
@@ -155,12 +171,17 @@ export const EventsSection = () => {
     )
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 w-full">
             <Button onClick={() => {
                 fetchGroups.refetch()
 
                 setModalOpen(true)
-            }}>Create Event</Button>
+            }}>
+                Create Event
+            </Button>
+            <div className="flex flex-col gap-8">
+                <EventCard />
+            </div>
             <Modal isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
                 title="Create Event"

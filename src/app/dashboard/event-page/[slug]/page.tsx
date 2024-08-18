@@ -2,7 +2,7 @@ import { GroupEditor } from "@/components/dashboard/GroupEditor";
 import { Navbar } from "@/components/dashboard/Navbar";
 
 
-export default function GroupPageEditor() {
+export default function EventPage() {
     return (
         <div className="flex justify-between items-center h-[100vh]">
             <Navbar />
