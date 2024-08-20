@@ -3,7 +3,7 @@
 import { Database } from "@/types/supabase"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useState } from "react"
-import { useMutation, useQuery } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Input } from "../ui/input"
@@ -29,11 +29,33 @@ interface UserData {
 
 export const InterestsSection = () => {
     const supabase = createClientComponentClient<Database>()
+    const queryClient = useQueryClient()
     const [interestsData, setInterestsData] = useState<InterestData | null>(null)
     const [selectedInterests, setSelectedInterests] = useState<string[]>([])
     const [selectedGroup, setSelectedGroup] = useState<string | null>("all")
     const [searchQuery, setSearchQuery] = useState<string>("")
     const { userId } = useUserContext()
+    const [userInterests, setUserInterests] = useState<string[]>([])
+    const [interestsToDelete, setInterestsToDelete] = useState<string[]>([])
+
+    useQuery("userInterests", async () => {
+        if (!userId) return
+        const { data, error } = await supabase
+            .from("users")
+            .select("user_interests")
+            .eq("id", userId)
+        if (error) {
+            throw error
+        }
+
+        if (data && data.length > 0) {
+            setUserInterests(data[0].user_interests as string[])
+        }
+
+        return data
+    }, {
+        enabled: !!userId,
+    })
 
     useQuery("interests", async () => {
         const { data, error } = await supabase
@@ -67,45 +89,88 @@ export const InterestsSection = () => {
             .from("users")
             .upsert(userData)
             .eq("id", userId)
+
         if (error) {
             throw error
         }
+
         return data
-    })
+    },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries("userInterests")
+            }
+        })
+
+    const removeInterests = async (interests: string[]) => {
+        const updatedInterests = userInterests.filter((interest) => !interests.includes(interest))
+        const { data, error } = await supabase
+            .from("users")
+            .update({ user_interests: updatedInterests })
+            .eq("id", userId)
+
+        if (error) {
+            console.log("Error removing interest:", error.message)
+        }
+
+        setUserInterests(updatedInterests)
+    }
 
     return (
         <div>
             <h1 className="text-2xl font-bold">Interests</h1>
-            <div className="mb-4">
-                <label htmlFor="group-select" className="block text-lg font-medium">Select Interest Group:</label>
-                <Select
-                    value={selectedGroup || "all"}
-                    onValueChange={(value: string) => setSelectedGroup(value)}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select interest group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Groups</SelectItem>
-                        {interestsData?.["interest-groups"].map((group) => (
-                            <SelectItem
-                                value={group["group-name"]}
-                                key={group["group-name"]}
-                            >
-                                {group["group-name"]}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+            <div className="flex gap-2">
+                {userInterests.map((interest, index) => (
+                    <Button onClick={() => setInterestsToDelete((prev) => [...prev, interest])}
+                        key={index} className={`px-4 py-2 border ${selectedInterests.includes(interest) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+                        {interest}
+                    </Button>
+                ))}
+                {interestsToDelete.length > 0 && (
+                    <Button onClick={() => {
+                        removeInterests(interestsToDelete)
+                        setInterestsToDelete([])
+                    }}
+                        className="px-4 py-2 border bg-red-500 text-white">
+                        Remove Selected
+                    </Button>
+                )}
             </div>
-            <div className="mb-4">
-                <label htmlFor="search-input" className="block text-lg font-medium">Search Interests:</label>
-                <Input
-                    id="search-input"
-                    type="text"
-                    placeholder="Search interests"
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                />
+            <div className="flex gap-8 items-center">
+                <div className="mb-4">
+                    <label htmlFor="group-select" className="block text-lg font-medium">Select Interest Group:</label>
+                    <Select
+                        value={selectedGroup || "all"}
+                        onValueChange={(value: string) => setSelectedGroup(value)}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select interest group" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Groups</SelectItem>
+                            {interestsData?.["interest-groups"].map((group) => (
+                                <SelectItem
+                                    value={group["group-name"]}
+                                    key={group["group-name"]}
+                                >
+                                    {group["group-name"]}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <p>
+                    OR
+                </p>
+                <div className="mb-4">
+                    <label htmlFor="search-input" className="block text-lg font-medium">Search Interests:</label>
+                    <Input
+                        id="search-input"
+                        type="text"
+                        placeholder="Search interests"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                    />
+                </div>
             </div>
             <div className="flex flex-col gap-4">
                 {interestsData?.["interest-groups"]
@@ -159,6 +224,6 @@ export const InterestsSection = () => {
             }>
                 Save Interests
             </Button>
-        </div>
+        </div >
     )
 }
