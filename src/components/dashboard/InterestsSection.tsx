@@ -8,6 +8,7 @@ import { useUserContext } from "@/providers/UserContextProvider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
+import { useRouter } from "next/navigation"
 
 interface Interest {
     name: string
@@ -77,12 +78,12 @@ export const InterestsSection = () => {
             prevSelected.includes(interestName)
                 ? prevSelected.filter((name) => name !== interestName)
                 : [...prevSelected, interestName]
-        )
-    }
+        );
+    };
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(event.target.value)
-    }
+        setSearchQuery(event.target.value);
+    };
 
     const addInterests = useMutation(async (userData: UserData) => {
         const { data, error } = await supabase
@@ -101,6 +102,15 @@ export const InterestsSection = () => {
                 queryClient.invalidateQueries("userInterests")
             }
         })
+
+    const handleInterestToRemoveClick = (interestName: string) => {
+        setInterestsToDelete((prevSelected) =>
+            prevSelected.includes(interestName)
+                ? prevSelected.filter((name) => name !== interestName)
+                : [...prevSelected, interestName]
+        );
+    };
+
 
     const removeInterests = async (interests: string[]) => {
         const updatedInterests = userInterests.filter((interest) => !interests.includes(interest))
@@ -121,7 +131,7 @@ export const InterestsSection = () => {
             <h1 className="text-2xl font-bold">Interests</h1>
             <div className="flex gap-2">
                 {userInterests.map((interest, index) => (
-                    <Button onClick={() => setInterestsToDelete((prev) => [...prev, interest])}
+                    <Button onClick={() => handleInterestToRemoveClick(interest)}
                         key={index} className={`px-4 py-2 border ${selectedInterests.includes(interest) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
                         {interest}
                     </Button>
@@ -182,13 +192,12 @@ export const InterestsSection = () => {
                                     .filter((interest) => !selectedInterests.includes(interest.name))
                                     .filter((interest) => interest.name.toLowerCase().includes(searchQuery.toLowerCase()))
                                     .map((interest) => (
-                                        <button
+                                        <Button
                                             key={interest.name}
                                             className="px-4 py-2 border bg-white text-black"
-                                            onClick={() => handleInterestClick(interest.name)}
-                                        >
+                                            onClick={() => handleInterestClick(interest.name)}>
                                             {interest.name}
-                                        </button>
+                                        </Button>
                                     ))}
                             </div>
                         </div>
@@ -200,13 +209,12 @@ export const InterestsSection = () => {
                         <h2 className="text-xl font-semibold">Selected Interests</h2>
                         <div className="flex gap-2">
                             {selectedInterests.map((interest) => (
-                                <button
+                                <Button
                                     key={interest}
                                     className="px-4 py-2 border bg-blue-500 text-white"
-                                    onClick={() => handleInterestClick(interest)}
-                                >
+                                    onClick={() => handleInterestClick(interest)}>
                                     {interest}
-                                </button>
+                                </Button>
                             ))}
                         </div>
                     </div>

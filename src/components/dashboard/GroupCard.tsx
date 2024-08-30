@@ -27,7 +27,7 @@ export const GroupCard = () => {
     return (
         <div className="flex flex-col gap-4">
             {groupData?.map((group) => (
-                <Link href={`/dashboard/group-page-editor/${group.id}`} key={group.id}>
+                <Link href={`/dashboard/group-page/${group.id}`} key={group.id}>
                     <div key={group.id} className="bg-white p-4 rounded-md shadow-md">
                         <h1>{group.group_name}</h1>
                         <p>{group.group_city}</p>
