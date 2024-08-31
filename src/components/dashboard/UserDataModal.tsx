@@ -101,6 +101,7 @@ export const UserDataModal = () => {
     }
 
     const addInterests = useMutation(async (userData: UserInterestsData) => {
+        ["users"]
         const { data, error } = await supabase
             .from("users")
             .upsert(userData)

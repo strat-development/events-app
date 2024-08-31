@@ -53,7 +53,7 @@ export const UserProfileSection = () => {
         }
     );
 
-    const bodyContent = (
+    const editProfileModalContent = (
         <>
             <Input
                 placeholder="First Name"
@@ -109,6 +109,12 @@ export const UserProfileSection = () => {
         </>
     )
 
+    const bodyContent = (
+        <>
+            <UserDataModal />
+        </>
+    )
+
     const getUserData = useQuery(
         ['users'],
         async () => {
@@ -144,14 +150,19 @@ export const UserProfileSection = () => {
             <Button onClick={() => { setIsModalOpen(true) }}>Edit Profile</Button>
 
             <Modal title="Edit your profile"
-                body={bodyContent}
+                body={editProfileModalContent}
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onChange={setIsModalOpen}
             />
 
             {!userRole && (
-                <UserDataModal />
+                <Modal title="User Data"
+                    body={bodyContent}
+                    isOpen={true}
+                    onClose={() => {}}
+                    onChange={setIsModalOpen}
+                />
             )}
 
             <Toaster />

@@ -4,11 +4,13 @@ import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export const NavComponent = () => {
     const authModal = useModal();
     const session = useSessionContext();
     const supabase = createClientComponentClient<Database>();
+    const router = useRouter();
 
     return (
         <nav className="flex justify-between items-center h-[80px] w-full bg-gray-900 text-white">
@@ -37,6 +39,7 @@ export const NavComponent = () => {
                         <button onClick={(
                             async () => {
                                 await supabase.auth.signOut();
+                                router.push("/");
                             }
                         )}>
                             Logout
