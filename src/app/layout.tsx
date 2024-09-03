@@ -6,6 +6,7 @@ import { SupabaseProvider } from "@/providers/SupabaseProvider";
 import { Navbar } from "@/components/Navbar";
 import { QueryClient, QueryClientProvider } from "react-query";
 import UserContextProvider from "@/providers/UserContextProvider";
+import GroupDataModalProvider from "@/providers/GroupDataModalProvider";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,8 +25,10 @@ export default function RootLayout({
         <SupabaseProvider>
           <QueryClientProvider client={queryClient}>
             <UserContextProvider>
-              <Navbar />
-              {children}
+              <GroupDataModalProvider>
+                <Navbar />
+                {children}
+              </GroupDataModalProvider>
             </UserContextProvider>
           </QueryClientProvider>
         </SupabaseProvider>
