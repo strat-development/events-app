@@ -1,8 +1,18 @@
+import { useState } from "react"
+import { TextEditor } from "../TextEditor"
+import { useGroupDataContext } from "@/providers/GroupDataModalProvider"
+
 export const GroupDescriptionModalStep = () => {
+    const { editorContent, setEditorContent } = useGroupDataContext()
+
     return (
         <div>
-            <h1>Group Description</h1>
-            <p>Describe your group</p>
+            <TextEditor {
+                ...{
+                    editorContent: editorContent,
+                    onChange: setEditorContent
+                }
+            } />
         </div>
     )
 }

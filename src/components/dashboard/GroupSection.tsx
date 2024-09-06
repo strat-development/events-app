@@ -1,20 +1,25 @@
 "use client"
 
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Button } from "../ui/button"
-import { useMutation, useQueryClient } from "react-query"
 import { Modal } from "@/features/Modal"
 import { useState } from "react"
 import { Input } from "../ui/input"
-import { Database } from "@/types/supabase"
 import { GroupCard } from "./GroupCard"
 import { Navbar } from "./Navbar"
-import { GroupData } from "@/types/types"
 import { GroupTopicsModalStep } from "@/features/create-group-modal/GroupTopicsModalStep"
 import { GroupDescriptionModalStep } from "@/features/create-group-modal/GroupDescriptionModalStep"
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider"
+import { useMutation, useQueryClient } from "react-query"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { Database } from "@/types/supabase"
+import { Toaster } from "../ui/toaster"
+import { toast } from "../ui/use-toast"
+import { useUserContext } from "@/providers/UserContextProvider"
 
 export const GroupSection = () => {
+    const supabase = createClientComponentClient<Database>()
+    const queryClient = useQueryClient()
+
     const [isOpen, setIsOpen] = useState(false)
     const [modalStepCount, setModalStepCount] = useState(1)
     const { groupName,
@@ -22,7 +27,49 @@ export const GroupSection = () => {
         groupCity,
         setGroupCity,
         groupCountry,
-        setGroupCountry } = useGroupDataContext()
+        setGroupCountry,
+        editorContent,
+        selectedInterests
+    } = useGroupDataContext()
+    const { userId } = useUserContext()
+
+    const createGroupMutation = useMutation(async () => {
+        const { data, error } = await supabase
+            .from("groups")
+            .insert([
+                {
+                    group_name: groupName,
+                    group_city: groupCity,
+                    group_country: groupCountry,
+                    group_description: editorContent,
+                    group_topics: selectedInterests,
+                    group_owner: userId
+                }
+            ])
+
+        if (error) {
+            throw error
+        }
+    },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(['groups']);
+                toast({
+                    title: "Success",
+                    description: "Group created successfully",
+                });
+
+            },
+
+            onError: () => {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "There was an error creating the group"
+                });
+            }
+        })
+
 
     const bodyContent = (
         <div className="flex flex-col gap-4">
@@ -68,30 +115,42 @@ export const GroupSection = () => {
             {modalStepCount === 3 && (
                 <div className="flex flex-col gap-4">
                     <GroupDescriptionModalStep />
+
+
                     <div className="flex">
                         <Button onClick={() => {
                             setModalStepCount(2)
                         }}>Previous step</Button>
-                        <Button onClick={() => { }}>Create group</Button>
+                        {selectedInterests.length > 0 && editorContent.length > 0 && groupCity.length > 0 && groupCountry.length > 0 && groupName.length > 0 && (
+                            <Button onClick={() => {
+                                createGroupMutation.mutateAsync()
+                                setIsOpen(false)
+                            }}>Create group</Button>
+                        )}
                     </div>
+
                 </div>
             )}
         </div >
     )
 
     return (
-        <div className="flex flex-col gap-4">
-            <Navbar />
-            <div>
-                <Button onClick={() => setIsOpen(true)}>Create group</Button>
-                <GroupCard />
-                <Modal title="Create Group"
-                    body={bodyContent}
-                    isOpen={isOpen}
-                    onClose={() => setIsOpen(false)}
-                    onChange={setIsOpen}
-                />
+        <>
+            <div className="flex flex-col gap-4">
+                <Navbar />
+                <div>
+                    <Button onClick={() => setIsOpen(true)}>Create group</Button>
+                    <GroupCard />
+                    <Modal title="Create Group"
+                        body={bodyContent}
+                        isOpen={isOpen}
+                        onClose={() => setIsOpen(false)}
+                        onChange={setIsOpen}
+                    />
+                </div>
             </div>
-        </div>
+
+            <Toaster />
+        </>
     )
 }

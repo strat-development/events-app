@@ -29,7 +29,8 @@ type GroupDataContextType = {
     setSelectedInterests: (selectedInterests: string[]) => void
     selectedGroup: string | null
     setSelectedGroup: (selectedGroup: string | null) => void
-
+    editorContent: string
+    setEditorContent: (editorContent: string) => void
 }
 
 const GroupDataContext = createContext<GroupDataContextType | null>(null)
@@ -43,6 +44,7 @@ export default function GroupDataModalProvider({ children }: { children: React.R
     const [groupName, setGroupName] = useState<string>("")
     const [groupCity, setGroupCity] = useState<string>("")
     const [groupCountry, setGroupCountry] = useState<string>("")
+    const [editorContent, setEditorContent] = useState<string>("")
 
     useQuery("interests", async () => {
         const { data, error } = await supabase
@@ -72,7 +74,9 @@ export default function GroupDataModalProvider({ children }: { children: React.R
             selectedInterests,
             setSelectedInterests,
             selectedGroup,
-            setSelectedGroup
+            setSelectedGroup,
+            editorContent,
+            setEditorContent
         }}>
             {children}
         </GroupDataContext.Provider>
