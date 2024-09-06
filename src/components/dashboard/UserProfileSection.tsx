@@ -20,7 +20,6 @@ export const UserProfileSection = () => {
     const queryClient = useQueryClient();
     const { userRole, userId } = useUserContext();
     const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [city, setCity] = useState("");
     const [country, setCountry] = useState("");
@@ -61,11 +60,6 @@ export const UserProfileSection = () => {
                 onChange={(e) => setFirstName(e.target.value)}
             />
             <Input
-                placeholder="Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-            />
-            <Input
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -81,7 +75,7 @@ export const UserProfileSection = () => {
                 onChange={(e) => setCountry(e.target.value)}
             />
             <Button onClick={() => {
-                if (!firstName || !lastName || !email || !city || !country) {
+                if (!firstName || !email || !city || !country) {
                     toast({
                         variant: "destructive",
                         title: "Error",
@@ -90,8 +84,7 @@ export const UserProfileSection = () => {
                     return;
                 } else {
                     addUserData.mutateAsync([{
-                        first_name: firstName,
-                        last_name: lastName,
+                        full_name: firstName,
                         email: email,
                         city: city,
                         country: country,
@@ -139,7 +132,7 @@ export const UserProfileSection = () => {
             <div>
                 {getUserData.data?.map((user) => (
                     <div key={user.id}>
-                        <h2>{user.first_name} {user.last_name}</h2>
+                        <h2>{user.full_name}</h2>
                         <p>{user.email}</p>
                         <p>{user.city}, {user.country}</p>
                     </div>

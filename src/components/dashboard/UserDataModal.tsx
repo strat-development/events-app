@@ -34,8 +34,7 @@ export const UserDataModal = () => {
     const supabase = createClientComponentClient<Database>();
     const queryClient = useQueryClient();
     const { userRole, userId } = useUserContext();
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+    const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [city, setCity] = useState("");
     const [country, setCountry] = useState("");
@@ -157,13 +156,8 @@ export const UserDataModal = () => {
                 <TabsContent value="user-data">
                     <Input
                         placeholder="First Name"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                    />
-                    <Input
-                        placeholder="Last Name"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
                     />
                     <Input
                         placeholder="Email"
@@ -181,7 +175,7 @@ export const UserDataModal = () => {
                         onChange={(e) => setCountry(e.target.value)}
                     />
                     <Button onClick={() => {
-                        if (!firstName || !lastName || !email || !city || !country) {
+                        if (!fullName || !email || !city || !country) {
                             toast({
                                 variant: "destructive",
                                 title: "Error",
@@ -190,8 +184,7 @@ export const UserDataModal = () => {
                             return;
                         } else {
                             addUserData.mutateAsync([{
-                                first_name: firstName,
-                                last_name: lastName,
+                                full_name: fullName,
                                 email: email,
                                 city: city,
                                 country: country,

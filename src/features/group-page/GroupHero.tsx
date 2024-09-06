@@ -8,7 +8,7 @@ import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
 import { GroupData, GroupMembersData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { use, useState } from "react"
+import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 
 interface GroupHeroProps {
@@ -35,6 +35,8 @@ export const GroupHero = ({
         const { data, error } = await supabase
             .from("groups")
             .select("*")
+            .eq("id", groupId)
+            
         if (error) {
             throw error
         }
@@ -49,6 +51,7 @@ export const GroupHero = ({
             .from("groups")
             .update({ group_name: newGroupName })
             .eq("group_owner", userId)
+            .eq("id", groupId)
         if (error) {
             throw error
         }
@@ -78,6 +81,7 @@ export const GroupHero = ({
             .from("groups")
             .update({ group_city: newGroupCity, group_country: newGroupCountry })
             .eq("group_owner", userId)
+            .eq("id", groupId)
         if (error) {
             throw error
         }
@@ -107,7 +111,6 @@ export const GroupHero = ({
             .from("group-members")
             .select("*", { count: "exact" })
             .eq("group_id", groupId)
-            
 
         if (error) {
             throw error

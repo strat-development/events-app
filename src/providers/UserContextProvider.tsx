@@ -34,7 +34,7 @@ export default function UserContextProvider({ children }: { children: React.Reac
             const getUserRole = async () => {
                 const { data: userData, error } = await supabase
                     .from("users")
-                    .select("user_role, first_name, email, id")
+                    .select("user_role, full_name, email, id")
                     .eq("id", user.id)
                     .single();
                     
@@ -44,7 +44,7 @@ export default function UserContextProvider({ children }: { children: React.Reac
 
                 if (userData) {
                     setUserRole(userData.user_role);
-                    setUserName(userData.first_name);
+                    setUserName(userData.full_name);
                     setUserEmail(userData.email);
                     setUserId(userData.id);
                 }
