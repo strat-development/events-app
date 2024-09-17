@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/dashboard/Navbar";
-import { CustomGroupPage } from "@/features/group-page/CustomGroupPage";
+import { CustomEventPage } from "@/features/custom-event-page/CustomEventPage";
 
 
 export default function EventPage({
@@ -9,12 +9,12 @@ export default function EventPage({
         slug: string
     }
 }) {
-    const groupId = params.slug;
+    const eventId = params.slug;
 
     return (
         <div className="flex justify-between items-center h-[100vh]">
             <Navbar />
-            <CustomGroupPage groupId={groupId} />
+            <CustomEventPage eventId={eventId} />
         </div>
     );
 }

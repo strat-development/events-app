@@ -9,42 +9,42 @@ import { TextEditor } from "../TextEditor"
 import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
 
-interface GroupInfoSectionProps {
-    groupId: string
+interface EventInfoSectionProps {
+    eventId: string
 }
 
-export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
+export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const supabase = createClientComponentClient<Database>()
-    const [groupDescription, setGroupDescription] = useState<string>()
+    const [eventDescription, setEventDescription] = useState<string>()
     const [isExpanded, setIsExpanded] = useState(false)
     const [isSetToEdit, setIsSetToEdit] = useState(false)
     const queryClient = useQueryClient()
 
-    useQuery(['groups-description'], async () => {
+    useQuery(['events-description'], async () => {
         const { data, error } = await supabase
-            .from("groups")
-            .select("group_description")
-            .eq("id", groupId)
+            .from("events")
+            .select("event_description")
+            .eq("id", eventId)
 
         if (error) {
             throw error
         }
 
         if (data) {
-            setGroupDescription(data[0].group_description as string)
+            setEventDescription(data[0].event_description as string)
         }
     })
 
-    const groupMembers = useQuery(
-        ['group-members-data'],
+    const eventAttendees = useQuery(
+        ['attendees-data'],
         async () => {
             const { data, error } = await supabase
-                .from("group-members")
+                .from("attendees")
                 .select(`
                 users (
                     *
                 )`)
-                .eq("group_id", groupId)
+                .eq("event_id", eventId)
 
             if (error) {
                 throw new Error(error.message)
@@ -53,15 +53,15 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
             return data
         },
         {
-            enabled: !!groupId,
+            enabled: !!eventId,
         })
 
-    const editGroupDescriptionMutation = useMutation(
-        async (newGroupDescription: string) => {
+    const editEventDescriptionMutation = useMutation(
+        async (newEventDescription: string) => {
             const { data, error } = await supabase
-                .from("groups")
-                .update({ group_description: newGroupDescription })
-                .eq("id", groupId)
+                .from("events")
+                .update({ event_description: newEventDescription })
+                .eq("id", eventId)
 
             if (error) {
                 throw error
@@ -73,7 +73,7 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
         },
         {
             onSuccess: () => {
-                queryClient.invalidateQueries('groups')
+                queryClient.invalidateQueries('events')
                 toast({
                     title: "Success",
                     description: "Description updated successfully",
@@ -97,7 +97,7 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                         {isSetToEdit === false && (
                             <>
                                 <div
-                                    dangerouslySetInnerHTML={{ __html: groupDescription as string }}
+                                    dangerouslySetInnerHTML={{ __html: eventDescription as string }}
                                     className={`overflow-hidden ${isExpanded ? 'max-h-full' : 'max-h-24'} ${!isExpanded && 'blur-effect'}`}
                                 ></div>
                                 <button
@@ -109,11 +109,11 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                         ) || (
                                 <div className="flex flex-col gap-4">
                                     <TextEditor
-                                        editorContent={groupDescription as string}
-                                        onChange={setGroupDescription}
+                                        editorContent={eventDescription as string}
+                                        onChange={setEventDescription}
                                     />
                                     <Button onClick={() => {
-                                        editGroupDescriptionMutation.mutate(groupDescription as string)
+                                        editEventDescriptionMutation.mutate(eventDescription as string)
 
                                         setIsSetToEdit(false)
                                     }}>
@@ -134,11 +134,11 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
 
                 </div>
                 <div className="flex flex-col gap-4">
-                    <h2 className='text-2xl font-bold'>Members</h2>
+                    <h2 className='text-2xl font-bold'>Attendees</h2>
                     <div className='grid grid-cols-4'>
-                        {groupMembers.data?.map((member) => (
-                            <div key={member.users?.id} className='flex flex-col gap-2'>
-                                <span className='text-sm'>{member.users?.full_name}</span>
+                        {eventAttendees.data?.map((attendee) => (
+                            <div key={attendee.users?.id} className='flex flex-col gap-2'>
+                                <span className='text-sm'>{attendee.users?.full_name}</span>
                             </div>
                         ))}
                     </div>
