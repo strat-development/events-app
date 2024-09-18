@@ -7,6 +7,7 @@ import { Navbar } from "@/components/Navbar";
 import { QueryClient, QueryClientProvider } from "react-query";
 import UserContextProvider from "@/providers/UserContextProvider";
 import GroupDataModalProvider from "@/providers/GroupDataModalProvider";
+import GroupOwnerContextProvider, { GroupOwnerContext } from "@/providers/GroupOwnerProvider";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,8 +27,10 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <UserContextProvider>
               <GroupDataModalProvider>
-                <Navbar />
-                {children}
+                <GroupOwnerContextProvider>
+                  <Navbar />
+                  {children}
+                </GroupOwnerContextProvider>
               </GroupDataModalProvider>
             </UserContextProvider>
           </QueryClientProvider>

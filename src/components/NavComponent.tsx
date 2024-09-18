@@ -15,7 +15,8 @@ export const NavComponent = () => {
     return (
         <nav className="flex justify-between items-center h-[80px] w-full bg-gray-900 text-white">
             <div className="flex items-center">
-                <h1 className="text-2xl font-bold ml-4">Logo</h1>
+                <Link href="/"
+                 className="text-2xl font-bold ml-4">Logo</Link>
             </div>
             
             {!session.session?.user.role === true && (

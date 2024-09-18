@@ -8,6 +8,8 @@ import { useMutation, useQuery, useQueryClient } from "react-query"
 import { TextEditor } from "../TextEditor"
 import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
+import { useUserContext } from "@/providers/UserContextProvider"
+import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 
 interface EventInfoSectionProps {
     eventId: string
@@ -19,6 +21,8 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const [isExpanded, setIsExpanded] = useState(false)
     const [isSetToEdit, setIsSetToEdit] = useState(false)
     const queryClient = useQueryClient()
+    const { userId } = useUserContext()
+    const { eventCreatorId } = useGroupOwnerContext()
 
     useQuery(['events-description'], async () => {
         const { data, error } = await supabase
@@ -112,6 +116,9 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                                         editorContent={eventDescription as string}
                                         onChange={setEventDescription}
                                     />
+                                    <Button onClick={() => setIsSetToEdit(false)}>
+                                        Cancel
+                                    </Button>
                                     <Button onClick={() => {
                                         editEventDescriptionMutation.mutate(eventDescription as string)
 
@@ -123,15 +130,13 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
 
                             )}
                     </div>
-                    <div className="flex gap-4">
-                        <Button onClick={() => setIsSetToEdit(true)}>
-                            Edit
-                        </Button>
-                        <Button onClick={() => setIsSetToEdit(false)}>
-                            Cancel
-                        </Button>
-                    </div>
-
+                    {eventCreatorId === userId && !isSetToEdit &&
+                        <div className="flex gap-4">
+                            <Button onClick={() => setIsSetToEdit(true)}>
+                                Edit
+                            </Button>
+                        </div>
+                    }
                 </div>
                 <div className="flex flex-col gap-4">
                     <h2 className='text-2xl font-bold'>Attendees</h2>

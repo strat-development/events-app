@@ -8,6 +8,8 @@ import { useMutation, useQuery, useQueryClient } from "react-query"
 import { TextEditor } from "../TextEditor"
 import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
+import { useUserContext } from "@/providers/UserContextProvider"
+import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 
 interface GroupInfoSectionProps {
     groupId: string
@@ -19,6 +21,8 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
     const [isExpanded, setIsExpanded] = useState(false)
     const [isSetToEdit, setIsSetToEdit] = useState(false)
     const queryClient = useQueryClient()
+    const { userId } = useUserContext()
+    const { ownerId } = useGroupOwnerContext()
 
     useQuery(['groups-description'], async () => {
         const { data, error } = await supabase
@@ -107,11 +111,15 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                                 </button>
                             </>
                         ) || (
+
                                 <div className="flex flex-col gap-4">
                                     <TextEditor
                                         editorContent={groupDescription as string}
                                         onChange={setGroupDescription}
                                     />
+                                    <Button onClick={() => setIsSetToEdit(false)}>
+                                        Cancel
+                                    </Button>
                                     <Button onClick={() => {
                                         editGroupDescriptionMutation.mutate(groupDescription as string)
 
@@ -120,17 +128,15 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                                         Save changes
                                     </Button>
                                 </div>
-
                             )}
                     </div>
-                    <div className="flex gap-4">
-                        <Button onClick={() => setIsSetToEdit(true)}>
-                            Edit
-                        </Button>
-                        <Button onClick={() => setIsSetToEdit(false)}>
-                            Cancel
-                        </Button>
-                    </div>
+                    {userId === ownerId && !isSetToEdit && (
+                        <div className="flex gap-4">
+                            <Button onClick={() => setIsSetToEdit(true)}>
+                                Edit
+                            </Button>
+                        </div>
+                    )}
 
                 </div>
                 <div className="flex flex-col gap-4">

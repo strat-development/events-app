@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
+import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
 import { GroupData, GroupMembersData } from "@/types/types"
@@ -22,6 +23,7 @@ export const GroupHero = ({
     const supabase = createClientComponentClient<Database>()
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
+    const { ownerId } = useGroupOwnerContext()
 
     const [groupData, setGroupData] = useState<GroupData[]>()
     const [groupNameToEdit, setGroupNameToEdit] = useState(false)
@@ -129,7 +131,7 @@ export const GroupHero = ({
                         <div className="flex flex-col gap-4">
                             <div className="flex gap-4">
                                 <h1>{group.group_name}</h1>
-                                {!groupNameToEdit && <Button onClick={() => setGroupNameToEdit(true)}>Edit</Button>}
+                                {userId === ownerId && !groupNameToEdit && <Button onClick={() => setGroupNameToEdit(true)}>Edit</Button>}
                             </div>
                             <div>
                                 {groupNameToEdit && (
@@ -153,7 +155,7 @@ export const GroupHero = ({
                             <div className="flex gap-2">
                                 <p>{group.group_city},</p>
                                 <p>{group.group_country}</p>
-                                {!groupCityToEdit && <Button onClick={() => setGroupCityToEdit(true)}>Edit</Button>}
+                                {userId === ownerId && !groupCityToEdit && <Button onClick={() => setGroupCityToEdit(true)}>Edit</Button>}
                             </div>
                             <div>
                                 {groupCityToEdit && (
