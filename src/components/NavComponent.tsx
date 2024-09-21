@@ -16,9 +16,9 @@ export const NavComponent = () => {
         <nav className="flex justify-between items-center h-[80px] w-full bg-gray-900 text-white">
             <div className="flex items-center">
                 <Link href="/"
-                 className="text-2xl font-bold ml-4">Logo</Link>
+                    className="text-2xl font-bold ml-4">Logo</Link>
             </div>
-            
+
             {!session.session?.user.role === true && (
                 <div>
                     <button onClick={() => {
@@ -40,6 +40,7 @@ export const NavComponent = () => {
                         <button onClick={(
                             async () => {
                                 await supabase.auth.signOut();
+
                                 router.push("/");
                             }
                         )}>
