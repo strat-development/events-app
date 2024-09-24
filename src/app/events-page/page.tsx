@@ -6,6 +6,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import stringSimilarity from "string-similarity";
 
 export default function EventsPage() {
     const supabase = createClientComponentClient<Database>();
@@ -18,32 +19,59 @@ export default function EventsPage() {
     }, []);
 
     useQuery(
-        ['events', eventInterestFromUrl],
+        ['events', eventInterestFromUrl],   
         async () => {
-            const { data, error, status } = await supabase
+            if (!eventInterestFromUrl) return [];
+
+            const { data, error } = await supabase
                 .from("events")
-                .select("*")
-                .contains('event_topics', { interests: [{ name: eventInterestFromUrl }] });
+                .select("*");
 
             if (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching events:', error);
                 throw new Error(error.message);
-            } else {
-                setEvents(data);
             }
+
+            const exactMatches = data.filter((event: EventData) => {
+                const eventTopics = event.event_topics as { interests: { name: string }[] };
+                return eventTopics?.interests.some((interest: { name: string }) =>
+                    interest.name.toLowerCase() === eventInterestFromUrl.toLowerCase()
+                );
+            });
+
+            if (exactMatches.length > 0) {
+                return exactMatches;
+            }
+
+            const similarityThreshold = 0.1;
+            const similarMatches = data.filter((event: EventData) => {
+                const eventTopics = event.event_topics as { interests: { name: string }[] };
+                return eventTopics && Array.isArray(eventTopics.interests) && eventTopics.interests.some((interest: { name: string }) => {
+                    const similarity = stringSimilarity.compareTwoStrings(
+                        interest.name.toLowerCase(),
+                        eventInterestFromUrl.toLowerCase()
+                    );
+                    return similarity >= similarityThreshold;
+                });
+            });
+
+            return similarMatches;
         },
         {
-            enabled: !!eventInterestFromUrl,    
+            enabled: !!eventInterestFromUrl,
+            onSuccess: (data) => {
+                setEvents(data);
+            }
         }
     );
 
+
     return (
         <div className="h-screen flex items-center">
-
             <ul>
                 {events.map((event) => (
-                    <Link href={`/event-page/${event.id}`} 
-                    key={event.id}>{event.event_title}</Link>
+                    <Link href={`/event-page/${event.id}`}
+                        key={event.id}>{event.event_title}</Link>
                 ))}
             </ul>
         </div>
