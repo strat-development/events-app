@@ -14,6 +14,8 @@ type UserContextType = {
     userId: string;
     setUserId: (userId: string) => void;
     clearUserRole: () => void;
+    userInterests: string[];
+    setUserInterests: (userInterests: string[]) => void;
 };
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -23,6 +25,8 @@ export default function UserContextProvider({ children }: { children: React.Reac
     const [userName, setUserName] = useState<string>("");
     const [userEmail, setUserEmail] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
+    const [userInterests, setUserInterests] = useState<string[]>([]);
+
     const {
         supabaseClient: supabase
     } = useSessionContext();
@@ -34,7 +38,7 @@ export default function UserContextProvider({ children }: { children: React.Reac
             const getUserRole = async () => {
                 const { data: userData, error } = await supabase
                     .from("users")
-                    .select("user_role, full_name, email, id")
+                    .select("user_role, full_name, email, id, user_interests")
                     .eq("id", user.id)
                     .single();
                     
@@ -47,6 +51,7 @@ export default function UserContextProvider({ children }: { children: React.Reac
                     setUserName(userData.full_name);
                     setUserEmail(userData.email);
                     setUserId(userData.id);
+                    setUserInterests(userData.user_interests);
                 }
             };
             getUserRole();
@@ -63,6 +68,8 @@ export default function UserContextProvider({ children }: { children: React.Reac
             setUserEmail,
             userId,
             setUserId,
+            userInterests,
+            setUserInterests,
             clearUserRole }}>
             {children}
         </UserContext.Provider>

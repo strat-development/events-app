@@ -43,7 +43,7 @@ export const InterestsSection = () => {
         enabled: !!userId,
     })
 
-  
+
 
     const handleInterestClick = (interest: string) => {
         if (selectedInterests.includes(interest)) {
@@ -102,12 +102,20 @@ export const InterestsSection = () => {
         <div>
             <h1 className="text-2xl font-bold">Interests</h1>
             <div className="flex gap-2">
-                {userInterests.map((interest, index) => (
-                    <Button onClick={() => handleInterestToRemoveClick(interest)}
-                        key={index} className={`px-4 py-2 border ${selectedInterests.includes(interest) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
-                        {interest}
-                    </Button>
-                ))}
+
+                {userInterests && (
+
+                    userInterests.map((interest, index) => (
+                        <Button onClick={() => handleInterestToRemoveClick(interest)}
+                            key={index} className={`px-4 py-2 border ${selectedInterests.includes(interest) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+                            {interest}
+                        </Button>
+                    ))
+
+                )}
+
+
+
                 {interestsToDelete.length > 0 && (
                     <Button onClick={() => {
                         removeInterests(interestsToDelete)
