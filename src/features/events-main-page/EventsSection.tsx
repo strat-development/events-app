@@ -7,6 +7,7 @@ import { useQuery } from "react-query";
 import stringSimilarity from "string-similarity";
 import { format, startOfToday, parseISO, isSameDay } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
+import Link from "next/link";
 
 export const EventsSection = () => {
     const supabase = createClientComponentClient<Database>();
@@ -89,7 +90,8 @@ export const EventsSection = () => {
                         <div key={date}>
                             <h2 className="text-xl font-bold">{date}</h2>
                             {events[date].map((event) => (
-                                <div key={event.id}>{event.event_title}</div>
+                                <Link href={`/event-page/${event.id}`} 
+                                key={event.id}>{event.event_title}</Link>
                             ))}
                         </div>
                     ))}

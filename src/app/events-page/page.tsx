@@ -4,6 +4,7 @@ import { useCityContext } from "@/providers/cityContextProvider";
 import { Database } from "@/types/supabase";
 import { EventData } from "@/types/types";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import stringSimilarity from "string-similarity";
@@ -12,21 +13,34 @@ export default function EventsPage() {
     const supabase = createClientComponentClient<Database>();
     const [events, setEvents] = useState<EventData[]>([]);
     const [eventInterestFromUrl, setEventInterestFromUrl] = useState<string | null>(null);
+    const [eventCityFromUrl, setEventCityFromUrl] = useState<string | null>(null);
+
     const { city } = useCityContext();
 
     useEffect(() => {
-        const searchParam = new URLSearchParams(window.location.search).get('search');
+        const searchParams = new URLSearchParams(window.location.search);
+        const searchParam = searchParams.get('search');
+        const cityParam = searchParams.get('city');
+
+        setEventCityFromUrl(cityParam);
         setEventInterestFromUrl(searchParam);
     }, []);
 
     useQuery(
-        ['events', eventInterestFromUrl, city],
+        ['events', eventInterestFromUrl, eventCityFromUrl, city],
         async () => {
-            if (!eventInterestFromUrl && !city) return [];
+            if (!eventInterestFromUrl && !eventCityFromUrl && !city) return [];
+
+            const cityFilter = eventCityFromUrl || city;
+
+            console.log('eventCityFromUrl:', eventCityFromUrl);
+            console.log('city from context:', city);
+            console.log('cityFilter:', cityFilter);
 
             const { data, error } = await supabase
                 .from("events")
-                .select("*");
+                .select("*")
+                .ilike('event_address', `%${cityFilter}%`);
 
             if (error) {
                 console.error('Error fetching events:', error);
@@ -38,10 +52,8 @@ export default function EventsPage() {
                 const matchesInterest = eventTopics?.interests.some((interest: { name: string }) =>
                     interest.name.toLowerCase() === eventInterestFromUrl?.toLowerCase()
                 );
-                const matchesCity = city
-                    ? event.event_address?.toLowerCase().includes(city.toLowerCase())
-                    : true;
-                return matchesInterest && matchesCity;
+
+                return matchesInterest;
             });
 
             const similarityThreshold = 0.1;
@@ -49,21 +61,17 @@ export default function EventsPage() {
                 const eventTopics = event.event_topics as { interests: { name: string }[] };
                 const matchesInterest = eventTopics && Array.isArray(eventTopics.interests) && eventTopics.interests.some((interest: { name: string }) => {
                     const similarityScores = eventInterestFromUrl ? [stringSimilarity.compareTwoStrings(
-                        interest.name.toLowerCase(),
-                        eventInterestFromUrl.toLowerCase()
+                        interest.name.toLowerCase(), eventInterestFromUrl.toLowerCase()
                     )] : [];
-                    return Math.max(...similarityScores) >= similarityThreshold;
+                    return similarityScores.some(score => score >= similarityThreshold);
                 });
-                const matchesCity = city
-                    ? event.event_address?.toLowerCase().includes(city.toLowerCase())
-                    : true;
-                return matchesInterest && matchesCity;
+
+                return matchesInterest;
             });
 
             return similarMatches;
         },
         {
-            enabled: !!eventInterestFromUrl || !!city,
             onSuccess: (data) => {
                 setEvents(data);
             }
@@ -72,11 +80,11 @@ export default function EventsPage() {
 
     return (
         <div className="h-screen flex items-center">
-            <ul>
-                {events.map((event) => (
-                    <li key={event.id}>{event.event_title}</li>
-                ))}
-            </ul>
+            {events.map((event) => (
+                <Link href={`/event-page/${event.id}`}
+                    key={event.id}>{event.event_title}</Link>
+
+            ))}
         </div>
     );
 }

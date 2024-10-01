@@ -11,14 +11,16 @@ interface EventSearchComponentProps {
 
 export const EventSearchComponent = ({ city }: EventSearchComponentProps) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [isCity, setIsCity] = useState('');
+    const [isCity, setIsCity] = useState(city || '');
     const router = useRouter();
 
     const handleSearch = () => {
         if (searchTerm.trim()) {
-            router.push(`/events-page?search=${encodeURIComponent(searchTerm)}?city=${city}`);
+            router.push(`/events-page?search=${encodeURIComponent(searchTerm)}&city=${encodeURIComponent(isCity)}`);
         }
     };
+
+    console.log('city', isCity);
 
     return (
         <div>
@@ -36,7 +38,7 @@ export const EventSearchComponent = ({ city }: EventSearchComponentProps) => {
                             id="city"
                             type="text"
                             placeholder="City"
-                            value={city as any}
+                            value={isCity}
                             onChange={(e) => setIsCity(e.target.value)}
                         />
                     </div>
