@@ -15,12 +15,8 @@ export const EventsSection = () => {
     const [events, setEvents] = useState<{ [date: string]: EventData[] }>({});
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-    console.log('userInterests:', userInterests);
-
     const handleDateChange = (date: Date) => {
         setSelectedDate(date);
-
-        console.log('selectedDate:', date);
     };
 
     useQuery(

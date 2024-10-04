@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { use, useEffect, useState } from "react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
@@ -23,10 +23,12 @@ export const EventsSection = () => {
     const [eventAddress, setEventAddress] = useState("")
     const [eventTicketPrice, setEventTicketPrice] = useState("")
     const [selectedGroup, setSelectedGroup] = useState("")
+    const [groupTopics, setGroupTopics] = useState([]);
+    
     const supabase = createClientComponentClient<Database>()
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
-    const [fetchedGroupsData, setFetchedGroupsData] = useState<GroupData[]>()
+    const [fetchedGroupsData, setFetchedGroupsData] = useState<GroupData[]>([])
 
     const clearStates = () => {
         setEventTitle("")
@@ -59,6 +61,26 @@ export const EventsSection = () => {
         }
     );
 
+    useEffect(() => {
+        const fetchGroupTopics = async () => {
+            if (selectedGroup) {
+                const { data, error } = await supabase
+                    .from("groups")
+                    .select("group_topics")
+                    .eq("id", selectedGroup);
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+
+                if (data && data.length > 0) {
+                    setGroupTopics(data[0].group_topics as any);
+                }
+            }
+        };
+
+        fetchGroupTopics();
+    }, [selectedGroup]);
 
     const createEvent = useMutation(
         async (eventData: EventData) => {
@@ -120,7 +142,9 @@ export const EventsSection = () => {
             />
             <Select
                 value={selectedGroup}
-                onValueChange={(value: string) => setSelectedGroup(value)}>
+                onValueChange={(value: string) => {
+                    setSelectedGroup(value)
+                }}>
                 <SelectTrigger>
                     <SelectValue placeholder="Select event group" />
                 </SelectTrigger>
@@ -135,6 +159,7 @@ export const EventsSection = () => {
                     ))}
                 </SelectContent>
             </Select>
+
             <Input
                 placeholder="Event Description"
                 value={eventDescription}
@@ -162,8 +187,9 @@ export const EventsSection = () => {
                     event_address: eventAddress,
                     created_by: userId,
                     event_group: selectedGroup,
+                    event_topics: groupTopics,
                     ticket_price: eventTicketPrice
-                } as EventData)
+                } as unknown as EventData)
 
                 queryClient.invalidateQueries(['events'])
             }}>Create Event</Button>

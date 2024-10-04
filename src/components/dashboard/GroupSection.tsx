@@ -32,6 +32,8 @@ export const GroupSection = () => {
         selectedInterests
     } = useGroupDataContext()
     const { userId } = useUserContext()
+    
+    const formattedInterests = { interests: selectedInterests.map((interest) => ({ name: interest })) };
 
     const createGroupMutation = useMutation(async () => {
         const { data, error } = await supabase
@@ -42,7 +44,7 @@ export const GroupSection = () => {
                     group_city: groupCity,
                     group_country: groupCountry,
                     group_description: editorContent,
-                    group_topics: selectedInterests,
+                    group_topics: formattedInterests,
                     group_owner: userId
                 }
             ])
