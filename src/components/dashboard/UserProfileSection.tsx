@@ -8,10 +8,12 @@ import { Toaster } from "../ui/toaster";
 import { UserDataModal } from "./UserDataModal";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserData } from "@/types/types";
 import { toast } from "../ui/use-toast";
 import { Modal } from "@/features/Modal";
+import { supabaseAdmin } from "@/lib/admin";
+import Image from "next/image";
 
 
 
@@ -23,7 +25,9 @@ export const UserProfileSection = () => {
     const [email, setEmail] = useState("");
     const [city, setCity] = useState("");
     const [country, setCountry] = useState("");
+    const [files, setFiles] = useState<File[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
 
     const addUserData = useMutation(
         async (newUserData: UserData[]) => {
@@ -37,7 +41,7 @@ export const UserProfileSection = () => {
                 queryClient.invalidateQueries(['users']);
                 toast({
                     title: "Success",
-                    description: "User created successfully",
+                    description: "Profile edited successfully",
                 });
 
             },
@@ -46,11 +50,88 @@ export const UserProfileSection = () => {
                 toast({
                     variant: "destructive",
                     title: "Error",
-                    description: "There was an error creating the user"
+                    description: "There was an error editing your profile"
                 });
             }
         }
     );
+
+    const addProfilePicture = useMutation(
+        async (paths: string[]) => {
+            const results = await Promise.all(paths.map(async (path) => {
+                const { data, error } = await supabase
+                    .from('profile-pictures')
+                    .upsert({
+                        user_id: userId,
+                        image_url: path
+                    });
+                if (error) {
+                    throw error;
+                }
+                return data;
+            }));
+
+            return results;
+        },
+    );
+
+    const uploadFiles = async (files: File[]) => {
+        const uploadPromises = files.map((file) => {
+            const path = `${file.name}${Math.random()}.${file.name.split('.').pop()}`;
+            return { promise: supabaseAdmin.storage.from('profile-pictures').upload(path, file), path };
+        });
+
+        const responses = await Promise.all(uploadPromises.map(({ promise }) => promise));
+
+        responses.forEach((response, index) => {
+            if (response.error) {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: `Error uploading file ${files[index].name}`
+                })
+            } else {
+                toast({
+                    title: "Success",
+                    description: `File ${files[index].name} uploaded successfully`
+                })
+            }
+        });
+
+        return uploadPromises.map(({ path }) => path);
+    }
+
+    const { data: images, isLoading } = useQuery(
+        ['profile-pictures', userId],
+        async () => {
+            const { data, error } = await supabase
+                .from('profile-pictures')
+                .select('*')
+                .eq('user_id', userId)
+            if (error) {
+                throw error;
+            }
+            return data || [];
+        },
+        {
+            enabled: !!userId
+        }
+    );
+
+    useEffect(() => {
+        if (images) {
+            Promise.all(images.map(async (image) => {
+                const { data: publicURL } = await supabase.storage
+                    .from('profile-pictures')
+                    .getPublicUrl(image.image_url)
+
+                return { publicUrl: publicURL.publicUrl };
+
+            }))
+                .then((publicUrls) => setImageUrls(publicUrls))
+                .catch(console.error);
+        }
+    }, [images]);
 
     const editProfileModalContent = (
         <>
@@ -74,6 +155,21 @@ export const UserProfileSection = () => {
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
             />
+            <div className="flex gap-4">
+                <Input type="file"
+                    onChange={(e) => {
+                        if (e.target.files) {
+                            setFiles([...files, ...Array.from(e.target.files)]);
+                        }
+                    }} />
+                {files.length > 0 && (
+                    <Button variant={"destructive"}
+                        onClick={() => setFiles([])}>
+                        Clear
+                    </Button>
+                )}
+            </div>
+
             <Button onClick={() => {
                 if (!firstName || !email || !city || !country) {
                     toast({
@@ -97,6 +193,19 @@ export const UserProfileSection = () => {
                             setIsModalOpen(false);
                         }
                     });
+
+                    if (files.length > 0) {
+                        uploadFiles(files)
+                            .then((paths) => {
+                                return addProfilePicture.mutateAsync(paths);
+                            })
+                            .catch((error) => console.error('Error uploading files:', error));
+                    } else {
+                        toast({
+                            title: "Error",
+                            description: "Error uploading image",
+                        });
+                    }
                 }
             }}>Edit Profile</Button>
         </>
@@ -131,7 +240,9 @@ export const UserProfileSection = () => {
         <>
             <div>
                 {getUserData.data?.map((user) => (
+
                     <div key={user.id}>
+                        <Image src={imageUrls[0]?.publicUrl || "/profile-placeholder.png"} alt="profile picture" width={200} height={200} />
                         <h2>{user.full_name}</h2>
                         <p>{user.email}</p>
                         <p>{user.city}, {user.country}</p>
@@ -153,7 +264,7 @@ export const UserProfileSection = () => {
                 <Modal title="User Data"
                     body={bodyContent}
                     isOpen={true}
-                    onClose={() => {}}
+                    onClose={() => { }}
                     onChange={setIsModalOpen}
                 />
             )}
