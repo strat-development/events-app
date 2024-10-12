@@ -7,6 +7,8 @@ import Link from "next/link"
 import { useQuery } from "react-query"
 import { Button } from "../ui/button"
 import { useState } from "react"
+import { DeleteEventDialog } from "./modals/DeleteEventDialog"
+import { EditEventDialog } from "./modals/EditEventDialog"
 
 export const EventCard = () => {
     const supabase = createClientComponentClient<Database>()
@@ -59,44 +61,58 @@ export const EventCard = () => {
     )
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className="flex">
-                <Button variant="link"
-                onClick={() => {
-                    setAttendingVisits(true)
+        <>
 
-                    fetchedEventsByAttendees.refetch()
-                }}>
-                    Attending
-                </Button>
-                <Button variant="link"
-                onClick={() => {
-                    setAttendingVisits(false)
+            <div className="flex flex-col gap-4">
+                <div className="flex">
+                    <Button variant="link"
+                        onClick={() => {
+                            setAttendingVisits(true)
 
-                    fetchedEventsByHosts.refetch()
-                }}>
-                    Hosting
-                </Button>
-            </div>
-            <h1>Events</h1>
+                            fetchedEventsByAttendees.refetch()
+                        }}>
+                        Attending
+                    </Button>
+                    <Button variant="link"
+                        onClick={() => {
+                            setAttendingVisits(false)
 
-            {attendingVisits === true && (
-                fetchedEventsByAttendees.data?.map((event) => (
-                    <div key={event.events?.event_title}>
-                        <Link href={`/dashboard/event-page/${event.events?.id}`}>
-                            <p>{event.events?.event_title}</p>
-                        </Link>
-                    </div>
-                ))
-            ) || (
-                    fetchedEventsByHosts.data?.map((event) => (
-                        <div key={event.event_title}>
-                            <Link href={`/dashboard/event-page/${event.id}`}>
-                                <p>{event.event_title}</p>
+                            fetchedEventsByHosts.refetch()
+                        }}>
+                        Hosting
+                    </Button>
+                </div>
+                <h1>Events</h1>
+
+                {attendingVisits === true && (
+                    fetchedEventsByAttendees.data?.map((event) => (
+                        <div key={event.events?.event_title}>
+                            <Link href={`/dashboard/event-page/${event.events?.id}`}>
+                                <p>{event.events?.event_title}</p>
                             </Link>
                         </div>
                     ))
-                )}
-        </div>
+                ) || (
+                        fetchedEventsByHosts.data?.map((event) => (
+                            <div className="flex"
+                                key={event.event_title}>
+                                <Link href={`/dashboard/event-page/${event.id}`}>
+                                    <p>{event.event_title}</p>
+                                </Link>
+
+                                <div className="flex gap-4">
+                                    <EditEventDialog
+                                        eventId={event.id}
+                                    />
+                                    <DeleteEventDialog
+                                        eventId={event.id}
+                                    />
+                                </div>
+                            </div>
+
+                        ))
+                    )}
+            </div>
+        </>
     )
 }
