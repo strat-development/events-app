@@ -8,6 +8,7 @@ import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
 import { EventAttendeesData, EventData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import Link from "next/link"
 import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 
@@ -187,6 +188,14 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                     </div>
                 </div>
             ))}
+            <div className="flex gap-4">
+                <Link href={`/dashboard/event-page/${eventId}`}>
+                    About
+                </Link>
+                <Link href={`/dashboard/event-photos/${eventId}`}>
+                    Photos
+                </Link>
+            </div>
         </div>
     )
 }
