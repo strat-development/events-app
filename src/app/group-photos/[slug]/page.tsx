@@ -1,30 +1,31 @@
 "use client"
 
-import { CreateEventImagesAlbumDialog } from "@/components/dashboard/modals/CreateEventImagesAlbumDialog";
+import { CreateGroupImagesAlbumDialog } from "@/components/dashboard/modals/CreateGroupImagesAlbumDialog";
 import { Navbar } from "@/components/dashboard/Navbar";
-import { EventGallery } from "@/features/custom-event-page/EventGallery";
-import { EventHero } from "@/features/custom-event-page/EventHero";
+import { GroupGallery } from "@/features/group-page/GroupGallery";
+import { GroupHero } from "@/features/group-page/GroupHero";
 
-export default function EventPhotosPage({
+export default function GroupPhotosPage({
     params
 }: {
     params: {
         slug: string
     }
 }) {
-    const eventId = params.slug;
+    const groupId = params.slug;
 
     return (
         <>
             <div className="flex justify-between items-center h-[100vh]">
                 <Navbar />
                 <div className="flex flex-col gap-8 items-center w-full min-h-screen relative top-24">
-                    <EventHero eventId={eventId} />
+                    <GroupHero groupId={groupId} />
                     <div>
-                        <CreateEventImagesAlbumDialog eventId={eventId} />
+                        <CreateGroupImagesAlbumDialog groupId={groupId} />
                     </div>
                     <div className="grid grid-cols-3 gap-8">
-                        <EventGallery eventId={eventId} />
+                        <GroupGallery
+                            groupId={groupId} />
                     </div>
                 </div>
             </div>

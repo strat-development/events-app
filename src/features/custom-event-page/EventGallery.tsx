@@ -3,6 +3,7 @@
 import { ImageCarousel } from "@/components/dashboard/ImageCarouel"
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
@@ -14,8 +15,6 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
     const supabase = createClientComponentClient<Database>();
 
     const [albums, setAlbums] = useState<any[]>([]);
-
-    console.log('EventGallery', eventId);
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['event-picture-albums', eventId],
@@ -45,7 +44,7 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
                 const imageUrlsArray = JSON.parse(imageUrls);
                 const publicUrls = await Promise.all(imageUrlsArray.map(async (imagePath: string) => {
                     const { data: publicURL } = await supabase.storage
-                        .from('event-picture-albums')
+                        .from('event-albums')
                         .getPublicUrl(imagePath);
 
                     return { publicUrl: publicURL.publicUrl };
@@ -72,8 +71,17 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
             <div className="grid grid-cols-3 w-full gap-[120px] justify-between">
                 {albums.map((album) => (
                     <div key={album.id}>
-                        <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
-                        <p>{album.album_name}</p>
+                        {window.location.pathname.includes('dashboard') ? (
+                            <Link href={`/dashboard/event-photos-album/${eventId}?albumId=${album.id}`}>
+                                <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
+                                <p>{album.album_name}</p>
+                            </Link>
+                        ) : (
+                            <Link href={`/event-photos-album/${eventId}?albumId=${album.id}`}>
+                                <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
+                                <p>{album.album_name}</p>
+                            </Link>
+                        )}
                     </div>
                 ))}
             </div>

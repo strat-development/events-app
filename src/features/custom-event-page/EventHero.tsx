@@ -188,14 +188,26 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                     </div>
                 </div>
             ))}
-            <div className="flex gap-4">
-                <Link href={`/dashboard/event-page/${eventId}`}>
-                    About
-                </Link>
-                <Link href={`/dashboard/event-photos/${eventId}`}>
-                    Photos
-                </Link>
-            </div>
+        
+            {window.location.pathname.includes("dashboard") && (
+                <div className="flex gap-4">
+                    <Link href={`/dashboard/event-page/${eventId}`}>
+                        About
+                    </Link>
+                    <Link href={`/dashboard/event-photos/${eventId}`}>
+                        Photos
+                    </Link>
+                </div>
+            ) || (
+                <div className="flex gap-4">
+                    <Link href={`/event-page/${eventId}`}>
+                        About
+                    </Link>
+                    <Link href={`/event-photos/${eventId}`}>
+                        Photos
+                    </Link>
+                </div>
+            )}
         </div>
     )
 }

@@ -94,7 +94,7 @@ export const CreateEventImagesAlbumDialog = ({ eventId }: CreateEventImagesAlbum
     const uploadFiles = async (files: File[], albumId: string) => {
         const uploadPromises = files.map((file) => {
             const path = `${albumId}/${file.name}${Math.random()}.${file.name.split('.').pop()}`;
-            return { promise: supabaseAdmin.storage.from('event-picture-albums').upload(path, file), path };
+            return { promise: supabaseAdmin.storage.from('event-albums').upload(path, file), path };
         });
     
         const responses = await Promise.all(uploadPromises.map(({ promise }) => promise));

@@ -3,6 +3,7 @@
 import { ImageCarousel } from "@/components/dashboard/ImageCarouel"
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
@@ -70,8 +71,17 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
             <div className="grid grid-cols-3 w-full gap-[120px] justify-between">
                 {albums.map((album) => (
                     <div key={album.id}>
-                        <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
-                        <p>{album.album_name}</p>
+                        {window.location.pathname.includes('dashboard') ? (
+                            <Link href={`/dashboard/group-photos-album/${groupId}?albumId=${album.id}`}>
+                                <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
+                                <p>{album.album_name}</p>
+                            </Link>
+                        ) : (
+                            <Link href={`/group-photos-album/${groupId}?albumId=${album.id}`}>
+                                <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
+                                <p>{album.album_name}</p>
+                            </Link>
+                        )}
                     </div>
                 ))}
             </div>

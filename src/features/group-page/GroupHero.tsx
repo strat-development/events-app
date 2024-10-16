@@ -154,34 +154,34 @@ export const GroupHero = ({
                 .select('hero_picture_url')
                 .eq('group_id', groupId)
                 .single();
-    
+
             if (fetchError) {
                 throw fetchError;
             }
-    
+
             const currentUrl = currentData?.hero_picture_url;
-    
+
             if (currentUrl) {
                 const { error: deleteError } = await supabaseAdmin.storage
                     .from('group-pictures')
                     .remove([currentUrl]);
-    
+
                 if (deleteError) {
                     throw deleteError;
                 }
             }
-    
+
             const { data, error } = await supabase
                 .from('group-pictures')
                 .update({
                     hero_picture_url: path
                 })
                 .eq('group_id', groupId);
-    
+
             if (error) {
                 throw error;
             }
-    
+
             return data;
         },
         {
@@ -190,7 +190,7 @@ export const GroupHero = ({
                     title: "Success",
                     description: "Image updated successfully",
                 });
-    
+
                 queryClient.invalidateQueries('group-pictures');
             },
             onError: () => {
@@ -211,15 +211,15 @@ export const GroupHero = ({
             if (error) {
                 throw error;
             }
-    
+
             const { error: storageError } = await supabaseAdmin.storage
                 .from('group-pictures')
                 .remove([path]);
-    
+
             if (storageError) {
                 throw storageError;
             }
-    
+
             return data;
         },
         {
@@ -228,7 +228,7 @@ export const GroupHero = ({
                     title: "Success",
                     description: "Image deleted successfully",
                 });
-    
+
                 queryClient.invalidateQueries('group-pictures');
             },
             onError: () => {
@@ -239,7 +239,7 @@ export const GroupHero = ({
             }
         }
     );
-    
+
     const uploadFiles = async (files: File[]) => {
         const uploadPromises = files.map((file) => {
             const path = `${file.name}${Math.random()}.${file.name.split('.').pop()}`;
@@ -375,7 +375,7 @@ export const GroupHero = ({
                                                         }
                                                     }}>Update</Button>
                                                 )}
-                                                
+
                                                 <Button variant={"destructive"}
                                                     onClick={() => setFiles([])}>
                                                     Clear
@@ -445,14 +445,26 @@ export const GroupHero = ({
                         </div>
                     </div>
                 ))}
-                <div className="flex gap-4">
-                    <Link href={`/dashboard/group-page/${groupId}`}>
-                        About
-                    </Link>
-                    <Link href={`/dashboard/group-photos/${groupId}`}>
-                        Photos
-                    </Link>
-                </div>
+
+                {window.location.pathname.includes("dashboard") && (
+                    <div className="flex gap-4">
+                        <Link href={`/dashboard/group-page/${groupId}`}>
+                            About
+                        </Link>
+                        <Link href={`/dashboard/group-photos/${groupId}`}>
+                            Photos
+                        </Link>
+                    </div>
+                ) || (
+                        <div className="flex gap-4">
+                            <Link href={`/group-page/${groupId}`}>
+                                About
+                            </Link>
+                            <Link href={`/group-photos/${groupId}`}>
+                                Photos
+                            </Link>
+                        </div>
+                    )}
             </div>
 
             <Toaster />
