@@ -1,6 +1,7 @@
 "use client"
 
 import { ImageCarousel } from "@/components/dashboard/ImageCarouel"
+import { DeleteEventAlbumDialog } from "@/components/dashboard/modals/DeleteEventAlbumDialog";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
@@ -71,17 +72,13 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
             <div className="grid grid-cols-3 w-full gap-[120px] justify-between">
                 {albums.map((album) => (
                     <div key={album.id}>
-                        {window.location.pathname.includes('dashboard') ? (
-                            <Link href={`/dashboard/event-photos-album/${eventId}?albumId=${album.id}`}>
-                                <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
-                                <p>{album.album_name}</p>
-                            </Link>
-                        ) : (
-                            <Link href={`/event-photos-album/${eventId}?albumId=${album.id}`}>
-                                <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
-                                <p>{album.album_name}</p>
-                            </Link>
-                        )}
+                        <Link href={window.location.pathname.includes('dashboard') ? `/dashboard/event-photos-album/${eventId}?albumId=${album.id}` : `/event-photos-album/${eventId}?albumId=${album.id}`}>
+                            <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
+                            <p>{album.album_name}</p>
+                        </Link>
+                       
+                            <DeleteEventAlbumDialog albumId={album.id} />
+                   
                     </div>
                 ))}
             </div>

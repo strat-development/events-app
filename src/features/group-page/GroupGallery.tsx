@@ -1,6 +1,7 @@
 "use client"
 
 import { ImageCarousel } from "@/components/dashboard/ImageCarouel"
+import { DeleteGroupAlbumDialog } from "@/components/dashboard/modals/DeleteGroupAlbumDialog";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
@@ -71,17 +72,11 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
             <div className="grid grid-cols-3 w-full gap-[120px] justify-between">
                 {albums.map((album) => (
                     <div key={album.id}>
-                        {window.location.pathname.includes('dashboard') ? (
-                            <Link href={`/dashboard/group-photos-album/${groupId}?albumId=${album.id}`}>
-                                <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
-                                <p>{album.album_name}</p>
-                            </Link>
-                        ) : (
-                            <Link href={`/group-photos-album/${groupId}?albumId=${album.id}`}>
-                                <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
-                                <p>{album.album_name}</p>
-                            </Link>
-                        )}
+                        <Link href={window.location.pathname.includes('dashboard') ? `/dashboard/group-photos-album/${groupId}?albumId=${album.id}` : `/group-photos-album/${groupId}?albumId=${album.id}`}>
+                            <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
+                            <p>{album.album_name}</p>
+                        </Link>
+                        <DeleteGroupAlbumDialog albumId={album.id} />
                     </div>
                 ))}
             </div>
