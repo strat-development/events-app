@@ -3,13 +3,15 @@
 import { Button } from "@/components/ui/button"
 import { Database } from "@/types/supabase"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { TextEditor } from "../TextEditor"
 import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
+import Link from "next/link"
+import Image from "next/image"
 
 interface EventInfoSectionProps {
     eventId: string
@@ -18,8 +20,10 @@ interface EventInfoSectionProps {
 export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const supabase = createClientComponentClient<Database>()
     const [eventDescription, setEventDescription] = useState<string>()
+    const [eventGroup, setEventGroup] = useState<string>()
     const [isExpanded, setIsExpanded] = useState(false)
     const [isSetToEdit, setIsSetToEdit] = useState(false)
+    const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([])
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
     const { eventCreatorId } = useGroupOwnerContext()
@@ -27,7 +31,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     useQuery(['events-description'], async () => {
         const { data, error } = await supabase
             .from("events")
-            .select("event_description")
+            .select("event_description, event_group")
             .eq("id", eventId)
 
         if (error) {
@@ -36,6 +40,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
 
         if (data) {
             setEventDescription(data[0].event_description as string)
+            setEventGroup(data[0].event_group as string)
         }
     })
 
@@ -92,6 +97,56 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
             }
         })
 
+    const groupInfo = useQuery(
+        ['group-info'],
+        async () => {
+            const { data, error } = await supabase
+                .from("groups")
+                .select("group_name, group_country, group_city")
+                .eq("id", eventGroup as string)
+
+            if (error) {
+                throw new Error(error.message)
+            }
+
+            return data
+        },
+        {
+            enabled: !!eventGroup,
+        })
+
+    const { data: images, isLoading } = useQuery(
+        ['group-pictures', eventGroup],
+        async () => {
+            const { data, error } = await supabase
+                .from('group-pictures')
+                .select('*')
+                .eq('group_id', eventGroup as string)
+            if (error) {
+                throw error;
+            }
+            return data || [];
+        },
+        {
+            enabled: !!eventGroup
+        }
+    );
+
+    useEffect(() => {
+        if (images) {
+            Promise.all(images.map(async (image) => {
+                const { data: publicURL } = await supabase.storage
+                    .from('group-pictures')
+                    .getPublicUrl(image.hero_picture_url || "")
+
+                return { publicUrl: publicURL.publicUrl };
+
+            }))
+                .then((publicUrls) => setImageUrls(publicUrls))
+                .catch(console.error);
+        }
+    }, [images]);
+
     return (
         <>
             <div className="flex gap-8">
@@ -102,8 +157,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                             <>
                                 <div
                                     dangerouslySetInnerHTML={{ __html: eventDescription as string }}
-                                    className={`overflow-hidden ${isExpanded ? 'max-h-full' : 'max-h-24'} ${!isExpanded && 'blur-effect'}`}
-                                ></div>
+                                    className={`overflow-hidden ${isExpanded ? 'max-h-full' : 'max-h-24'} ${!isExpanded && 'blur-effect'}`}></div>
                                 <button
                                     onClick={() => setIsExpanded(!isExpanded)}
                                     className='text-blue-500'>
@@ -147,6 +201,19 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                             </div>
                         ))}
                     </div>
+                </div>
+                <div>
+                    <h2 className='text-2xl font-bold'>Group Info</h2>
+                    <Link href={`/group-page/${eventGroup}`}>
+                        <div className='flex gap-4'>
+                            <Image src={imageUrls[0]?.publicUrl} width={200} height={200} alt="" />
+                            <div className="flex flex-col gap-4">
+                                <span>Group Name: {groupInfo.data?.[0].group_name}</span>
+                                <span>Group Country: {groupInfo.data?.[0].group_country}</span>
+                                <span>Group City: {groupInfo.data?.[0].group_city}</span>
+                            </div>
+                        </div>
+                    </Link>
                 </div>
             </div>
 
