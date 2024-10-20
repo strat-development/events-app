@@ -52,19 +52,42 @@ export const EditUserProfileDialog = () => {
 
     const addProfilePicture = useMutation(
         async (paths: string[]) => {
+            const { data: currentData, error: currentError } = await supabase
+                .from('profile-pictures')
+                .select('image_url')
+                .eq('user_id', userId)
+                .single();
+    
+            if (currentError) {
+                throw currentError;
+            }
+    
+            if (currentData && currentData.image_url) {
+                const { error: deleteError } = await supabaseAdmin
+                    .storage
+                    .from('profile-pictures')
+                    .remove([currentData.image_url]);
+    
+                if (deleteError) {
+                    throw deleteError;
+                }
+            }
+    
             const results = await Promise.all(paths.map(async (path) => {
                 const { data, error } = await supabase
                     .from('profile-pictures')
-                    .upsert({
+                    .update({
                         user_id: userId,
                         image_url: path
-                    });
+                    })
+                    .eq('user_id', userId);
+    
                 if (error) {
                     throw error;
                 }
                 return data;
             }));
-
+    
             return results;
         },
     );

@@ -9,12 +9,12 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { EditUserProfileDialog } from "./modals/EditUserProfileDialog";
 import { UserDataModal } from "./modals/UserDataDialog";
+import { DeleteUserProfileImageDialog } from "./modals/DeleteUserProfileImageDialog";
 
 export const UserProfileSection = () => {
     const supabase = createClientComponentClient<Database>();
     const { userRole, userId } = useUserContext();
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
-
 
     const { data: images, isLoading } = useQuery(
         ['profile-pictures', userId],
@@ -71,9 +71,11 @@ export const UserProfileSection = () => {
         <>
             <div>
                 {getUserData.data?.map((user) => (
-
                     <div key={user.id}>
-                        <Image src={imageUrls[0]?.publicUrl || "/profile-placeholder.png"} alt="profile picture" width={200} height={200} />
+                        <div className="flex flex-col gap-4">
+                            <Image src={imageUrls[0]?.publicUrl} alt="profile picture" width={200} height={200} />
+                            <DeleteUserProfileImageDialog />
+                        </div>
                         <h2>{user.full_name}</h2>
                         <p>{user.email}</p>
                         <p>{user.city}, {user.country}</p>
@@ -85,7 +87,7 @@ export const UserProfileSection = () => {
             <EditUserProfileDialog />
 
             {!userRole && (
-                    <UserDataModal />
+                <UserDataModal />
             )}
 
             <Toaster />
