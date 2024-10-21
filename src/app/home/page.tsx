@@ -16,7 +16,6 @@ export default function Home() {
                     <EventsSection />
                     <UserGroupsSection />
                 </div>
-
             </div>
         </div>
     );

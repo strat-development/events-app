@@ -11,3 +11,5 @@ export type InterestData = Database["public"]["Tables"]["interests"]["Row"];
 export type GroupMembersData = Database["public"]["Tables"]["group-members"]["Row"];
 
 export type EventAttendeesData = Database["public"]["Tables"]["attendees"]["Row"];
+
+export type SocialMediaTypes = 'Facebook' | 'Instagram' | 'Twitter';

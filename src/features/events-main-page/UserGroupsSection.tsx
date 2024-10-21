@@ -4,16 +4,13 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 
 export const UserGroupsSection = () => {
     const supabase = createClientComponentClient<Database>();
-    const queryClient = useQueryClient();
     const { userId } = useUserContext();
     const [groupId, setGroupId] = useState<string[]>([]);
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
-
-    console.log('groupId', groupId);
 
     const fetchGroupId = useQuery(
         'groupIds',
