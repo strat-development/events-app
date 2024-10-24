@@ -52,7 +52,6 @@ export default function GroupPhotosAlbumPage({
             if (albumId) {
                 const fetchPublicUrls = async (imageUrls: string) => {
                     const imageUrlsArray = JSON.parse(imageUrls);
-                    console.log('Parsed imageUrlsArray:', imageUrlsArray);
 
                     const publicUrls = await Promise.all(imageUrlsArray.map(async (imagePath: string) => {
                         const { data: publicURL } = await supabase.storage

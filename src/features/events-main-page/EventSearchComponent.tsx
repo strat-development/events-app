@@ -20,8 +20,6 @@ export const EventSearchComponent = ({ city }: EventSearchComponentProps) => {
         }
     };
 
-    console.log('city', isCity);
-
     return (
         <div>
             <div className="flex gap-4 max-[1024px]:items-center">

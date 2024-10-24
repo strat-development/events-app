@@ -88,9 +88,6 @@ export const UserGroupsSection = () => {
         }
     }, [images]);
 
-
-
-
     return (
         <div className="flex flex-col gap-16 w-fit max-w-[1200px]">
             {fetchGroups.data?.map((group) => (

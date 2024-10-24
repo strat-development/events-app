@@ -47,8 +47,6 @@ export const UpdateEventImagesAlbumDialog = () => {
                 .from('event-picture-albums')
                 .update({ image_urls: JSON.stringify(newImageUrls) })
                 .eq('id', albumId ?? '');
-
-            console.log(newImageUrls);
     
             if (error) {
                 throw error;
@@ -67,8 +65,6 @@ export const UpdateEventImagesAlbumDialog = () => {
         const newFileUrls = files.map(file => `${albumId}/${file.name}`);
         const newImageUrls = [...imageUrls, ...newFileUrls];
         setImageUrls(newImageUrls);
-
-        console.log(newImageUrls);
 
         await updateImagesMutation.mutateAsync(newImageUrls);
         await uploadFiles(files, newFileUrls);
