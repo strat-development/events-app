@@ -22,7 +22,12 @@ export const InterestsSection = () => {
     const { userId } = useUserContext()
     const [userInterests, setUserInterests] = useState<string[]>([])
     const [interestsToDelete, setInterestsToDelete] = useState<string[]>([])
-    const { interestsData, selectedGroup, selectedInterests, setSelectedInterests, setSelectedGroup } = useGroupDataContext()
+    const { interestsData,
+        selectedGroup,
+        selectedInterests,
+        setSelectedInterests,
+        setSelectedGroup
+    } = useGroupDataContext()
 
     useQuery("userInterests", async () => {
         if (!userId) return
@@ -102,17 +107,13 @@ export const InterestsSection = () => {
         <div>
             <h1 className="text-2xl font-bold">Interests</h1>
             <div className="flex gap-2">
-
                 {userInterests && (
-
                     userInterests.map((interest, index) => (
                         <Button onClick={() => handleInterestToRemoveClick(interest)}
-                            key={index} className={`px-4 py-2 border ${selectedInterests.includes(interest) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+                            key={index} className={`px-4 py-2 border ${interestsToDelete.includes(interest) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
                             {interest}
                         </Button>
-                    ))
-
-                )}
+                    )))}
 
 
 
@@ -200,16 +201,14 @@ export const InterestsSection = () => {
                     </div>
                 )}
             </div>
-            <Button onClick={
-                () => {
-                    if (userId) {
-                        addInterests.mutateAsync({
-                            user_interests: selectedInterests,
-                            id: userId
-                        } as UserData)
-                    }
+            <Button onClick={() => {
+                if (userId) {
+                    addInterests.mutateAsync({
+                        user_interests: selectedInterests,
+                        id: userId
+                    } as UserData)
                 }
-            }>
+            }}>
                 Save Interests
             </Button>
         </div >
