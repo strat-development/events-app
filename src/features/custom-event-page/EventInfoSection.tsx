@@ -23,7 +23,10 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const [eventGroup, setEventGroup] = useState<string>()
     const [isExpanded, setIsExpanded] = useState(false)
     const [isSetToEdit, setIsSetToEdit] = useState(false)
+    const [eventHostId, setEventHostId] = useState<string>()
+    const [attendeesId, setAttendeesId] = useState<string[]>([])
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([])
+    const [profileImageUrls, setProfileImageUrls] = useState<{ publicUrl: string }[]>([]);
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
     const { eventCreatorId } = useGroupOwnerContext()
@@ -31,7 +34,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     useQuery(['events-description'], async () => {
         const { data, error } = await supabase
             .from("events")
-            .select("event_description, event_group")
+            .select("event_description, event_group, created_by")
             .eq("id", eventId)
 
         if (error) {
@@ -41,6 +44,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
         if (data) {
             setEventDescription(data[0].event_description as string)
             setEventGroup(data[0].event_group as string)
+            setEventHostId(data[0].created_by as string)
         }
     })
 
@@ -54,10 +58,16 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                     *
                 )`)
                 .eq("event_id", eventId)
+                .limit(3)
 
             if (error) {
                 throw new Error(error.message)
             }
+
+            if (data) {
+                setAttendeesId(data.map((attendee) => attendee.users?.id as string))
+            }
+
 
             return data
         },
@@ -147,6 +157,38 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
         }
     }, [images]);
 
+    const { data: profileImages } = useQuery(
+        ['profile-pictures', attendeesId],
+        async () => {
+            const { data, error } = await supabase
+                .from('profile-pictures')
+                .select('*')
+                .eq('user_id', attendeesId)
+            if (error) {
+                throw error;
+            }
+            return data || [];
+        },
+        {
+            enabled: !!attendeesId
+        }
+    );
+
+    useEffect(() => {
+        if (profileImages) {
+            Promise.all(profileImages.map(async (image) => {
+                const { data: publicURL } = await supabase.storage
+                    .from('profile-pictures')
+                    .getPublicUrl(image.image_url)
+
+                return { publicUrl: publicURL.publicUrl };
+
+            }))
+                .then((publicUrls) => setProfileImageUrls(publicUrls))
+                .catch(console.error);
+        }
+    }, [images]);
+
     return (
         <>
             <div className="flex gap-8">
@@ -196,9 +238,17 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                     <h2 className='text-2xl font-bold'>Attendees</h2>
                     <div className='grid grid-cols-4'>
                         {eventAttendees.data?.map((attendee) => (
-                            <div key={attendee.users?.id} className='flex flex-col gap-2'>
-                                <span className='text-sm'>{attendee.users?.full_name}</span>
-                            </div>
+                            <Link href={`/user-profile/${attendee.users?.id}`} key={attendee.users?.id}>
+                                <div key={attendee.users?.id}
+                                    className='flex flex-col gap-2 items-center border p-4 rounded-lg'>
+                                    <Image className="rounded-full shadow-xl"
+                                        src={profileImageUrls[0]?.publicUrl} width={50} height={50} alt="" />
+                                    <span className=''>{attendee.users?.full_name}</span>
+                                    {attendee.users?.id === eventHostId && (
+                                        <span className='text-sm text-red-500'>Host</span>
+                                    )}
+                                </div>
+                            </Link>
                         ))}
                     </div>
                 </div>

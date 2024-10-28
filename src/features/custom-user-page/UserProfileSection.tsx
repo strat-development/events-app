@@ -4,23 +4,28 @@ import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useMutation, useQuery } from "react-query";
-import { Toaster } from "../ui/toaster";
+import { Toaster } from "../../components/ui/toaster";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { EditUserProfileDialog } from "./modals/EditUserProfileDialog";
-import { UserDataModal } from "./modals/UserDataDialog";
-import { DeleteUserProfileImageDialog } from "./modals/DeleteUserProfileImageDialog";
-import { EditSocialsDialog } from "./modals/EditSocialsDialog";
+import { EditUserProfileDialog } from "../../components/dashboard/modals/EditUserProfileDialog";
+import { UserDataModal } from "../../components/dashboard/modals/UserDataDialog";
+import { DeleteUserProfileImageDialog } from "../../components/dashboard/modals/DeleteUserProfileImageDialog";
+import { EditSocialsDialog } from "../../components/dashboard/modals/EditSocialsDialog";
 import { SocialMediaTypes } from "@/types/types";
 import { Facebook, Instagram, Twitter } from "lucide-react";
 import Link from "next/link";
 import { TextEditor } from "@/features/TextEditor";
-import { Button } from "../ui/button";
-import { toast } from "../ui/use-toast";
+import { Button } from "../../components/ui/button";
+import { toast } from "../../components/ui/use-toast";
 
-export const UserProfileSection = () => {
+interface UserProfileSectionProps {
+    userId: string;
+    userRole?: string;
+}
+
+export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps) => {
     const supabase = createClientComponentClient<Database>();
-    const { userRole, userId } = useUserContext();
+
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
     const [userBio, setUserBio] = useState<string>();
     const [isSetToEdit, setIsSetToEdit] = useState(false)
@@ -129,12 +134,18 @@ export const UserProfileSection = () => {
                         key={user.id}>
                         <div className="flex flex-col gap-4">
                             <Image src={imageUrls[0]?.publicUrl} alt="profile picture" width={200} height={200} />
-                            <DeleteUserProfileImageDialog />
+                            {window.location.pathname === "/dashboard" && (
+                                <DeleteUserProfileImageDialog />
+                            )}
                         </div>
                         <div className="flex flex-col gap-1">
                             <h2>{user.full_name}</h2>
                             <p>{user.email}</p>
                             <p>{user.city}, {user.country}</p>
+                            {window.location.pathname === "/dashboard" && (
+                                <EditUserProfileDialog />
+                            )}
+
                         </div>
 
                         {isSetToEdit === false && (
@@ -161,11 +172,13 @@ export const UserProfileSection = () => {
                                 </div>
                             )}
                         {!isSetToEdit &&
-                            <div className="flex gap-4">
-                                <Button onClick={() => setIsSetToEdit(true)}>
-                                    Edit
-                                </Button>
-                            </div>
+                            window.location.pathname === "/dashboard" && (
+                                <div className="flex gap-4">
+                                    <Button onClick={() => setIsSetToEdit(true)}>
+                                        Edit
+                                    </Button>
+                                </div>
+                            )
                         }
                     </div>
                 ))}
@@ -189,11 +202,10 @@ export const UserProfileSection = () => {
                         );
                     })}
                 </div>
-
-                <EditSocialsDialog />
+                {window.location.pathname === "/dashboard" && (
+                    <EditSocialsDialog />
+                )}
             </div>
-
-            <EditUserProfileDialog />
 
             {!userRole && (
                 <UserDataModal />
