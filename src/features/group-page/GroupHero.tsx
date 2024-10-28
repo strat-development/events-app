@@ -12,7 +12,7 @@ import { GroupData, GroupMembersData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import Image from "next/image"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 
 interface GroupHeroProps {
@@ -51,7 +51,10 @@ export const GroupHero = ({
         if (data) {
             setGroupData(data)
         }
-    })
+    },
+        {
+            cacheTime: 10 * 60 * 1000,
+        })
 
     const editGroupNameMutation = useMutation(async (newGroupName: string) => {
         const { data, error } = await supabase
@@ -80,7 +83,7 @@ export const GroupHero = ({
                 title: "Error",
                 description: "Failed to change group name",
             });
-        }
+        },
     })
 
     const editGroupLocationMutation = useMutation(async () => {
@@ -126,7 +129,10 @@ export const GroupHero = ({
         if (data) {
             setGroupMembersData(data)
         }
-    })
+    },
+        {
+            cacheTime: 10 * 60 * 1000,
+        })
 
     const addGroupPicture = useMutation(
         async (paths: string[]) => {
@@ -279,7 +285,8 @@ export const GroupHero = ({
             return data || [];
         },
         {
-            enabled: !!groupId
+            enabled: !!groupId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -298,15 +305,19 @@ export const GroupHero = ({
         }
     }, [images]);
 
+    const memoizedGroupData = useMemo(() => groupData, [groupData]);
+    const memoizedGroupMembersData = useMemo(() => groupMembersData, [groupMembersData]);
+    const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
+
     return (
         <>
             <div className="flex flex-col gap-4">
-                {groupData?.map((group) => (
+                {memoizedGroupData?.map((group) => (
                     <div key={group.id} className="bg-white p-4 rounded-md shadow-md">
                         <div className="flex flex-col gap-4">
                             <div className="flex gap-4">
                                 <div className="flex flex-col gap-4">
-                                    {imageUrls.map((image) => (
+                                    {memoizedImageUrls.map((image) => (
                                         <Image key={image.publicUrl}
                                             src={image.publicUrl}
                                             alt=""
@@ -327,8 +338,6 @@ export const GroupHero = ({
                                                 }}>Delete</Button>
                                         </div>
                                     )}
-
-
 
                                     <div className="flex gap-4">
                                         <Input type="file"
@@ -437,9 +446,9 @@ export const GroupHero = ({
                         </div>
 
                         <div>
-                            {groupMembersData?.map((member) => (
+                            {memoizedGroupMembersData?.map((member) => (
                                 <div key={member.id}>
-                                    <p>Members count: {groupMembersData?.length || 0}</p>
+                                    <p>Members count: {memoizedGroupMembersData?.length || 0}</p>
                                 </div>
                             ))}
                         </div>

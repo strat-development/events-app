@@ -7,7 +7,7 @@ import { Database } from "@/types/supabase"
 import { Toaster } from "./ui/toaster"
 import { toast } from "./ui/use-toast"
 import { useMutation, useQuery } from "react-query"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { EventData } from "@/types/types"
 import { useUserContext } from "@/providers/UserContextProvider"
 
@@ -34,7 +34,10 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
         if (data) {
             setEventData(data)
         }
-    })
+    },
+        {
+            cacheTime: 10 * 60 * 1000,
+        })
 
     const addAttendee = useMutation(async () => {
         const { data, error } = await supabase
@@ -74,7 +77,8 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
         return data
     },
         {
-            enabled: !!userId && !!eventId
+            enabled: !!userId && !!eventId,
+            cacheTime: 10 * 60 * 1000,
         })
 
     const removeAttendee = useMutation(async () => {
@@ -105,11 +109,13 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
         })
     }
 
+    const memoizedEventData = useMemo(() => eventData, [eventData])
+
     return (
         <>
             <div className="sticky bottom-0 py-4 flex justify-center items-center w-full border-t-2 bg-white">
                 <div className="flex max-w-[1200px] w-full self-center justify-between">
-                    {eventData?.map((event) => (
+                    {memoizedEventData?.map((event) => (
                         <>
                             <div>
                                 <p>{event.starts_at}</p>

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Database } from "@/types/supabase"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { TextEditor } from "../TextEditor"
 import { Toaster } from "@/components/ui/toaster"
@@ -46,7 +46,10 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
             setEventGroup(data[0].event_group as string)
             setEventHostId(data[0].created_by as string)
         }
-    })
+    },
+        {
+            cacheTime: 10 * 60 * 1000,
+        })
 
     const eventAttendees = useQuery(
         ['attendees-data'],
@@ -73,6 +76,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
         },
         {
             enabled: !!eventId,
+            cacheTime: 10 * 60 * 1000,
         })
 
     const editEventDescriptionMutation = useMutation(
@@ -123,6 +127,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
         },
         {
             enabled: !!eventGroup,
+            cacheTime: 10 * 60 * 1000,
         })
 
     const { data: images, isLoading } = useQuery(
@@ -138,7 +143,8 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
             return data || [];
         },
         {
-            enabled: !!eventGroup
+            enabled: !!eventGroup,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -170,13 +176,14 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
             return data || [];
         },
         {
-            enabled: !!attendeesId
+            enabled: !!attendeesId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
     useEffect(() => {
-        if (profileImages) {
-            Promise.all(profileImages.map(async (image) => {
+        if (memoizedProfileImages) {
+            Promise.all(memoizedProfileImages.map(async (image) => {
                 const { data: publicURL } = await supabase.storage
                     .from('profile-pictures')
                     .getPublicUrl(image.image_url)
@@ -188,6 +195,10 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                 .catch(console.error);
         }
     }, [images]);
+
+    const memoizedEventAttendeesData = useMemo(() => eventAttendees, [eventAttendees])
+    const memoizedGroupInfo = useMemo(() => groupInfo, [groupInfo])
+    const memoizedProfileImages = useMemo(() => profileImages, [profileImages])
 
     return (
         <>
@@ -237,7 +248,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                 <div className="flex flex-col gap-4">
                     <h2 className='text-2xl font-bold'>Attendees</h2>
                     <div className='grid grid-cols-4'>
-                        {eventAttendees.data?.map((attendee) => (
+                        {memoizedEventAttendeesData.data?.map((attendee) => (
                             <Link href={`/user-profile/${attendee.users?.id}`} key={attendee.users?.id}>
                                 <div key={attendee.users?.id}
                                     className='flex flex-col gap-2 items-center border p-4 rounded-lg'>
@@ -258,9 +269,9 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                         <div className='flex gap-4'>
                             <Image src={imageUrls[0]?.publicUrl} width={200} height={200} alt="" />
                             <div className="flex flex-col gap-4">
-                                <span>Group Name: {groupInfo.data?.[0].group_name}</span>
-                                <span>Group Country: {groupInfo.data?.[0].group_country}</span>
-                                <span>Group City: {groupInfo.data?.[0].group_city}</span>
+                                <span>Group Name: {memoizedGroupInfo.data?.[0].group_name}</span>
+                                <span>Group Country: {memoizedGroupInfo.data?.[0].group_country}</span>
+                                <span>Group City: {memoizedGroupInfo.data?.[0].group_city}</span>
                             </div>
                         </div>
                     </Link>

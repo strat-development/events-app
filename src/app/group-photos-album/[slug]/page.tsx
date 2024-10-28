@@ -6,7 +6,8 @@ import { GroupHero } from "@/features/group-page/GroupHero";
 import { supabaseAdmin } from "@/lib/admin";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Key, useEffect, useState } from "react";
+import Image from "next/image";
+import { Key, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 export default function GroupPhotosAlbumPage({
@@ -35,7 +36,8 @@ export default function GroupPhotosAlbumPage({
             return data || [];
         },
         {
-            enabled: !!groupId
+            enabled: !!groupId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -142,6 +144,8 @@ export default function GroupPhotosAlbumPage({
         });
     };
 
+    const memoizedAlbums = useMemo(() => albums, [albums]);
+
     return (
         <div className="h-screen flex flex-col items-center justify-center w-full">
             <h1 className="text-3xl font-bold">Group Photos Album</h1>
@@ -149,13 +153,15 @@ export default function GroupPhotosAlbumPage({
             <div className="flex flex-col gap-8 items-center justify-center">
                 <UpdateGroupImagesAlbumDialog />
                 <div className="grid grid-cols-3 gap-8 items-center">
-                    {albums.map((album, index) => (
+                    {memoizedAlbums.map((album, index) => (
                         <div key={index}>
                             <h2 className="text-xl font-bold">{album.name}</h2>
                             <div className="grid grid-cols-3 gap-8">
                                 {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
                                     <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>
-                                        <img src={imageUrl.publicUrl} alt={`Image ${index}`} className="w-full h-auto" />
+                                        <Image src={imageUrl.publicUrl || ""}
+                                            alt={`Image ${index}`}
+                                            className="w-full h-auto" />
                                         <input
                                             type="checkbox"
                                             className="absolute top-2 right-2"

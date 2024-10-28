@@ -59,7 +59,10 @@ export default function GroupDataModalProvider({ children }: { children: React.R
         }
 
         return data
-    })
+    },
+        {
+            cacheTime: 10 * 60 * 1000,
+        })
 
     return (
         <GroupDataContext.Provider value={{

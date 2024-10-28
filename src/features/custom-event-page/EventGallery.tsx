@@ -30,7 +30,8 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
             return data || [];
         },
         {
-            enabled: !!eventId
+            enabled: !!eventId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -76,9 +77,9 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
                             <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
                             <p>{album.album_name}</p>
                         </Link>
-                       
-                            <DeleteEventAlbumDialog albumId={album.id} />
-                   
+
+                        <DeleteEventAlbumDialog albumId={album.id} />
+
                     </div>
                 ))}
             </div>

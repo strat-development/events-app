@@ -8,7 +8,7 @@ import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
 import { EventData, GroupData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 
 export const CreateEventDialog = () => {
@@ -20,20 +20,20 @@ export const CreateEventDialog = () => {
     const [eventTicketPrice, setEventTicketPrice] = useState("")
     const [selectedGroup, setSelectedGroup] = useState("")
     const [groupTopics, setGroupTopics] = useState([]);
-    
+
     const supabase = createClientComponentClient<Database>()
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
     const [fetchedGroupsData, setFetchedGroupsData] = useState<GroupData[]>([])
 
-    const clearStates = () => {
+    const clearStates = useCallback(() => {
         setEventTitle("")
         setEventDescription("")
         setEventDate("")
         setEventAddress("")
         setEventTicketPrice("")
         setSelectedGroup("")
-    }
+    }, [])
 
     const fetchGroups = useQuery(
         ['groups'],
@@ -54,6 +54,7 @@ export const CreateEventDialog = () => {
         },
         {
             enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -73,7 +74,7 @@ export const CreateEventDialog = () => {
                     setGroupTopics(data[0].group_topics as any);
                 }
             }
-        };
+        }
 
         fetchGroupTopics();
     }, [selectedGroup]);
@@ -126,6 +127,7 @@ export const CreateEventDialog = () => {
         },
         {
             enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
         }
     )
 
@@ -136,7 +138,7 @@ export const CreateEventDialog = () => {
                     <Button onClick={() => {
                         fetchGroups.refetch()
                     }}
-                    variant="outline">Create event</Button>
+                        variant="outline">Create event</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
@@ -178,7 +180,7 @@ export const CreateEventDialog = () => {
                             onChange={(e) => setEventDescription(e.target.value)}
                         />
                         <Input
-                            type="date"
+                            type="datetime-local"
                             value={eventDate}
                             onChange={(e) => setEventDate(e.target.value)} />
                         <Input

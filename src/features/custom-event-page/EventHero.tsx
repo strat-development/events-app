@@ -11,7 +11,7 @@ import { EventAttendeesData, EventData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import Link from "next/link"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 
 interface EventHeroProps {
@@ -46,7 +46,10 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
         if (data) {
             setEventData(data)
         }
-    })
+    },
+        {
+            cacheTime: 10 * 60 * 1000,
+        })
 
     useQuery(['event-members'], async () => {
         const { data, error } = await supabase
@@ -64,7 +67,10 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
         if (data) {
             setEventAttendeessData(data as unknown as EventAttendeesData[])
         }
-    })
+    },
+        {
+            cacheTime: 10 * 60 * 1000,
+        })
 
     const editEventNameMutation = useMutation(async (newEventName: string) => {
         const { data, error } = await supabase
@@ -277,7 +283,8 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
             return data || [];
         },
         {
-            enabled: !!eventId
+            enabled: !!eventId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -296,15 +303,18 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
         }
     }, [images]);
 
+    const memoizedEventData = useMemo(() => eventData, [eventData]);
+    const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
+    const memoizedAttendeesData = useMemo(() => attendeesData, [attendeesData]);
 
     return (
         <div className="flex flex-col gap-4">
-            {eventData?.map((event) => (
+            {memoizedEventData?.map((event) => (
                 <div key={event.id} className="bg-white p-4 rounded-md shadow-md">
                     <div className="flex flex-col gap-4">
                         <div className="flex gap-4">
                             <div className="flex flex-col gap-4">
-                                {imageUrls.map((image) => (
+                                {memoizedImageUrls.map((image) => (
                                     <Image key={image.publicUrl}
                                         src={image.publicUrl}
                                         alt=""
@@ -325,8 +335,6 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                                             }}>Delete</Button>
                                     </div>
                                 )}
-
-
 
                                 <div className="flex gap-4">
                                     <Input type="file"
@@ -436,7 +444,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                     </div>
 
                     <div>
-                        {attendeesData?.map((member) => (
+                        {memoizedAttendeesData?.map((member) => (
                             <div key={member.id}>
                                 <p>Attendees count: {attendeesData?.length || 0}</p>
                             </div>

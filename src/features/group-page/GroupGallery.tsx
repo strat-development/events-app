@@ -5,7 +5,7 @@ import { DeleteGroupAlbumDialog } from "@/components/dashboard/modals/DeleteGrou
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
 interface GroupGalleryProps {
@@ -30,7 +30,8 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
             return data || [];
         },
         {
-            enabled: !!groupId
+            enabled: !!groupId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -67,10 +68,12 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
         }
     }, [albumsData, albumsError]);
 
+    const memoizedAlbums = useMemo(() => albums, [albums]);
+
     return (
         <>
             <div className="grid grid-cols-3 w-full gap-[120px] justify-between">
-                {albums.map((album) => (
+                {memoizedAlbums.map((album) => (
                     <div key={album.id}>
                         <Link href={window.location.pathname.includes('dashboard') ? `/dashboard/group-photos-album/${groupId}?albumId=${album.id}` : `/group-photos-album/${groupId}?albumId=${album.id}`}>
                             <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />

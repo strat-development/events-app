@@ -88,7 +88,10 @@ export const UserDataModal = () => {
         }
 
         return data
-    })
+    },
+        {
+            cacheTime: 10 * 60 * 1000,
+        })
 
     const handleInterestClick = (interestName: string) => {
         setSelectedInterests((prevSelected) =>
@@ -138,6 +141,7 @@ export const UserDataModal = () => {
         return data
     }, {
         enabled: !!userId,
+        cacheTime: 10 * 60 * 1000,
     })
 
 
@@ -158,8 +162,8 @@ export const UserDataModal = () => {
                             )}
                         </TabsList>
                         {!userRole && (
-                            <TabsContent className="flex flex-col gap-4" 
-                            value="user-data">
+                            <TabsContent className="flex flex-col gap-4"
+                                value="user-data">
                                 <Input
                                     placeholder="First Name"
                                     value={fullName}

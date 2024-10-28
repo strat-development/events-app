@@ -6,7 +6,7 @@ import { EventData } from "@/types/types";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import stringSimilarity from "string-similarity";
 
@@ -67,8 +67,9 @@ export default function EventsPage() {
         {
             onSuccess: (data) => {
                 setEvents(data);
-            }
-        }
+            },
+            cacheTime: 10 * 60 * 1000,
+        },
     );
 
     const imageQuery = useQuery(
@@ -88,7 +89,8 @@ export default function EventsPage() {
             return data || [];
         },
         {
-            enabled: events.length > 0
+            enabled: events.length > 0,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -112,13 +114,16 @@ export default function EventsPage() {
         }
     }, [imageQuery.data]);
 
+    const memoizedEvents = useMemo(() => events, [events]);
+    const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
+
     return (
         <div className="h-screen flex flex-col items-center">
-            {events.map((event) => (
+            {memoizedEvents.map((event) => (
                 <div key={event.id} className="flex flex-col items-center mb-4">
-                    {imageUrls[event.id] && (
+                    {memoizedImageUrls[event.id] && (
                         <Image
-                            src={imageUrls[event.id]}
+                            src={memoizedImageUrls[event.id]}
                             alt={event.event_title || ""}
                             width={200}
                             height={200}

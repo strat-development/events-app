@@ -3,7 +3,7 @@ import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
 export const UserGroupsSection = () => {
@@ -33,11 +33,12 @@ export const UserGroupsSection = () => {
         },
         {
             enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
     const fetchGroups = useQuery(
-        'groups',
+        ['user-groups-data', groupId],
         async () => {
             const { data, error } = await supabase
                 .from('groups')
@@ -53,6 +54,7 @@ export const UserGroupsSection = () => {
         },
         {
             enabled: !!groupId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -69,7 +71,8 @@ export const UserGroupsSection = () => {
             return data || [];
         },
         {
-            enabled: !!groupId
+            enabled: !!groupId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -88,14 +91,17 @@ export const UserGroupsSection = () => {
         }
     }, [images]);
 
+    const memoizedGroupsData = useMemo(() => fetchGroups.data, [fetchGroups.data]);
+    const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
+
     return (
-        <div className="flex flex-col gap-16 w-fit max-w-[1200px]">
-            {fetchGroups.data?.map((group) => (
+        <div className="flex flex-col gap-16 w-fit">
+            {memoizedGroupsData?.map((group) => (
                 <div key={group.id} className="bg-white p-4 rounded-md shadow-md">
                     <Link href={`/group-page/${group.id}`}>
                         <div className="flex gap-4">
                             <div className="flex flex-col gap-4">
-                                {imageUrls.map((image) => (
+                                {memoizedImageUrls.map((image) => (
                                     <Image key={image.publicUrl}
                                         src={image.publicUrl}
                                         alt=""

@@ -3,7 +3,7 @@ import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
 export const UserGroupsSection = () => {
@@ -32,7 +32,10 @@ export const UserGroupsSection = () => {
 
             return data;
         },
-        { enabled: !!userId }
+        {
+            enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
+        }
     );
 
     const fetchMemberGroups = useQuery(
@@ -54,7 +57,10 @@ export const UserGroupsSection = () => {
 
             return data;
         },
-        { enabled: !!userId }
+        {
+            enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
+        }
     );
 
     useEffect(() => {
@@ -102,17 +108,21 @@ export const UserGroupsSection = () => {
         }
     }, [ownedGroups, memberGroups]);
 
+    const memoizedOwnedGroups = useMemo(() => ownedGroups, [ownedGroups]);
+    const memoizedMemberGroups = useMemo(() => memberGroups, [memberGroups]);
+    const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
+
     return (
         <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4">
                 <h2 className='text-2xl font-bold'>Owned Groups</h2>
                 <div className='grid grid-cols-4 gap-4'>
-                    {ownedGroups.map((groupId) => (
+                    {memoizedOwnedGroups.map((groupId) => (
                         <Link href={`/group-page/${groupId}`} key={groupId}>
                             <div className='flex flex-col gap-2 items-center border p-4 rounded-lg'>
-                                {imageUrls[groupId] ? (
+                                {memoizedImageUrls[groupId] ? (
                                     <Image className="rounded-md"
-                                        src={imageUrls[groupId]}
+                                        src={memoizedImageUrls[groupId]}
                                         alt={`Group ${groupId}`}
                                         width={200}
                                         height={200}
@@ -130,12 +140,12 @@ export const UserGroupsSection = () => {
             <div className="flex flex-col gap-4">
                 <h2 className='text-2xl font-bold'>Member Groups</h2>
                 <div className='grid grid-cols-4 gap-4'>
-                    {memberGroups.map((groupId) => (
+                    {memoizedMemberGroups.map((groupId) => (
                         <Link href={`/group-page/${groupId}`} key={groupId}>
                             <div className='flex flex-col gap-2 items-center border p-4 rounded-lg'>
-                                {imageUrls[groupId] ? (
+                                {memoizedImageUrls[groupId] ? (
                                     <Image className="rounded-md"
-                                        src={imageUrls[groupId]}
+                                        src={memoizedImageUrls[groupId]}
                                         alt={`Group ${groupId}`}
                                         width={200}
                                         height={200}

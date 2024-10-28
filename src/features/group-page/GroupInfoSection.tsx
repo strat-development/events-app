@@ -3,13 +3,15 @@
 import { Button } from "@/components/ui/button"
 import { Database } from "@/types/supabase"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { TextEditor } from "../TextEditor"
 import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
+import Link from "next/link"
+import Image from "next/image"
 
 interface GroupInfoSectionProps {
     groupId: string
@@ -20,6 +22,8 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
     const [groupDescription, setGroupDescription] = useState<string>()
     const [isExpanded, setIsExpanded] = useState(false)
     const [isSetToEdit, setIsSetToEdit] = useState(false)
+    const [membersId, setMembersId] = useState<string[]>()
+    const [profileImageUrls, setProfileImageUrls] = useState<{ publicUrl: string }[]>([]);
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
     const { ownerId } = useGroupOwnerContext()
@@ -37,7 +41,10 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
         if (data) {
             setGroupDescription(data[0].group_description as string)
         }
-    })
+    },
+        {
+            cacheTime: 10 * 60 * 1000,
+        })
 
     const groupMembers = useQuery(
         ['group-members-data'],
@@ -58,6 +65,7 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
         },
         {
             enabled: !!groupId,
+            cacheTime: 10 * 60 * 1000,
         })
 
     const editGroupDescriptionMutation = useMutation(
@@ -91,6 +99,41 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                 });
             }
         })
+
+    const { data: profileImages } = useQuery(
+        ['profile-pictures',],
+        async () => {
+            const { data, error } = await supabase
+                .from('profile-pictures')
+                .select('*')
+                .eq('user_id', membersId || [])
+            if (error) {
+                throw error;
+            }
+            return data || [];
+        },
+        {
+            enabled: !!membersId,
+            cacheTime: 10 * 60 * 1000,
+        }
+    );
+
+    useEffect(() => {
+        if (profileImages) {
+            Promise.all(profileImages.map(async (image) => {
+                const { data: publicURL } = await supabase.storage
+                    .from('profile-pictures')
+                    .getPublicUrl(image.image_url)
+
+                return { publicUrl: publicURL.publicUrl };
+
+            }))
+                .then((publicUrls) => setProfileImageUrls(publicUrls))
+                .catch(console.error);
+        }
+    }, [Image]);
+
+    const memoizedGroupMembers = useMemo(() => groupMembers.data, [groupMembers.data]);
 
     return (
         <>
@@ -142,10 +185,18 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                 <div className="flex flex-col gap-4">
                     <h2 className='text-2xl font-bold'>Members</h2>
                     <div className='grid grid-cols-4'>
-                        {groupMembers.data?.map((member) => (
-                            <div key={member.users?.id} className='flex flex-col gap-2'>
-                                <span className='text-sm'>{member.users?.full_name}</span>
-                            </div>
+                        {memoizedGroupMembers?.map((member) => (
+                            <Link href={`/user-profile/${member.users?.id}`} key={member.users?.id}>
+                                <div key={member.users?.id}
+                                    className='flex flex-col gap-2 items-center border p-4 rounded-lg'>
+                                    <Image className="rounded-full shadow-xl"
+                                        src={profileImageUrls[0]?.publicUrl} width={50} height={50} alt="" />
+                                    <span className=''>{member.users?.full_name}</span>
+                                    {member.users?.id === membersId && (
+                                        <span className='text-sm text-red-500'>Host</span>
+                                    )}
+                                </div>
+                            </Link>
                         ))}
                     </div>
                 </div>

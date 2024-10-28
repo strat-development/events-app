@@ -6,7 +6,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import Link from "next/link"
 import { useQuery } from "react-query"
 import { Button } from "../ui/button"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { DeleteEventDialog } from "./modals/DeleteEventDialog"
 import { EditEventDialog } from "./modals/EditEventDialog"
 import Image from "next/image"
@@ -38,6 +38,7 @@ export const EventCard = () => {
         },
         {
             enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -58,6 +59,7 @@ export const EventCard = () => {
         },
         {
             enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -82,7 +84,8 @@ export const EventCard = () => {
             return data || [];
         },
         {
-            enabled: eventIds.length > 0
+            enabled: eventIds.length > 0,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -106,6 +109,9 @@ export const EventCard = () => {
         }
     }, [images]);
 
+    const memoizedEventsByAttendees = useMemo(() => fetchedEventsByAttendees.data, [fetchedEventsByAttendees.data]);
+    const memoizedEventsByHosts = useMemo(() => fetchedEventsByHosts.data, [fetchedEventsByHosts.data]);
+
     return (
         <div className="flex flex-col gap-4">
             <div className="flex">
@@ -126,7 +132,7 @@ export const EventCard = () => {
             </div>
             <h1>Events</h1>
             {attendingVisits && (
-                fetchedEventsByAttendees.data?.map((event) => (
+                memoizedEventsByAttendees?.map((event) => (
                     <div key={event.events?.id} className="flex flex-col items-center mb-4">
                         {event.events?.id && imageUrls[event.events.id] && (
                             <Image
@@ -143,7 +149,7 @@ export const EventCard = () => {
                 ))
             )}
             {!attendingVisits && (
-                fetchedEventsByHosts.data?.map((event) => (
+                memoizedEventsByHosts?.map((event) => (
                     <div key={event.id} className="flex flex-col items-center mb-4">
                         {imageUrls[event.id] && (
                             <Image

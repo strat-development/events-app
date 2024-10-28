@@ -2,7 +2,7 @@ import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { EventData } from "@/types/types";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import stringSimilarity from "string-similarity";
 import { format, startOfToday, parseISO } from "date-fns";
@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import Link from "next/link";
 import Image from "next/image";
 
-export const EventsSection = () => { 
+export const EventsSection = () => {
     const supabase = createClientComponentClient<Database>();
     const { userInterests } = useUserContext();
     const [events, setEvents] = useState<{ [date: string]: EventData[] }>({});
@@ -81,6 +81,7 @@ export const EventsSection = () => {
         },
         {
             enabled: !!userInterests && userInterests.length > 0,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -97,7 +98,8 @@ export const EventsSection = () => {
             return data || [];
         },
         {
-            enabled: !!eventIds
+            enabled: !!eventIds,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -121,21 +123,24 @@ export const EventsSection = () => {
         }
     }, [images]);
 
+    const memoizedEvents = useMemo(() => events, [events]);
+    const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
+
     return (
         <>
-            <div className="flex gap-16 items-center">
+            <div className="flex gap-16 items-start">
                 <Calendar onDayClick={handleDateChange} />
                 <div className="flex flex-col">
                     <h1>EVENTS</h1>
-                    {Object.entries(events).map(([date, events]) => (
+                    {Object.entries(memoizedEvents).map(([date, events]) => (
                         <div key={date} className="flex flex-col gap-8">
                             <h2 className="text-xl font-bold">{date}</h2>
                             {events.map((event) => (
                                 <div key={event.id} className="flex gap-4">
                                     <div className="flex flex-col gap-4">
-                                        {imageUrls[event.id] && (
+                                        {memoizedImageUrls[event.id] && (
                                             <Image
-                                                src={imageUrls[event.id]}
+                                                src={memoizedImageUrls[event.id]}
                                                 alt=""
                                                 width={200}
                                                 height={200}

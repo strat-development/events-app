@@ -30,14 +30,17 @@ export const UpdateGroupImagesAlbumDialog = () => {
             if (error) {
                 throw error;
             }
-    
+
             if (data && data.length > 0) {
                 if (data[0].image_urls) {
                     setImageUrls(JSON.parse(data[0].image_urls as string));
                 }
             }
-    
+
             return data || [];
+        },
+        {
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -47,11 +50,11 @@ export const UpdateGroupImagesAlbumDialog = () => {
                 .from('group-picture-albums')
                 .update({ image_urls: JSON.stringify(newImageUrls) })
                 .eq('id', albumId ?? '');
-    
+
             if (error) {
                 throw error;
             }
-    
+
             return data;
         },
         {
@@ -92,7 +95,7 @@ export const UpdateGroupImagesAlbumDialog = () => {
             }
             return fileUrls[index];
         });
-    
+
         return paths;
     };
 

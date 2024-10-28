@@ -5,7 +5,7 @@ import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useMutation, useQuery } from "react-query";
 import { Toaster } from "../../components/ui/toaster";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { EditUserProfileDialog } from "../../components/dashboard/modals/EditUserProfileDialog";
 import { UserDataModal } from "../../components/dashboard/modals/UserDataDialog";
@@ -48,7 +48,8 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
             return data || [];
         },
         {
-            enabled: !!userId
+            enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -82,7 +83,8 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
             return data;
         },
         {
-            enabled: !!userId
+            enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
         }
     )
 
@@ -121,15 +123,18 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
             }
             return data?.[0];
         }, {
-        enabled: !!userId
+        enabled: !!userId,
+        cacheTime: 10 * 60 * 1000,
     });
 
     const parsedSocials = typeof socials?.social_media === 'string' ? JSON.parse(socials.social_media) : {};
+    const memoizedUserData = useMemo(() => getUserData, [getUserData]);
+    
 
     return (
         <>
             <div className="flex flex-col gap-4">
-                {getUserData.data?.map((user) => (
+                {memoizedUserData.data?.map((user) => (
                     <div className="flex flex-col gap-4"
                         key={user.id}>
                         <div className="flex flex-col gap-4">

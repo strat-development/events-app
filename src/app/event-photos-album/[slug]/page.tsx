@@ -6,7 +6,7 @@ import { EventHero } from "@/features/custom-event-page/EventHero";
 import { supabaseAdmin } from "@/lib/admin";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Key, useEffect, useState } from "react";
+import { Key, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 export default function EventPhotosAlbumPage({
@@ -35,7 +35,8 @@ export default function EventPhotosAlbumPage({
             return data || [];
         },
         {
-            enabled: !!eventId
+            enabled: !!eventId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -52,7 +53,7 @@ export default function EventPhotosAlbumPage({
             if (albumId) {
                 const fetchPublicUrls = async (imageUrls: string) => {
                     const imageUrlsArray = JSON.parse(imageUrls);
-                    
+
                     const publicUrls = await Promise.all(imageUrlsArray.map(async (imagePath: string) => {
                         const { data: publicURL } = await supabase.storage
                             .from('event-albums')
@@ -142,6 +143,8 @@ export default function EventPhotosAlbumPage({
         });
     };
 
+    const memoizedAlbums = useMemo(() => albums, [albums]);
+
     return (
         <div className="h-screen flex flex-col items-center justify-center">
             <h1 className="text-3xl font-bold">Event Photos Album</h1>
@@ -149,7 +152,7 @@ export default function EventPhotosAlbumPage({
             <div className="flex flex-col gap-8 items-center">
                 <UpdateEventImagesAlbumDialog />
                 <div className="grid grid-cols-3 gap-3">
-                    {albums.map((album, index) => (
+                    {memoizedAlbums.map((album, index) => (
                         <div key={index}>
                             <h2 className="text-xl font-bold">{album.name}</h2>
                             <div className="grid grid-cols-3 gap-8">

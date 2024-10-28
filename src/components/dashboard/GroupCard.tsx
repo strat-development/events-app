@@ -2,7 +2,7 @@ import { Database } from "@/types/supabase"
 import { GroupData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 import { DeleteGroupDialog } from "./modals/DeleteGroupDialog"
 import { EditGroupDialog } from "./modals/EditGroupModal"
@@ -26,7 +26,10 @@ export const GroupCard = () => {
             setGroupData(data);
             queryClient.invalidateQueries(['groups']);
         }
-    });
+    },
+        {
+            cacheTime: 10 * 60 * 1000,
+        });
 
     const groupIds = groupData.map(group => group.id);
 
@@ -47,7 +50,8 @@ export const GroupCard = () => {
             return data || [];
         },
         {
-            enabled: groupIds.length > 0
+            enabled: groupIds.length > 0,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 
@@ -71,14 +75,17 @@ export const GroupCard = () => {
         }
     }, [images]);
 
+    const memoizedGroupData = useMemo(() => groupData, [groupData]);
+    const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
+
     return (
         <div className="flex flex-col gap-4">
-            {groupData?.map((group) => (
+            {memoizedGroupData?.map((group) => (
                 <div key={group.id} className="bg-white p-4 rounded-md shadow-md">
                     <Link href={`/dashboard/group-page/${group.id}`} key={group.id}>
-                        {imageUrls[group.id] && (
+                        {memoizedImageUrls[group.id] && (
                             <Image
-                                src={imageUrls[group.id]}
+                                src={memoizedImageUrls[group.id]}
                                 alt={group.group_name || ""}
                                 width={200}
                                 height={200}
