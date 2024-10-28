@@ -31,7 +31,7 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
             cacheTime: 10 * 60 * 1000,
         })
 
-        const memoizedEvents = useMemo(() => events.data, [events.data])
+    const memoizedEvents = useMemo(() => events.data, [events.data])
 
     return (
         <>
@@ -41,13 +41,23 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
                 <div className='flex flex-col gap-4'>
                     <h2 className='text-2xl font-bold'>Upcoming events</h2>
                     {memoizedEvents?.map(event => (
-                        <Link href={`/dashboard/event-page/${event.id}`}
-                            key={event.id} className='flex flex-col gap-2'>
-                            <h3 className='text-lg font-bold'>{event.event_title}</h3>
-                            <p>{event.starts_at}</p>
-                            <p>{event.ticket_price}</p>
-                        </Link>
-                    ))}
+                        window.location.pathname.includes('dashboard') && (
+                            <Link href={`/dashboard/event-page/${event.id}`}
+                                key={event.id} className='flex flex-col gap-2'>
+                                <h3 className='text-lg font-bold'>{event.event_title}</h3>
+                                <p>{event.starts_at}</p>
+                                <p>{event.ticket_price}</p>
+                            </Link>
+                        ) || (
+                            <Link href={`/event-page/${event.id}`}
+                                key={event.id} className='flex flex-col gap-2'>
+                                <h3 className='text-lg font-bold'>{event.event_title}</h3>
+                                <p>{event.starts_at}</p>
+                                <p>{event.ticket_price}</p>
+                            </Link>
+                        )
+                    )
+                    )}
                 </div>
             )}
         </>

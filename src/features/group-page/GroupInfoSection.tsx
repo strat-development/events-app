@@ -46,28 +46,6 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
             cacheTime: 10 * 60 * 1000,
         })
 
-    const groupMembers = useQuery(
-        ['group-members-data'],
-        async () => {
-            const { data, error } = await supabase
-                .from("group-members")
-                .select(`
-                users (
-                    *
-                )`)
-                .eq("group_id", groupId)
-
-            if (error) {
-                throw new Error(error.message)
-            }
-
-            return data
-        },
-        {
-            enabled: !!groupId,
-            cacheTime: 10 * 60 * 1000,
-        })
-
     const editGroupDescriptionMutation = useMutation(
         async (newGroupDescription: string) => {
             const { data, error } = await supabase
@@ -100,24 +78,6 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
             }
         })
 
-    const { data: profileImages } = useQuery(
-        ['profile-pictures',],
-        async () => {
-            const { data, error } = await supabase
-                .from('profile-pictures')
-                .select('*')
-                .eq('user_id', membersId || [])
-            if (error) {
-                throw error;
-            }
-            return data || [];
-        },
-        {
-            enabled: !!membersId,
-            cacheTime: 10 * 60 * 1000,
-        }
-    );
-
     useEffect(() => {
         if (profileImages) {
             Promise.all(profileImages.map(async (image) => {
@@ -132,6 +92,73 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                 .catch(console.error);
         }
     }, [Image]);
+
+    useQuery(['groups-description'], async () => {
+        const { data, error } = await supabase
+            .from("groups")
+            .select("group_description")
+            .eq("id", groupId)
+
+        if (error) {
+            throw error
+        }
+
+        if (data) {
+            setGroupDescription(data[0].group_description as string)
+        }
+    },
+        { cacheTime: 10 * 60 * 1000 })
+
+    const groupMembers = useQuery(
+        ['group-members-data'],
+        async () => {
+            const { data, error } = await supabase
+                .from("group-members")
+                .select(`users (*)`)
+                .eq("group_id", groupId)
+
+            if (error) {
+                throw new Error(error.message)
+            }
+
+            if (data) {
+                setMembersId(data.map((member) => member.users?.id as string))
+            }
+            return data
+        },
+        {
+            enabled: !!groupId,
+            cacheTime: 10 * 60 * 1000,
+        })
+
+    const { data: profileImages } = useQuery(
+        ['profile-pictures', membersId],
+        async () => {
+            const { data, error } = await supabase
+                .from('profile-pictures')
+                .select('*')
+                .in('user_id', membersId || [])
+            if (error) {
+                throw error;
+            }
+            return data || [];
+        },
+        { enabled: !!membersId, cacheTime: 10 * 60 * 1000 }
+    );
+
+    useEffect(() => {
+        if (profileImages) {
+            Promise.all(profileImages.map(async (image) => {
+                const { data: publicURL } = await supabase.storage
+                    .from('profile-pictures')
+                    .getPublicUrl(image.image_url)
+
+                return { user_id: image.user_id, publicUrl: publicURL.publicUrl };
+            }))
+                .then((publicUrls) => setProfileImageUrls(publicUrls.filter(url => url.user_id !== null) as { user_id: string; publicUrl: string }[]))
+                .catch(console.error);
+        }
+    }, [profileImages]);
 
     const memoizedGroupMembers = useMemo(() => groupMembers.data, [groupMembers.data]);
 

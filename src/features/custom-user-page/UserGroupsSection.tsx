@@ -64,7 +64,7 @@ export const UserGroupsSection = () => {
     );
 
     useEffect(() => {
-        const groupIdsToFetch = Array.from(new Set([...ownedGroups, ...memberGroups])); // Ensure unique IDs
+        const groupIdsToFetch = Array.from(new Set([...ownedGroups, ...memberGroups]));
 
         if (groupIdsToFetch.length > 0) {
             const fetchImages = async () => {

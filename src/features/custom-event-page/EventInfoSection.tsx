@@ -26,7 +26,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const [eventHostId, setEventHostId] = useState<string>()
     const [attendeesId, setAttendeesId] = useState<string[]>([])
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([])
-    const [profileImageUrls, setProfileImageUrls] = useState<{ publicUrl: string }[]>([]);
+    const [profileImageUrls, setProfileImageUrls] = useState<Record<string, string>>({});
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
     const { eventCreatorId } = useGroupOwnerContext()
@@ -163,38 +163,33 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
         }
     }, [images]);
 
-    const { data: profileImages } = useQuery(
-        ['profile-pictures', attendeesId],
-        async () => {
-            const { data, error } = await supabase
-                .from('profile-pictures')
-                .select('*')
-                .eq('user_id', attendeesId)
-            if (error) {
-                throw error;
-            }
-            return data || [];
-        },
-        {
-            enabled: !!attendeesId,
-            cacheTime: 10 * 60 * 1000,
+    const { data: profileImages } = useQuery(['profile-pictures', attendeesId], async () => {
+        const { data, error } = await supabase
+            .from('profile-pictures')
+            .select('user_id, image_url')
+            .in('user_id', attendeesId);
+
+        if (error) {
+            throw error;
         }
-    );
-
-    useEffect(() => {
-        if (memoizedProfileImages) {
-            Promise.all(memoizedProfileImages.map(async (image) => {
-                const { data: publicURL } = await supabase.storage
-                    .from('profile-pictures')
-                    .getPublicUrl(image.image_url)
-
-                return { publicUrl: publicURL.publicUrl };
-
-            }))
-                .then((publicUrls) => setProfileImageUrls(publicUrls))
-                .catch(console.error);
+        
+        const urlMap: Record<string, string> = {};
+        if (data) {
+            await Promise.all(
+                data.map(async (image) => {
+                    const { data: publicURL } = await supabase.storage
+                        .from('profile-pictures')
+                        .getPublicUrl(image.image_url);
+                    if (publicURL && image.user_id) urlMap[image.user_id] = publicURL.publicUrl;
+                })
+            );
+            setProfileImageUrls(urlMap);
         }
-    }, [images]);
+        return urlMap;
+    }, {
+        enabled: attendeesId.length > 0,
+        cacheTime: 10 * 60 * 1000,
+    });
 
     const memoizedEventAttendeesData = useMemo(() => eventAttendees, [eventAttendees])
     const memoizedGroupInfo = useMemo(() => groupInfo, [groupInfo])
@@ -253,7 +248,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                                 <div key={attendee.users?.id}
                                     className='flex flex-col gap-2 items-center border p-4 rounded-lg'>
                                     <Image className="rounded-full shadow-xl"
-                                        src={profileImageUrls[0]?.publicUrl} width={50} height={50} alt="" />
+                                        src={attendee.users?.id ? profileImageUrls[attendee.users.id] : ''} width={50} height={50} alt="" />
                                     <span className=''>{attendee.users?.full_name}</span>
                                     {attendee.users?.id === eventHostId && (
                                         <span className='text-sm text-red-500'>Host</span>

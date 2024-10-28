@@ -33,7 +33,7 @@ export const TextEditor = ({
           levels: [2]
         }
       }),
-      BreakOnEnter, // Add the custom extension here
+      BreakOnEnter,
     ],
     content: editorContent,
     editorProps: {
