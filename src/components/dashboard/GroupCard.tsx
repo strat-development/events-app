@@ -79,7 +79,7 @@ export const GroupCard = () => {
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex gap-4">
             {memoizedGroupData?.map((group) => (
                 <div key={group.id} className="bg-white p-4 rounded-md shadow-md">
                     <Link href={`/dashboard/group-page/${group.id}`} key={group.id}>

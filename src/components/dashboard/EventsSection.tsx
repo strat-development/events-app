@@ -5,7 +5,7 @@ import { CreateEventDialog } from "./modals/CreateEventDialog"
 
 export const EventsSection = () => {
     return (
-        <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col gap-4">
             <CreateEventDialog />
             <div className="flex flex-col gap-8">
                 <EventCard />

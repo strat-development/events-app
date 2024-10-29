@@ -9,6 +9,7 @@ import { format, startOfToday, parseISO } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import Link from "next/link";
 import Image from "next/image";
+import { UserGroupsSection } from "./UserGroupsSection";
 
 export const EventsSection = () => {
     const supabase = createClientComponentClient<Database>();
@@ -129,7 +130,10 @@ export const EventsSection = () => {
     return (
         <>
             <div className="flex gap-16 items-start">
-                <Calendar onDayClick={handleDateChange} />
+                <div className="flex flex-col gap-8">
+                    <Calendar onDayClick={handleDateChange} />
+                    <UserGroupsSection />
+                </div>
                 <div className="flex flex-col">
                     <h1>EVENTS</h1>
                     {Object.entries(memoizedEvents).map(([date, events]) => (

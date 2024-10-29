@@ -55,7 +55,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
         ['attendees-data'],
         async () => {
             const { data, error } = await supabase
-                .from("attendees")
+                .from("event-attendees")
                 .select(`
                 users (
                     *
@@ -193,7 +193,6 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
 
     const memoizedEventAttendeesData = useMemo(() => eventAttendees, [eventAttendees])
     const memoizedGroupInfo = useMemo(() => groupInfo, [groupInfo])
-    const memoizedProfileImages = useMemo(() => profileImages, [profileImages])
 
     return (
         <>

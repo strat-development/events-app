@@ -2,7 +2,6 @@
 
 import { EventSearchComponent } from "@/features/events-main-page/EventSearchComponent";
 import { EventsSection } from "@/features/events-main-page/EventsSection";
-import { UserGroupsSection } from "@/features/events-main-page/UserGroupsSection";
 import { useCityContext } from "@/providers/cityContextProvider";
 
 export default function Home() {
@@ -14,7 +13,6 @@ export default function Home() {
                 <EventSearchComponent city={city} />
                 <div className="flex flex-col gap-16">
                     <EventsSection />
-                    <UserGroupsSection />
                 </div>
             </div>
         </div>

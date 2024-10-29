@@ -161,7 +161,8 @@ export default function GroupPhotosAlbumPage({
                                     <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>
                                         <Image src={imageUrl.publicUrl || ""}
                                             alt={`Image ${index}`}
-                                            className="w-full h-auto" />
+                                            width={2000}
+                                            height={2000} />
                                         <input
                                             type="checkbox"
                                             className="absolute top-2 right-2"

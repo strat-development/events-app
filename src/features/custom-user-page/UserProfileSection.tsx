@@ -200,7 +200,6 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                 {Icon && <Link href={socialsAsObj.link}>
                                     <div className="flex gap-4 items-center">
                                         {Icon}
-                                        <h3>{socialsType}</h3>
                                     </div>
                                 </Link>}
                             </div>

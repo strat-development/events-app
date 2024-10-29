@@ -21,7 +21,7 @@ export const EventCard = () => {
         ['eventsByAttendees', userId],
         async () => {
             const { data, error } = await supabase
-                .from("event-attendees-linker")
+                .from("event-attendees")
                 .select(`
                     events (
                         *
@@ -130,45 +130,50 @@ export const EventCard = () => {
                     Hosting
                 </Button>
             </div>
-            <h1>Events</h1>
-            {attendingVisits && (
-                memoizedEventsByAttendees?.map((event) => (
-                    <div key={event.events?.id} className="flex flex-col items-center mb-4">
-                        {event.events?.id && imageUrls[event.events.id] && (
-                            <Image
-                                src={imageUrls[event.events.id]}
-                                alt={event.events.event_title || ""}
-                                width={200}
-                                height={200}
-                            />
-                        )}
-                        <Link href={`/dashboard/event-page/${event.events?.id}`}>
-                            <p>{event.events?.event_title}</p>
-                        </Link>
-                    </div>
-                ))
-            )}
-            {!attendingVisits && (
-                memoizedEventsByHosts?.map((event) => (
-                    <div key={event.id} className="flex flex-col items-center mb-4">
-                        {imageUrls[event.id] && (
-                            <Image
-                                src={imageUrls[event.id]}
-                                alt={event.event_title || ""}
-                                width={200}
-                                height={200}
-                            />
-                        )}
-                        <Link href={`/dashboard/event-page/${event.id}`}>
-                            <p>{event.event_title}</p>
-                        </Link>
-                        <div className="flex gap-4">
-                            <EditEventDialog eventId={event.id} />
-                            <DeleteEventDialog eventId={event.id} />
+            <div className="flex gap-4 items-baseline">
+                {attendingVisits && (
+                    memoizedEventsByAttendees?.map((event) => (
+                        <div key={event.events?.id} className="flex flex-col items-center mb-4">
+                            {event.events?.id && imageUrls[event.events.id] && (
+                                <Image
+                                    src={imageUrls[event.events.id]}
+                                    alt={event.events.event_title || ""}
+                                    width={200}
+                                    height={200}
+                                />
+                            )}
+                            <Link href={`/dashboard/event-page/${event.events?.id}`}>
+                                <p>{event.events?.event_title}</p>
+                            </Link>
+                           
                         </div>
-                    </div>
-                ))
-            )}
+                    ))
+                )}
+            </div>
+
+            <div className="flex gap-4 items-baseline">
+                {!attendingVisits && (
+                    memoizedEventsByHosts?.map((event) => (
+                        <div key={event.id} className="flex flex-col items-center mb-4">
+                            {imageUrls[event.id] && (
+                                <Image
+                                    src={imageUrls[event.id]}
+                                    alt={event.event_title || ""}
+                                    width={200}
+                                    height={200}
+                                />
+                            )}
+                            <Link href={`/dashboard/event-page/${event.id}`}>
+                                <p>{event.event_title}</p>
+                            </Link>
+                            <div className="flex gap-4">
+                                <EditEventDialog eventId={event.id} />
+                                <DeleteEventDialog eventId={event.id} />
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
         </div>
     );
 };

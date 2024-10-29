@@ -41,9 +41,9 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
 
     const addAttendee = useMutation(async () => {
         const { data, error } = await supabase
-            .from("attendees")
+            .from("event-attendees")
             .upsert({
-                id: userId,
+                attendee_id: userId,
                 event_id: eventId
             })
 
@@ -59,11 +59,13 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
         }
     })
 
+
+
     const fetchAttendee = useQuery(['attendee'], async () => {
         const { data, error } = await supabase
-            .from("attendees")
+            .from("event-attendees")
             .select("*")
-            .eq("id", userId)
+            .eq("attendee_id", userId)
             .eq("event_id", eventId)
 
         if (error) {
@@ -83,9 +85,9 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
 
     const removeAttendee = useMutation(async () => {
         const { data, error } = await supabase
-            .from("attendees")
+            .from("event-attendees")
             .delete()
-            .eq("id", userId)
+            .eq("user_id", userId)
             .eq("event_id", eventId)
 
         if (error) {
