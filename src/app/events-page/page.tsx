@@ -1,11 +1,14 @@
 "use client";
 
 import { useCityContext } from "@/providers/cityContextProvider";
+import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
+import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { EventData } from "@/types/types";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import stringSimilarity from "string-similarity";
@@ -17,6 +20,14 @@ export default function EventsPage() {
     const [eventInterestFromUrl, setEventInterestFromUrl] = useState<string | null>(null);
     const [eventCityFromUrl, setEventCityFromUrl] = useState<string | null>(null);
     const { city } = useCityContext();
+    const { userId } = useUserContext();
+    const { eventCreatorId } = useGroupOwnerContext();
+    const router = useRouter();
+
+    if (!userId) {
+        router.push('/');
+        return null
+    }
 
     useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
@@ -118,25 +129,29 @@ export default function EventsPage() {
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
 
     return (
-        <div className="h-screen flex flex-col items-center">
-            {memoizedEvents.map((event) => (
-                <div key={event.id} className="flex flex-col items-center mb-4">
-                    {memoizedImageUrls[event.id] && (
-                        <Image
-                            src={memoizedImageUrls[event.id]}
-                            alt={event.event_title || ""}
-                            width={200}
-                            height={200}
-                        />
-                    )}
-                    <Link href={`/event-page/${event.id}`}>
-                        <h1 className="text-2xl font-bold">{event.event_title}</h1>
-                    </Link>
-                    <p>{event.starts_at}</p>
-                    <p>{event.event_address}</p>
-                    <p>{event.ticket_price}</p>
+        <>
+            {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
+                <div className="h-screen flex flex-col items-center">
+                    {memoizedEvents.map((event) => (
+                        <div key={event.id} className="flex flex-col items-center mb-4">
+                            {memoizedImageUrls[event.id] && (
+                                <Image
+                                    src={memoizedImageUrls[event.id]}
+                                    alt={event.event_title || ""}
+                                    width={200}
+                                    height={200}
+                                />
+                            )}
+                            <Link href={`/event-page/${event.id}`}>
+                                <h1 className="text-2xl font-bold">{event.event_title}</h1>
+                            </Link>
+                            <p>{event.starts_at}</p>
+                            <p>{event.event_address}</p>
+                            <p>{event.ticket_price}</p>
+                        </div>
+                    ))}
                 </div>
-            ))}
-        </div>
+            )}
+        </>
     );
 }

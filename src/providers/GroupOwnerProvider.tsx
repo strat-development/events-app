@@ -45,7 +45,7 @@ export default function GroupOwnerContextProvider({ children }: { children: Reac
 
     
     useEffect(() => {
-        if (user) {
+        if (user && userId) {
             const getEventCreator = async () => {
                 const { data: creatorData, error } = await supabase
                     .from("events")
@@ -56,7 +56,7 @@ export default function GroupOwnerContextProvider({ children }: { children: Reac
                     console.log(error);
                 }
 
-                if (creatorData) {
+                if (creatorData && creatorData.length > 0) {
                     setEventCreatorId(creatorData[0].created_by);
                 }
             };

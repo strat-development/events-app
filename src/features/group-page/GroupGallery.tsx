@@ -2,6 +2,8 @@
 
 import { ImageCarousel } from "@/components/dashboard/ImageCarouel"
 import { DeleteGroupAlbumDialog } from "@/components/dashboard/modals/DeleteGroupAlbumDialog";
+import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
+import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
@@ -14,7 +16,8 @@ interface GroupGalleryProps {
 
 export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
     const supabase = createClientComponentClient<Database>();
-
+    const { userId } = useUserContext();
+    const { ownerId } = useGroupOwnerContext();
     const [albums, setAlbums] = useState<any[]>([]);
 
     const { data: albumsData, error: albumsError } = useQuery(
@@ -79,7 +82,9 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
                             <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
                             <p>{album.album_name}</p>
                         </Link>
-                        <DeleteGroupAlbumDialog albumId={album.id} />
+                        {window.location.pathname.includes("/dashboard") && ownerId === userId && (
+                            <DeleteGroupAlbumDialog albumId={album.id} />
+                        )}
                     </div>
                 ))}
             </div>

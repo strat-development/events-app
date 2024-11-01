@@ -200,7 +200,7 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                                 </div>
                             )}
                     </div>
-                    {userId === ownerId && !isSetToEdit && (
+                    {window.location.pathname.includes("/dashboard") && userId === ownerId && !isSetToEdit && (
                         <div className="flex gap-4">
                             <Button onClick={() => setIsSetToEdit(true)}>
                                 Edit

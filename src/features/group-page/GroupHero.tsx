@@ -326,81 +326,85 @@ export const GroupHero = ({
                                         />
                                     ))}
 
-                                    {(images?.length ?? 0) > 0 && (
-                                        <div className="flex gap-4">
-                                            <Button variant={"destructive"}
-                                                onClick={() => {
-                                                    if (images) {
-                                                        if (images[0].hero_picture_url) {
-                                                            deleteGroupPicture.mutateAsync(images[0].hero_picture_url);
+                                    {window.location.pathname.includes("dashboard") && ownerId === userId && (
+                                        (images?.length ?? 0) > 0 && (
+                                            <div className="flex gap-4">
+                                                <Button variant={"destructive"}
+                                                    onClick={() => {
+                                                        if (images) {
+                                                            if (images[0].hero_picture_url) {
+                                                                deleteGroupPicture.mutateAsync(images[0].hero_picture_url);
+                                                            }
                                                         }
+                                                    }}>Delete</Button>
+                                            </div>
+                                        ))}
+
+
+                                    {window.location.pathname.includes("dashboard") && ownerId === userId && (
+                                        <div className="flex gap-4">
+                                            <Input type="file"
+                                                onChange={(e) => {
+                                                    if (e.target.files) {
+                                                        setFiles([...files, ...Array.from(e.target.files)]);
                                                     }
-                                                }}>Delete</Button>
+                                                }} />
+
+                                            {files.length > 0 && (
+                                                <>
+                                                    {(images?.length ?? 0) === 0 ? (
+                                                        <Button onClick={() => {
+                                                            if (files.length > 0) {
+                                                                uploadFiles(files)
+                                                                    .then((paths) => {
+                                                                        addGroupPicture.mutateAsync(paths);
+
+                                                                        setFiles([]);
+                                                                    })
+                                                                    .catch((error) => console.error('Error uploading files:', error));
+                                                            } else {
+                                                                toast({
+                                                                    title: "Error",
+                                                                    description: "Error uploading image",
+                                                                });
+                                                            }
+                                                        }}>Upload</Button>
+                                                    ) : (
+                                                        <Button onClick={() => {
+                                                            if (files.length > 0) {
+                                                                uploadFiles(files)
+                                                                    .then((paths) => {
+                                                                        updateGroupPicture.mutateAsync(paths[0]);
+
+                                                                        setFiles([]);
+                                                                    })
+                                                                    .catch((error) => console.error('Error uploading files:', error));
+                                                            } else {
+                                                                toast({
+                                                                    title: "Error",
+                                                                    description: "Error uploading image",
+                                                                });
+                                                            }
+                                                        }}>Update</Button>
+                                                    )}
+
+                                                    <Button variant={"destructive"}
+                                                        onClick={() => setFiles([])}>
+                                                        Clear
+                                                    </Button>
+                                                </>
+                                            )}
                                         </div>
                                     )}
-
-                                    <div className="flex gap-4">
-                                        <Input type="file"
-                                            onChange={(e) => {
-                                                if (e.target.files) {
-                                                    setFiles([...files, ...Array.from(e.target.files)]);
-                                                }
-                                            }} />
-
-                                        {files.length > 0 && (
-                                            <>
-                                                {(images?.length ?? 0) === 0 ? (
-                                                    <Button onClick={() => {
-                                                        if (files.length > 0) {
-                                                            uploadFiles(files)
-                                                                .then((paths) => {
-                                                                    addGroupPicture.mutateAsync(paths);
-
-                                                                    setFiles([]);
-                                                                })
-                                                                .catch((error) => console.error('Error uploading files:', error));
-                                                        } else {
-                                                            toast({
-                                                                title: "Error",
-                                                                description: "Error uploading image",
-                                                            });
-                                                        }
-                                                    }}>Upload</Button>
-                                                ) : (
-                                                    <Button onClick={() => {
-                                                        if (files.length > 0) {
-                                                            uploadFiles(files)
-                                                                .then((paths) => {
-                                                                    updateGroupPicture.mutateAsync(paths[0]);
-
-                                                                    setFiles([]);
-                                                                })
-                                                                .catch((error) => console.error('Error uploading files:', error));
-                                                        } else {
-                                                            toast({
-                                                                title: "Error",
-                                                                description: "Error uploading image",
-                                                            });
-                                                        }
-                                                    }}>Update</Button>
-                                                )}
-
-                                                <Button variant={"destructive"}
-                                                    onClick={() => setFiles([])}>
-                                                    Clear
-                                                </Button>
-                                            </>
-                                        )}
-                                    </div>
                                 </div>
 
                             </div>
                             <div className="flex gap-4">
                                 <h1>{group.group_name}</h1>
-                                {userId === ownerId && !groupNameToEdit && <Button onClick={() => setGroupNameToEdit(true)}>Edit</Button>}
+                                {window.location.pathname.includes("/dashboard") && userId === ownerId && !groupNameToEdit && <Button onClick={() => setGroupNameToEdit(true)}>Edit</Button>}
                             </div>
                             <div>
-                                {groupNameToEdit && (
+                            {window.location.pathname.includes("/dashboard") && userId === ownerId && groupNameToEdit && (
                                     <div className="flex gap-4">
                                         <Input placeholder="New group name"
                                             value={newGroupName}
@@ -421,12 +425,13 @@ export const GroupHero = ({
                             <div className="flex gap-2">
                                 <p>{group.group_city},</p>
                                 <p>{group.group_country}</p>
-                                {userId === ownerId && !groupCityToEdit && <Button onClick={() => setGroupCityToEdit(true)}>Edit</Button>}
+                                {window.location.pathname.includes("/dashboard") && userId === ownerId && !groupCityToEdit && <Button onClick={() => setGroupCityToEdit(true)}>Edit</Button>}
                             </div>
                             <div>
-                                {groupCityToEdit && (
+                            {window.location.pathname.includes("/dashboard") && userId === ownerId && groupCityToEdit && (
                                     <div className="flex gap-4">
                                         <Input placeholder="New group city"
+
                                             value={newGroupCity}
                                             onChange={(e) => setNewGroupCity(e.target.value)}
                                         />

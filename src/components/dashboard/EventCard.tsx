@@ -10,10 +10,12 @@ import { useEffect, useMemo, useState } from "react"
 import { DeleteEventDialog } from "./modals/DeleteEventDialog"
 import { EditEventDialog } from "./modals/EditEventDialog"
 import Image from "next/image"
+import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 
 export const EventCard = () => {
     const supabase = createClientComponentClient<Database>()
-    const { userId } = useUserContext()
+    const { eventCreatorId } = useGroupOwnerContext();
+    const { userId } = useUserContext();
     const [attendingVisits, setAttendingVisits] = useState(true)
     const [imageUrls, setImageUrls] = useState<{ [eventId: string]: string }>({});
 
@@ -145,7 +147,7 @@ export const EventCard = () => {
                             <Link href={`/dashboard/event-page/${event.events?.id}`}>
                                 <p>{event.events?.event_title}</p>
                             </Link>
-                           
+
                         </div>
                     ))
                 )}
@@ -166,10 +168,12 @@ export const EventCard = () => {
                             <Link href={`/dashboard/event-page/${event.id}`}>
                                 <p>{event.event_title}</p>
                             </Link>
-                            <div className="flex gap-4">
-                                <EditEventDialog eventId={event.id} />
-                                <DeleteEventDialog eventId={event.id} />
-                            </div>
+                            {window.location.pathname.includes("/dashboard") && eventCreatorId === userId && (
+                                <div className="flex gap-4">
+                                    <EditEventDialog eventId={event.id} />
+                                    <DeleteEventDialog eventId={event.id} />
+                                </div>
+                            )}
                         </div>
                     ))
                 )}

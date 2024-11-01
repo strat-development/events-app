@@ -2,6 +2,8 @@
 
 import { ImageCarousel } from "@/components/dashboard/ImageCarouel"
 import { DeleteEventAlbumDialog } from "@/components/dashboard/modals/DeleteEventAlbumDialog";
+import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
+import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
@@ -16,6 +18,8 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
     const supabase = createClientComponentClient<Database>();
 
     const [albums, setAlbums] = useState<any[]>([]);
+    const {eventCreatorId} = useGroupOwnerContext();
+    const {userId} = useUserContext();
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['event-picture-albums', eventId],
@@ -78,7 +82,9 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
                             <p>{album.album_name}</p>
                         </Link>
 
-                        <DeleteEventAlbumDialog albumId={album.id} />
+                        {window.location.pathname.includes("/dashboard") && eventCreatorId === userId && (
+                            <DeleteEventAlbumDialog albumId={album.id} />
+                        )}
 
                     </div>
                 ))}

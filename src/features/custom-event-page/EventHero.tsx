@@ -6,13 +6,13 @@ import { toast } from "@/components/ui/use-toast"
 import { supabaseAdmin } from "@/lib/admin"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { useUserContext } from "@/providers/UserContextProvider"
-import { Database } from "@/types/supabase"
 import { EventAttendeesData, EventData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { Database } from "@/types/supabase"
 
 interface EventHeroProps {
     eventId: string
@@ -21,7 +21,7 @@ interface EventHeroProps {
 export const EventHero = ({ eventId }: EventHeroProps) => {
     const supabase = createClientComponentClient<Database>()
     const queryClient = useQueryClient()
-    const { userId } = useUserContext()
+    const { userId } = useUserContext();
     const { eventCreatorId } = useGroupOwnerContext()
 
     const [eventData, setEventData] = useState<EventData[]>()
@@ -31,7 +31,6 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
     const [newEventAddress, setNewEventAddress] = useState("")
     const [attendeesData, setEventAttendeessData] = useState<EventAttendeesData[]>()
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
-    const [files, setFiles] = useState<File[]>([]);
 
     useQuery(['events'], async () => {
         const { data, error } = await supabase
@@ -53,7 +52,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
 
     useQuery(['event-members'], async () => {
         const { data, error } = await supabase
-            .from("attendees")
+            .from("event-attendees")
             .select(`
                 users (
                     *
@@ -323,83 +322,31 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                                     />
                                 ))}
 
-                                {(images?.length ?? 0) > 0 && (
-                                    <div className="flex gap-4">
-                                        <Button variant={"destructive"}
-                                            onClick={() => {
-                                                if (images) {
-                                                    if (images[0].hero_picture_url) {
-                                                        deleteGroupPicture.mutateAsync(images[0].hero_picture_url);
-                                                    }
-                                                }
-                                            }}>Delete</Button>
-                                    </div>
-                                )}
-
-                                <div className="flex gap-4">
-                                    <Input type="file"
-                                        onChange={(e) => {
-                                            if (e.target.files) {
-                                                setFiles([...files, ...Array.from(e.target.files)]);
-                                            }
-                                        }} />
-
-                                    {files.length > 0 && (
-                                        <>
-                                            {(images?.length ?? 0) === 0 ? (
-                                                <Button onClick={() => {
-                                                    if (files.length > 0) {
-                                                        uploadFiles(files)
-                                                            .then((paths) => {
-                                                                addGroupPicture.mutateAsync(paths);
-
-                                                                setFiles([]);
-                                                            })
-                                                            .catch((error) => console.error('Error uploading files:', error));
-                                                    } else {
-                                                        toast({
-                                                            title: "Error",
-                                                            description: "Error uploading image",
-                                                        });
-                                                    }
-                                                }}>Upload</Button>
-                                            ) : (
-                                                <Button onClick={() => {
-                                                    if (files.length > 0) {
-                                                        uploadFiles(files)
-                                                            .then((paths) => {
-                                                                updateGroupPicture.mutateAsync(paths[0]);
-
-                                                                setFiles([]);
-                                                            })
-                                                            .catch((error) => console.error('Error uploading files:', error));
-                                                    } else {
-                                                        toast({
-                                                            title: "Error",
-                                                            description: "Error uploading image",
-                                                        });
-                                                    }
-                                                }}>Update</Button>
-                                            )}
-
+                                {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
+                                    images?.length ?? 0) > 0 && (
+                                        <div className="flex gap-4">
                                             <Button variant={"destructive"}
-                                                onClick={() => setFiles([])}>
-                                                Clear
-                                            </Button>
-                                        </>
+                                                onClick={() => {
+                                                    if (images) {
+                                                        if (images[0].hero_picture_url) {
+                                                            deleteGroupPicture.mutateAsync(images[0].hero_picture_url);
+                                                        }
+                                                    }
+                                                }}>Delete</Button>
+                                        </div>
                                     )}
-                                </div>
                             </div>
                         </div>
+                
                         <div className="flex gap-4">
                             <h1>{event.event_title}</h1>
 
-                            {userId === eventCreatorId && !eventNameToEdit && (
+                            {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !eventNameToEdit && (
                                 <Button onClick={() => setEventNameToEdit(true)}>Edit</Button>
                             )}
                         </div>
                         <div>
-                            {eventNameToEdit && (
+                            {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && eventNameToEdit && (
                                 <div className="flex gap-4">
                                     <Input placeholder="New event name"
                                         value={newEventName}
@@ -419,14 +366,14 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                     <div className="flex flex-col gap-4">
                         <div className="flex gap-2">
                             <p>{event.event_address}</p>
-                            {userId === eventCreatorId && !eventAddressToEdit && (
+                            {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !eventAddressToEdit && (
                                 <Button onClick={() => setEventAddressToEdit(true)}>
                                     Edit
                                 </Button>
                             )}
                         </div>
                         <div>
-                            {eventAddressToEdit && (
+                            {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && eventAddressToEdit && (
                                 <div className="flex gap-4">
                                     <Input placeholder="New event address"
                                         value={newEventAddress}

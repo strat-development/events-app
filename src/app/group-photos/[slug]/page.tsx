@@ -1,9 +1,10 @@
 "use client"
 
 import { CreateGroupImagesAlbumDialog } from "@/components/dashboard/modals/CreateGroupImagesAlbumDialog";
-import { Navbar } from "@/components/dashboard/Navbar";
 import { GroupGallery } from "@/features/group-page/GroupGallery";
 import { GroupHero } from "@/features/group-page/GroupHero";
+import { useUserContext } from "@/providers/UserContextProvider";
+import { useRouter } from "next/navigation";
 
 export default function GroupPhotosPage({
     params
@@ -13,16 +14,24 @@ export default function GroupPhotosPage({
     }
 }) {
     const groupId = params.slug;
+    const { userId } = useUserContext();
+    const router = useRouter();
+
+    if (!userId) {
+        router.push('/');
+        return null
+    }
 
     return (
         <>
             <div className="flex justify-between items-center h-[100vh]">
-                <Navbar />
                 <div className="flex flex-col gap-8 items-center w-full min-h-screen relative top-24">
                     <GroupHero groupId={groupId} />
-                    <div>
-                        <CreateGroupImagesAlbumDialog groupId={groupId} />
-                    </div>
+                    {window.location.pathname.includes("/dashboard") && (
+                        <div>
+                            <CreateGroupImagesAlbumDialog groupId={groupId} />
+                        </div>
+                    )}
                     <div className="grid grid-cols-3 gap-8">
                         <GroupGallery
                             groupId={groupId} />

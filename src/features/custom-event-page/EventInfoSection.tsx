@@ -231,7 +231,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
 
                             )}
                     </div>
-                    {eventCreatorId === userId && !isSetToEdit &&
+                    {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !isSetToEdit &&
                         <div className="flex gap-4">
                             <Button onClick={() => setIsSetToEdit(true)}>
                                 Edit

@@ -7,11 +7,15 @@ import { useQuery, useQueryClient } from "react-query"
 import { DeleteGroupDialog } from "./modals/DeleteGroupDialog"
 import { EditGroupDialog } from "./modals/EditGroupModal"
 import Image from "next/image"
+import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
+import { useUserContext } from "@/providers/UserContextProvider"
 
 export const GroupCard = () => {
     const supabase = createClientComponentClient<Database>();
     const [groupData, setGroupData] = useState<GroupData[]>([]);
     const [imageUrls, setImageUrls] = useState<{ [groupId: string]: string }>({});
+    const { ownerId } = useGroupOwnerContext();
+    const { userId } = useUserContext(); 
     const queryClient = useQueryClient();
 
     useQuery(['groups'], async () => {
@@ -96,10 +100,12 @@ export const GroupCard = () => {
                         <p>{group.group_city}</p>
                         <p>{group.group_country}</p>
                     </Link>
-                    <div className="flex gap-4">
-                        <EditGroupDialog groupId={group.id} />
-                        <DeleteGroupDialog groupId={group.id} />
-                    </div>
+                    {window.location.pathname.includes("/dashboard") && ownerId === userId && (
+                        <div className="flex gap-4">
+                            <EditGroupDialog groupId={group.id} />
+                            <DeleteGroupDialog groupId={group.id} />
+                        </div>
+                    )}
                 </div>
             ))}
         </div>
