@@ -129,89 +129,91 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
 
     const parsedSocials = typeof socials?.social_media === 'string' ? JSON.parse(socials.social_media) : {};
     const memoizedUserData = useMemo(() => getUserData, [getUserData]);
-    
+
 
     return (
         <>
-            <div className="flex flex-col gap-4">
-                {memoizedUserData.data?.map((user) => (
-                    <div className="flex flex-col gap-4"
-                        key={user.id}>
-                        <div className="flex flex-col gap-4">
-                            <Image src={imageUrls[0]?.publicUrl} alt="profile picture" width={200} height={200} />
-                            {window.location.pathname === "/dashboard" && (
-                                <DeleteUserProfileImageDialog />
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <h2>{user.full_name}</h2>
-                            <p>{user.email}</p>
-                            <p>{user.city}, {user.country}</p>
-                            {window.location.pathname === "/dashboard" && (
-                                <EditUserProfileDialog />
-                            )}
-
-                        </div>
-
-                        {isSetToEdit === false && (
-                            <>
-                                <div
-                                    dangerouslySetInnerHTML={{ __html: user.user_bio as string }}></div>
-                            </>
-                        ) || (
-                                <div className="flex flex-col gap-4">
-                                    <TextEditor
-                                        editorContent={user.user_bio as string}
-                                        onChange={setUserBio}
-                                    />
-                                    <Button onClick={() => setIsSetToEdit(false)}>
-                                        Cancel
-                                    </Button>
-                                    <Button onClick={() => {
-                                        editUserBioMutation.mutate(userBio as string)
-
-                                        setIsSetToEdit(false)
-                                    }}>
-                                        Save changes
-                                    </Button>
-                                </div>
-                            )}
-                        {!isSetToEdit &&
-                            window.location.pathname === "/dashboard" && (
-                                <div className="flex gap-4">
-                                    <Button onClick={() => setIsSetToEdit(true)}>
-                                        Edit
-                                    </Button>
-                                </div>
-                            )
-                        }
-                    </div>
-                ))}
-
-
-
-                <div className="flex gap-4">
-                    {parsedSocials && Object.entries(parsedSocials).map(([socialsType, value]) => {
-                        const socialsAsObj = value as { link: string };
-                        const Icon = socialMediaIcons[socialsType as SocialMediaTypes];
-                        return (
-                            <div className="flex gap-4 items-center"
-                                key={socialsType}>
-                                {Icon && <Link href={socialsAsObj.link}>
-                                    <div className="flex gap-4 items-center">
-                                        {Icon}
-                                    </div>
-                                </Link>}
+            {userId && (
+                <div className="flex flex-col gap-4">
+                    {memoizedUserData.data?.map((user) => (
+                        <div className="flex flex-col gap-4"
+                            key={user.id}>
+                            <div className="flex flex-col gap-4">
+                                <Image src={imageUrls[0]?.publicUrl} alt="profile picture" width={200} height={200} />
+                                {window.location.pathname === "/dashboard" && (
+                                    <DeleteUserProfileImageDialog />
+                                )}
                             </div>
-                        );
-                    })}
-                </div>
-                {window.location.pathname === "/dashboard" && (
-                    <EditSocialsDialog />
-                )}
-            </div>
+                            <div className="flex flex-col gap-1">
+                                <h2>{user.full_name}</h2>
+                                <p>{user.email}</p>
+                                <p>{user.city}, {user.country}</p>
+                                {window.location.pathname === "/dashboard" && (
+                                    <EditUserProfileDialog />
+                                )}
 
-            {!userRole && (
+                            </div>
+
+                            {isSetToEdit === false && (
+                                <>
+                                    <div
+                                        dangerouslySetInnerHTML={{ __html: user.user_bio as string }}></div>
+                                </>
+                            ) || (
+                                    <div className="flex flex-col gap-4">
+                                        <TextEditor
+                                            editorContent={user.user_bio as string}
+                                            onChange={setUserBio}
+                                        />
+                                        <Button onClick={() => setIsSetToEdit(false)}>
+                                            Cancel
+                                        </Button>
+                                        <Button onClick={() => {
+                                            editUserBioMutation.mutate(userBio as string)
+
+                                            setIsSetToEdit(false)
+                                        }}>
+                                            Save changes
+                                        </Button>
+                                    </div>
+                                )}
+                            {!isSetToEdit &&
+                                window.location.pathname === "/dashboard" && (
+                                    <div className="flex gap-4">
+                                        <Button onClick={() => setIsSetToEdit(true)}>
+                                            Edit
+                                        </Button>
+                                    </div>
+                                )
+                            }
+                        </div>
+                    ))}
+
+
+
+                    <div className="flex gap-4">
+                        {parsedSocials && Object.entries(parsedSocials).map(([socialsType, value]) => {
+                            const socialsAsObj = value as { link: string };
+                            const Icon = socialMediaIcons[socialsType as SocialMediaTypes];
+                            return (
+                                <div className="flex gap-4 items-center"
+                                    key={socialsType}>
+                                    {Icon && <Link href={socialsAsObj.link}>
+                                        <div className="flex gap-4 items-center">
+                                            {Icon}
+                                        </div>
+                                    </Link>}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {window.location.pathname === "/dashboard" && (
+                        <EditSocialsDialog />
+                    )}
+                </div>
+            )}
+
+            {!userRole && userId && (
                 <UserDataModal />
             )}
 

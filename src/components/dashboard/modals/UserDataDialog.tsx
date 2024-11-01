@@ -48,6 +48,8 @@ export const UserDataModal = () => {
     const [searchQuery, setSearchQuery] = useState<string>("")
     const [userInterests, setUserInterests] = useState<string[]>([])
 
+    console.log("tabValue", tabValue)
+
     const addUserData = useMutation(
         async (newUserData: UserData[]) => {
             await supabase
@@ -148,15 +150,15 @@ export const UserDataModal = () => {
     return (
         <>
             <Dialog open={isOpen || !userRole} onOpenChange={setIsOpen}>
-                <DialogContent className="sm:max-w-[425px] flex items-center p-8">
-                    <Tabs defaultValue={tabValue}
+                <DialogContent className="sm:max-w-[425px] flex flex-col items-center p-8">
+                    <Tabs onValueChange={tabValue => setTabValue(tabValue)} value={tabValue}
                         className="w-[400px]">
                         <TabsList className="flex w-full">
                             {!userRole && (
                                 <TabsTrigger className="w-full"
                                     value="user-data">User data</TabsTrigger>
                             )}
-                            {!userInterests && (
+                            {userInterests && (
                                 <TabsTrigger className="w-full"
                                     value="user-interests">Interests</TabsTrigger>
                             )}
@@ -184,30 +186,12 @@ export const UserDataModal = () => {
                                     value={country}
                                     onChange={(e) => setCountry(e.target.value)}
                                 />
-                                <Button onClick={() => {
-                                    if (!fullName || !email || !city || !country) {
-                                        toast({
-                                            variant: "destructive",
-                                            title: "Error",
-                                            description: "Please fill out all fields"
-                                        });
-                                        return;
-                                    } else {
-                                        addUserData.mutateAsync([{
-                                            full_name: fullName,
-                                            email: email,
-                                            city: city,
-                                            country: country,
-                                            user_role: "User",
-                                            id: userId
-                                        }] as UserData[]);
-
-                                        setTabValue("user-interests");
-                                    }
-                                }}>Create User</Button>
+                                <Button onClick={() => setTabValue("user-interests")}>
+                                    Next
+                                </Button>
                             </TabsContent>
                         )}
-                        {!userInterests && (
+                        {userInterests && (
                             <TabsContent value="user-interests">
                                 <div className="flex gap-8 items-center">
                                     <div className="mb-4">
@@ -265,45 +249,72 @@ export const UserDataModal = () => {
                                                 </div>
                                             </div>
                                         ))}
-                                </div>
-                                <div>
-                                    {selectedInterests.length > 0 && (
-                                        <div>
-                                            <h2 className="text-xl font-semibold">Selected Interests</h2>
-                                            <div className="flex gap-2">
-                                                {selectedInterests.map((interest) => (
-                                                    <Button
-                                                        key={interest}
-                                                        className="px-4 py-2 border bg-blue-500 text-white"
-                                                        onClick={() => handleInterestClick(interest)}>
-                                                        {interest}
-                                                    </Button>
-                                                ))}
+                                    <div>
+                                        {selectedInterests.length > 0 && (
+                                            <div>
+                                                <h2 className="text-xl font-semibold">Selected Interests</h2>
+                                                <div className="flex gap-2">
+                                                    {selectedInterests.map((interest) => (
+                                                        <Button
+                                                            key={interest}
+                                                            className="px-4 py-2 border bg-blue-500 text-white"
+                                                            onClick={() => handleInterestClick(interest)}>
+                                                            {interest}
+                                                        </Button>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
-                                <Button onClick={
-                                    () => {
-                                        if (userId) {
-                                            addInterests.mutateAsync({
-                                                user_interests: selectedInterests,
-                                                id: userId
-                                            } as UserInterestsData, {
-                                                onSuccess: () => {
-                                                    window.location.reload()
-                                                }
-                                            })
-                                        }
-                                    }
-                                }>
-                                    Save Interests
+
+                                <Button onClick={() => {
+                                    setTabValue("user-data")
+                                }}>
+                                    Back
                                 </Button>
                             </TabsContent>
                         )}
                     </Tabs>
+                    {fullName && email && city && country && selectedInterests.length > 0 && userId && (
+                    <Button onClick={() => {
+                        if (!fullName || !email || !city || !country) {
+                            toast({
+                                variant: "destructive",
+                                title: "Error",
+                                description: "Please fill out all fields"
+                            });
+                            return;
+                        } else {
+                            addUserData.mutateAsync([{
+                                full_name: fullName,
+                                email: email,
+                                city: city,
+                                country: country,
+                                user_role: "User",
+                                id: userId
+                            }] as UserData[]);
+
+                            {
+                                if (userId) {
+                                    addInterests.mutateAsync({
+                                        user_interests: selectedInterests,
+                                        id: userId
+                                    } as UserInterestsData, {
+                                        onSuccess: () => {
+                                            window.location.reload()
+                                        }
+                                    })
+                                }
+                            }
+
+
+                            setTabValue("user-interests");
+                        }
+                    }}>Create User</Button>
+                    )}  
                 </DialogContent>
-            </Dialog>
+            </Dialog >
 
             <Toaster />
         </>
