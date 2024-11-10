@@ -81,7 +81,7 @@ export const EditSocialsDialog = () => {
                             return (
                                 <div className="flex items-center gap-4 cursor-pointer" key={social}>
                                     <label className="text-2xl" htmlFor={social}>{Icon}</label>
-                                    <Input
+                                    <Input id={social}
                                         type="text"
                                         onChange={(e) => handleSocialChange(social, 'link', e)}
                                         placeholder={`${social} link...`}

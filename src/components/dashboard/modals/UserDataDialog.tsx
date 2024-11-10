@@ -48,7 +48,7 @@ export const UserDataModal = () => {
     const [searchQuery, setSearchQuery] = useState<string>("")
     const [userInterests, setUserInterests] = useState<string[]>([])
 
-    console.log("tabValue", tabValue)
+    console.log("fullName", fullName)
 
     const addUserData = useMutation(
         async (newUserData: UserData[]) => {
@@ -158,40 +158,43 @@ export const UserDataModal = () => {
                                 <TabsTrigger className="w-full"
                                     value="user-data">User data</TabsTrigger>
                             )}
-                            {userInterests && (
+                            {!userInterests && (
                                 <TabsTrigger className="w-full"
                                     value="user-interests">Interests</TabsTrigger>
                             )}
                         </TabsList>
+
                         {!userRole && (
                             <TabsContent className="flex flex-col gap-4"
                                 value="user-data">
-                                <Input
-                                    placeholder="First Name"
+                                <Input id="fullName"
+                                    placeholder="Full Name"
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
                                 />
-                                <Input
+                                <Input id="email"
                                     placeholder="Email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
-                                <Input
+                                <Input id="city"
                                     placeholder="City"
                                     value={city}
                                     onChange={(e) => setCity(e.target.value)}
                                 />
-                                <Input
+                                <Input id="country"
                                     placeholder="Country"
                                     value={country}
                                     onChange={(e) => setCountry(e.target.value)}
                                 />
-                                <Button onClick={() => setTabValue("user-interests")}>
+                                <Button id="nextBtn" 
+                                onClick={() => setTabValue("user-interests")}>
                                     Next
                                 </Button>
                             </TabsContent>
                         )}
-                        {userInterests && (
+
+                        {!userInterests && (
                             <TabsContent value="user-interests">
                                 <div className="flex gap-8 items-center">
                                     <div className="mb-4">
@@ -276,6 +279,7 @@ export const UserDataModal = () => {
                             </TabsContent>
                         )}
                     </Tabs>
+
                     {fullName && email && city && country && selectedInterests.length > 0 && userId && (
                     <Button onClick={() => {
                         if (!fullName || !email || !city || !country) {
@@ -307,7 +311,6 @@ export const UserDataModal = () => {
                                     })
                                 }
                             }
-
 
                             setTabValue("user-interests");
                         }

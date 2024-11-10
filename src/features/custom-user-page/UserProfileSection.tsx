@@ -181,7 +181,7 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                 window.location.pathname === "/dashboard" && (
                                     <div className="flex gap-4">
                                         <Button onClick={() => setIsSetToEdit(true)}>
-                                            Edit
+                                            Edit BIO
                                         </Button>
                                     </div>
                                 )

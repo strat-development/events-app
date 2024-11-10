@@ -17,7 +17,7 @@ export const EventsSection = () => {
     const [events, setEvents] = useState<{ [date: string]: EventData[] }>({});
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [imageUrls, setImageUrls] = useState<{ [eventId: string]: string }>({});
-    const eventIds = Object.values(events).flat().map((event) => event.id);
+    const eventIds = Object.values(events).flat().map((event) => event.id); 
 
     const handleDateChange = (date: Date) => {
         setSelectedDate(date);

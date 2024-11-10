@@ -130,28 +130,26 @@ export default function EventsPage() {
 
     return (
         <>
-            {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
-                <div className="h-screen flex flex-col items-center">
-                    {memoizedEvents.map((event) => (
-                        <div key={event.id} className="flex flex-col items-center mb-4">
-                            {memoizedImageUrls[event.id] && (
-                                <Image
-                                    src={memoizedImageUrls[event.id]}
-                                    alt={event.event_title || ""}
-                                    width={200}
-                                    height={200}
-                                />
-                            )}
-                            <Link href={`/event-page/${event.id}`}>
-                                <h1 className="text-2xl font-bold">{event.event_title}</h1>
-                            </Link>
-                            <p>{event.starts_at}</p>
-                            <p>{event.event_address}</p>
-                            <p>{event.ticket_price}</p>
-                        </div>
-                    ))}
-                </div>
-            )}
+            <div className="h-screen flex flex-col items-center">
+                {memoizedEvents.map((event) => (
+                    <div key={event.id} className="flex flex-col items-center mb-4">
+                        {memoizedImageUrls[event.id] && (
+                            <Image
+                                src={memoizedImageUrls[event.id]}
+                                alt={event.event_title || ""}
+                                width={200}
+                                height={200}
+                            />
+                        )}
+                        <Link href={`/event-page/${event.id}`}>
+                            <h1 className="text-2xl font-bold">{event.event_title}</h1>
+                        </Link>
+                        <p>{event.starts_at}</p>
+                        <p>{event.event_address}</p>
+                        <p>{event.ticket_price}</p>
+                    </div>
+                ))}
+            </div>
         </>
     );
 }

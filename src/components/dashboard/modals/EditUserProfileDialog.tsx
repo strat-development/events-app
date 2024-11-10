@@ -163,22 +163,22 @@ export const EditUserProfileDialog = () => {
                             Are you sure you want to edit user profile? If not please close this dialog.
                         </DialogDescription>
                     </DialogHeader>
-                    <Input
+                    <Input id="fullName"
                         placeholder="First Name"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                     />
-                    <Input
+                    <Input id="email"
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
-                    <Input
+                    <Input id="city"
                         placeholder="City"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                     />
-                    <Input
+                    <Input id="country"
                         placeholder="Country"
                         value={country}
                         onChange={(e) => setCountry(e.target.value)}

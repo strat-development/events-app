@@ -35,7 +35,7 @@ export const NavComponent = () => {
             ) || (
                     <div className="flex gap-4">
                         <Link href="/dashboard">
-                            <span>Dashboard</span>
+                            <button>Dashboard</button>
                         </Link>
                         <button onClick={(
                             async () => {

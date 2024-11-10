@@ -8,11 +8,16 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
     const { city } = useCityContext();
-    const { userId } = useUserContext();
+    const { userId, userName } = useUserContext();
     const router = useRouter();
 
     if (!userId) {
         router.push('/');
+        return null
+    }
+
+    if (!userName) {
+        router.push('/dashboard');
         return null
     }
 

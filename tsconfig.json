@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/dashboard/modals/DeleteEventDialog.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/dashboard/modals/DeleteEventDialog.tsx", "cypress/e2e/home_page.cy.js", "cypress/support/commands.js"],
   "exclude": ["node_modules"]
 }

@@ -87,7 +87,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
         const { data, error } = await supabase
             .from("event-attendees")
             .delete()
-            .eq("user_id", userId)
+            .eq("attendee_id", userId)
             .eq("event_id", eventId)
 
         if (error) {
