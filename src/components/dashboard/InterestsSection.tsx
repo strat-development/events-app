@@ -211,6 +211,8 @@ export const InterestsSection = () => {
                         id: userId
                     } as UserData)
                 }
+
+                setSelectedInterests([])
             }}>
                 Save Interests
             </Button>

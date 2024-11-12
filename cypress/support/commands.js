@@ -99,7 +99,7 @@ Cypress.Commands.add("editSocials", () => {
     cy.get('input[placeholder="Facebook link..."]').type('https://github.com/ddebixx')
     cy.get('input[placeholder="Instagram link..."]').type('https://github.com/ddebixx')
     cy.get('input[placeholder="Twitter link..."]').type('https://github.com/ddebixx')
-    
+
     cy.get('button').contains('Update socials').click()
 })
 
@@ -107,11 +107,11 @@ Cypress.Commands.add("editInterests", () => {
     cy.get('a').contains('Interests').scrollIntoView().click()
 
     cy.get('body').then($body => {
-            cy.get('button[id^="user-interest-"]').each(($button) => {
-                cy.wrap($button).click()
-            })
+        cy.get('button[id^="user-interest-"]').each(($button) => {
+            cy.wrap($button).click()
+        })
 
-            cy.get('button').contains('Remove Selected').click()
+        cy.get('button').contains('Remove Selected').click()
     })
 
     cy.get('button[id="interest-0"]').each(($button) => {
@@ -130,6 +130,11 @@ Cypress.Commands.add("createGroup", () => {
     cy.get('input[placeholder="Group Country"]').type('Poland')
 
     cy.get('button').contains('Next step').click()
+
+    cy.get('button[id="interest-0"]').each(($button) => {
+        cy.wrap($button).click()
+    })
+
     cy.get('button').contains('Next step').click()
 
     cy.get('div[id="text-editor-toolbar"]').find('button').each(($button, index, $list) => {
@@ -159,3 +164,6 @@ Cypress.Commands.add("createEvent", () => {
     cy.get('button').contains('Create Event').click()
 })
 
+Cypress.Commands.add("visitEvent", () => {
+    cy.get('button').contains('Hosting').click()
+})
