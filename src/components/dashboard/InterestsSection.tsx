@@ -109,13 +109,17 @@ export const InterestsSection = () => {
             <div className="flex gap-2">
                 {userInterests && (
                     userInterests.map((interest, index) => (
-                        <Button onClick={() => handleInterestToRemoveClick(interest)}
-                            key={index} className={`px-4 py-2 border ${interestsToDelete.includes(interest) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+                        <Button onClick={() => {
+                            handleInterestToRemoveClick(interest)
+                            console.log(index)
+                        }
+                        }
+                            id={`user-interest-${index}`}
+                            key={index}
+                            className={`px-4 py-2 border ${interestsToDelete.includes(interest) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
                             {interest}
                         </Button>
                     )))}
-
-
 
                 {interestsToDelete.length > 0 && (
                     <Button onClick={() => {
@@ -166,15 +170,15 @@ export const InterestsSection = () => {
             <div className="flex flex-col gap-4">
                 {interestsData?.["interest-groups"]
                     .filter((group) => selectedGroup === "all" || group["group-name"] === selectedGroup)
-                    .map((group) => (
+                    .map((group, index) => (
                         <div key={group["group-name"]} className="flex flex-col gap-2">
                             <div className="flex gap-2">
                                 {group.interests
                                     .filter((interest) => !selectedInterests.includes(interest.name))
                                     .filter((interest) => interest.name.toLowerCase().includes(searchQuery.toLowerCase()))
                                     .map((interest) => (
-                                        <Button
-                                            key={interest.name}
+                                        <Button key={interest.name}
+                                            id={`interest-${index}`}
                                             className="px-4 py-2 border bg-white text-black"
                                             onClick={() => handleInterestClick(interest.name)}>
                                             {interest.name}
@@ -190,8 +194,7 @@ export const InterestsSection = () => {
                         <h2 className="text-xl font-semibold">Selected Interests</h2>
                         <div className="flex gap-2">
                             {selectedInterests.map((interest) => (
-                                <Button
-                                    key={interest}
+                                <Button key={interest}
                                     className="px-4 py-2 border bg-blue-500 text-white"
                                     onClick={() => handleInterestClick(interest)}>
                                     {interest}

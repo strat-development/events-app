@@ -4,7 +4,11 @@ describe('The Home Page', () => {
             .then(() => {
                 cy.createUserProfile()
                 cy.searchForEvent()
-                cy.editUser()
+                // cy.editUser()
+                cy.editSocials()
+                cy.editInterests()
+                cy.createGroup()
+                cy.createEvent()
             })
     })
 

@@ -77,25 +77,85 @@ Cypress.Commands.add("searchForEvent", () => {
 })
 
 Cypress.Commands.add("editUser", () => {
-    cy.get('button').contains('Edit user').click()
+    cy.get('button').contains('Edit user').scrollIntoView().click()
     cy.get('input[id="fullName"]').type('Test User')
     cy.get('input[id="email"]').type('testemail@mail.com')
     cy.get('input[id="city"]').type('Gdansk')
     cy.get('input[id="country"]').type('Poland')
     cy.get('button').contains('Edit Profile').click()
 
-    cy.get('button').contains('Edit BIO').click()
+    cy.get('button').contains('Edit BIO').scrollIntoView().click()
     cy.get('div[id="text-editor-toolbar"]').find('button').each(($button, index, $list) => {
-        cy.wrap($button).click()
+        cy.wrap($button).scrollIntoView().click()
         cy.get('.tiptap').type(`Test bio ${index + 1}{enter}`)
     })
 
     cy.get('button').contains('Save changes').click()
+})
 
-    cy.get('button').contains('Edit socials').click()
+Cypress.Commands.add("editSocials", () => {
+    cy.get('button').contains('Edit socials').scrollIntoView().click()
 
     cy.get('input[placeholder="Facebook link..."]').type('https://github.com/ddebixx')
     cy.get('input[placeholder="Instagram link..."]').type('https://github.com/ddebixx')
     cy.get('input[placeholder="Twitter link..."]').type('https://github.com/ddebixx')
+    
+    cy.get('button').contains('Update socials').click()
+})
+
+Cypress.Commands.add("editInterests", () => {
+    cy.get('a').contains('Interests').scrollIntoView().click()
+
+    cy.get('body').then($body => {
+            cy.get('button[id^="user-interest-"]').each(($button) => {
+                cy.wrap($button).click()
+            })
+
+            cy.get('button').contains('Remove Selected').click()
+    })
+
+    cy.get('button[id="interest-0"]').each(($button) => {
+        cy.wrap($button).click()
+    })
+
+    cy.get('button').contains('Save Interests').click()
+})
+
+Cypress.Commands.add("createGroup", () => {
+    cy.get('a').contains('Your groups').click()
+
+    cy.get('button').contains('Create Group').click()
+    cy.get('input[placeholder="Group Name"]').type('Test Group')
+    cy.get('input[placeholder="Group City"]').type('Gdańsk')
+    cy.get('input[placeholder="Group Country"]').type('Poland')
+
+    cy.get('button').contains('Next step').click()
+    cy.get('button').contains('Next step').click()
+
+    cy.get('div[id="text-editor-toolbar"]').find('button').each(($button, index, $list) => {
+        cy.wrap($button).scrollIntoView().click()
+        cy.get('.tiptap').type(`Test bio ${index + 1}{enter}`)
+    })
+
+    cy.get('button').contains('Create group').click()
+})
+
+Cypress.Commands.add("visitGroup", () => {
+    cy.get('a').contains('Test group').click()
+})
+
+Cypress.Commands.add("createEvent", () => {
+    cy.get('a').contains('Events').click()
+
+    cy.get('button').contains('Create event').click()
+
+    cy.get('input[placeholder="Event Title"]').type('Test Event')
+    cy.contains('button', 'Select event group').click()
+    cy.contains('div', 'Test Group').click()
+    cy.get('input[placeholder="Event Description"]').type('Test description')
+    cy.get('input[type="datetime-local"]').type('2024-11-30T14:30')
+    cy.get('input[placeholder="Event Address"]').type('Gdańsk, Fajna 15')
+    cy.get('input[placeholder="Ticket Price"]').type('Free')
+    cy.get('button').contains('Create Event').click()
 })
 

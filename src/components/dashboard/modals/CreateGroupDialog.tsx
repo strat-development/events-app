@@ -127,7 +127,8 @@ export const CreateGroupDialog = () => {
                                 <div className="flex gap-4">
                                     <Button onClick={() => setModalStepCount(2)}>Previous step</Button>
                                     {selectedInterests.length > 0 && editorContent.length > 0 && groupCity.length > 0 && groupCountry.length > 0 && groupName.length > 0 && (
-                                        <Button onClick={() => {
+                                        <Button 
+                                        onClick={() => {
                                             createGroupMutation.mutateAsync()
                                             setIsOpen(false);
                                         }}>Create group</Button>

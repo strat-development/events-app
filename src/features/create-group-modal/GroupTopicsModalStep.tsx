@@ -64,14 +64,14 @@ export const GroupTopicsModalStep = () => {
             <div className="flex flex-col gap-4">
                 {interestsData?.["interest-groups"]
                     .filter((group) => selectedGroup === "all" || group["group-name"] === selectedGroup)
-                    .map((group) => (
+                    .map((group, index) => (
                         <div key={group["group-name"]} className="flex flex-col gap-2">
                             <div className="flex gap-2">
                                 {group.interests
                                     .filter((interest) => !selectedInterests.includes(interest.name))
                                     .filter((interest) => interest.name.toLowerCase().includes(searchQuery.toLowerCase()))
                                     .map((interest) => (
-                                        <Button
+                                        <Button id={`interest-${index}`}
                                             key={interest.name}
                                             className="px-4 py-2 border bg-white text-black"
                                             onClick={() => handleInterestClick(interest.name)}>

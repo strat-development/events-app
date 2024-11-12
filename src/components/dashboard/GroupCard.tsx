@@ -10,6 +10,8 @@ import Image from "next/image"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { useUserContext } from "@/providers/UserContextProvider"
 
+
+
 export const GroupCard = () => {
     const supabase = createClientComponentClient<Database>();
     const [groupData, setGroupData] = useState<GroupData[]>([]);
@@ -21,7 +23,9 @@ export const GroupCard = () => {
     useQuery(['groups'], async () => {
         const { data, error } = await supabase
             .from("groups")
-            .select("*");
+            .select("*")
+            .eq("group_owner", ownerId);
+
         if (error) {
             throw error;
         }

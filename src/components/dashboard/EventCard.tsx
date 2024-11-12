@@ -50,7 +50,7 @@ export const EventCard = () => {
             const { data, error } = await supabase
                 .from("events")
                 .select(`*`)
-                .eq('created_by', userId);
+                .eq('created_by', eventCreatorId);
 
             if (error) {
                 console.error("Error fetching events:", error.message);
