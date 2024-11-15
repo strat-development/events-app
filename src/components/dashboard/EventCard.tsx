@@ -11,6 +11,7 @@ import { DeleteEventDialog } from "./modals/DeleteEventDialog"
 import { EditEventDialog } from "./modals/EditEventDialog"
 import Image from "next/image"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
+import { Pagination } from "@mui/material"
 
 export const EventCard = () => {
     const supabase = createClientComponentClient<Database>()
@@ -18,6 +19,9 @@ export const EventCard = () => {
     const { userId } = useUserContext();
     const [attendingVisits, setAttendingVisits] = useState(true)
     const [imageUrls, setImageUrls] = useState<{ [eventId: string]: string }>({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
+
 
     const fetchedEventsByAttendees = useQuery(
         ['eventsByAttendees', userId],
@@ -114,6 +118,18 @@ export const EventCard = () => {
     const memoizedEventsByAttendees = useMemo(() => fetchedEventsByAttendees.data, [fetchedEventsByAttendees.data]);
     const memoizedEventsByHosts = useMemo(() => fetchedEventsByHosts.data, [fetchedEventsByHosts.data]);
 
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    const currentAttendingItems = memoizedEventsByAttendees?.slice(startIndex, endIndex) ?? [];
+    const currentHostItems = memoizedEventsByHosts?.slice(startIndex, endIndex) ?? [];
+
+    const pageCount = Math.ceil((attendingVisits ? (memoizedEventsByAttendees?.length ?? 0) : (memoizedEventsByHosts?.length ?? 0)) / itemsPerPage);
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+        setCurrentPage(page);
+    };
+
     return (
         <div className="flex flex-col gap-4">
             <div className="flex">
@@ -134,7 +150,7 @@ export const EventCard = () => {
             </div>
             <div className="flex gap-4 items-baseline">
                 {attendingVisits && (
-                    memoizedEventsByAttendees?.map((event) => (
+                    currentAttendingItems?.map((event) => (
                         <div key={event.events?.id} className="flex flex-col items-center mb-4">
                             {event.events?.id && imageUrls[event.events.id] && (
                                 <Image
@@ -155,7 +171,7 @@ export const EventCard = () => {
 
             <div className="flex gap-4 items-baseline">
                 {!attendingVisits && (
-                    memoizedEventsByHosts?.map((event) => (
+                    currentHostItems?.map((event) => (
                         <div key={event.id} className="flex flex-col items-center mb-4">
                             {imageUrls[event.id] && (
                                 <Image
@@ -178,6 +194,14 @@ export const EventCard = () => {
                     ))
                 )}
             </div>
+            <Pagination
+                className="self-center"
+                count={pageCount}
+                page={currentPage}
+                onChange={handlePageChange}
+                variant="outlined"
+                color="secondary"
+            />
         </div>
     );
 };

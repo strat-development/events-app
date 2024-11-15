@@ -7,6 +7,7 @@ import { supabaseAdmin } from "@/lib/admin";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
+import { Pagination } from "@mui/material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -28,6 +29,8 @@ export default function EventPhotosAlbumPage({
     const { userId } = useUserContext();
     const { eventCreatorId } = useGroupOwnerContext();
     const router = useRouter();
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
 
     if (!eventCreatorId || !userId) {
         router.push('/');
@@ -157,6 +160,15 @@ export default function EventPhotosAlbumPage({
 
     const memoizedAlbums = useMemo(() => albums, [albums]);
 
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = memoizedAlbums.slice(startIndex, endIndex);
+    const pageCount = Math.ceil(memoizedAlbums.length / itemsPerPage);
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+        setCurrentPage(page);
+    };
+
     return (
         <>
             {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
@@ -166,7 +178,7 @@ export default function EventPhotosAlbumPage({
                     <div className="flex flex-col gap-8 items-center">
                         <UpdateEventImagesAlbumDialog />
                         <div className="grid grid-cols-3 gap-3">
-                            {memoizedAlbums.map((album, index) => (
+                            {currentItems.map((album, index) => (
                                 <div key={index}>
                                     <h2 className="text-xl font-bold">{album.name}</h2>
                                     <div className="grid grid-cols-3 gap-8">
@@ -201,6 +213,14 @@ export default function EventPhotosAlbumPage({
                     </Button>
                 </div>
             )}
+            <Pagination
+                className="self-center"
+                count={pageCount}
+                page={currentPage}
+                onChange={handlePageChange}
+                variant="outlined"
+                color="secondary"
+            />
         </>
     );
 }

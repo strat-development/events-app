@@ -10,6 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import Link from "next/link";
 import Image from "next/image";
 import { UserGroupsSection } from "./UserGroupsSection";
+import { Pagination } from "@mui/material";
 
 export const EventsSection = () => {
     const supabase = createClientComponentClient<Database>();
@@ -17,7 +18,9 @@ export const EventsSection = () => {
     const [events, setEvents] = useState<{ [date: string]: EventData[] }>({});
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [imageUrls, setImageUrls] = useState<{ [eventId: string]: string }>({});
-    const eventIds = Object.values(events).flat().map((event) => event.id); 
+    const eventIds = Object.values(events).flat().map((event) => event.id);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
 
     const handleDateChange = (date: Date) => {
         setSelectedDate(date);
@@ -127,6 +130,16 @@ export const EventsSection = () => {
     const memoizedEvents = useMemo(() => events, [events]);
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
 
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = Object.values(memoizedEvents).flat().slice(startIndex, endIndex);
+    const pageCount = Math.ceil((Object.values(memoizedEvents).flat().length ?? 0) / itemsPerPage);
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+        setCurrentPage(page);
+    };
+
+
     return (
         <>
             <div className="flex gap-16 items-start">
@@ -136,33 +149,39 @@ export const EventsSection = () => {
                 </div>
                 <div className="flex flex-col">
                     <h1>EVENTS</h1>
-                    {Object.entries(memoizedEvents).map(([date, events]) => (
-                        <div key={date} className="flex flex-col gap-8">
-                            <h2 className="text-xl font-bold">{date}</h2>
-                            {events.map((event) => (
-                                <div key={event.id} className="flex gap-4">
-                                    <div className="flex flex-col gap-4">
-                                        {memoizedImageUrls[event.id] && (
-                                            <Image
-                                                src={memoizedImageUrls[event.id]}
-                                                alt=""
-                                                width={200}
-                                                height={200}
-                                            />
-                                        )}
-                                    </div>
-                                    <div className="flex flex-col gap-4">
-                                        <Link href={`/event-page/${event.id}`}>
-                                            <h1 className="text-2xl font-bold">{event.event_title}</h1>
-                                        </Link>
-                                        <p>{event.starts_at}</p>
-                                        <p>{event.event_address}</p>
-                                        <p>{event.ticket_price}</p>
-                                    </div>
+                    {currentItems.map((event: EventData) => (
+                        <div key={event.id} className="flex flex-col gap-8">
+                            <h2 className="text-xl font-bold">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd')}</h2>
+                            <div className="flex gap-4">
+                                <div className="flex flex-col gap-4">
+                                    {memoizedImageUrls[event.id] && (
+                                        <Image
+                                            src={memoizedImageUrls[event.id]}
+                                            alt=""
+                                            width={200}
+                                            height={200}
+                                        />
+                                    )}
                                 </div>
-                            ))}
+                                <div className="flex flex-col gap-4">
+                                    <Link href={`/event-page/${event.id}`}>
+                                        <h1 className="text-2xl font-bold">{event.event_title}</h1>
+                                    </Link>
+                                    <p>{event.starts_at}</p>
+                                    <p>{event.event_address}</p>
+                                    <p>{event.ticket_price}</p>
+                                </div>
+                            </div>
                         </div>
                     ))}
+                    <Pagination
+                        className="self-center"
+                        count={pageCount}
+                        page={currentPage}
+                        onChange={handlePageChange}
+                        variant="outlined"
+                        color="secondary"
+                    />
                 </div>
             </div>
         </>

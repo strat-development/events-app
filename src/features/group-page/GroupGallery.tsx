@@ -5,6 +5,7 @@ import { DeleteGroupAlbumDialog } from "@/components/dashboard/modals/DeleteGrou
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
+import { Pagination } from "@mui/material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -19,6 +20,8 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
     const { userId } = useUserContext();
     const { ownerId } = useGroupOwnerContext();
     const [albums, setAlbums] = useState<any[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['group-picture-albums', groupId],
@@ -73,10 +76,19 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
 
     const memoizedAlbums = useMemo(() => albums, [albums]);
 
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = memoizedAlbums.slice(startIndex, endIndex);
+    const pageCount = Math.ceil(memoizedAlbums.length / itemsPerPage);
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+        setCurrentPage(page);
+    };
+
     return (
         <>
             <div className="grid grid-cols-3 w-full gap-[120px] justify-between">
-                {memoizedAlbums.map((album) => (
+                {currentItems.map((album) => (
                     <div key={album.id}>
                         <Link href={window.location.pathname.includes('dashboard') ? `/dashboard/group-photos-album/${groupId}?albumId=${album.id}` : `/group-photos-album/${groupId}?albumId=${album.id}`}>
                             <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
@@ -87,6 +99,14 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
                         )}
                     </div>
                 ))}
+                <Pagination
+                    className="self-center"
+                    count={pageCount}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    variant="outlined"
+                    color="secondary"
+                />
             </div>
         </>
     );

@@ -7,6 +7,7 @@ import { supabaseAdmin } from "@/lib/admin";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
+import { Pagination } from "@mui/material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useMemo, useState } from "react";
@@ -26,12 +27,14 @@ export default function EventPhotosAlbumPage({
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
     const { userId } = useUserContext();
     const router = useRouter();
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
 
     if (!userId) {
         router.push('/');
         return null
     }
-    
+
     const { data: albumsData, error: albumsError } = useQuery(
         ['event-picture-albums', eventId],
         async () => {
@@ -141,57 +144,56 @@ export default function EventPhotosAlbumPage({
         }
     );
 
-    const handleCheckboxChange = (imageUrl: string) => {
-        setSelectedImages(prevSelectedImages => {
-            const newSelectedImages = new Set(prevSelectedImages);
-            if (newSelectedImages.has(imageUrl)) {
-                newSelectedImages.delete(imageUrl);
-            } else {
-                newSelectedImages.add(imageUrl);
-            }
-            return Array.from(newSelectedImages);
-        });
-    };
-
     const memoizedAlbums = useMemo(() => albums, [albums]);
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = memoizedAlbums.slice(startIndex, endIndex);
+    const pageCount = Math.ceil(memoizedAlbums.length / itemsPerPage);
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+        setCurrentPage(page);
+    };
 
     return (
         <>
-                <div className="h-screen flex flex-col items-center justify-center">
-                    <h1 className="text-3xl font-bold">Event Photos Album</h1>
-                    <EventHero eventId={eventId} />
-                    <div className="flex flex-col gap-8 items-center">
-                        <UpdateEventImagesAlbumDialog />
-                        <div className="grid grid-cols-3 gap-3">
-                            {memoizedAlbums.map((album, index) => (
-                                <div key={index}>
-                                    <h2 className="text-xl font-bold">{album.name}</h2>
-                                    <div className="grid grid-cols-3 gap-8">
-                                        {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
-                                            <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>
-                                                <img src={imageUrl.publicUrl} alt={`Image ${index}`} className="w-full h-auto" />
-                                                <input
-                                                    type="checkbox"
-                                                    className="absolute top-2 right-2"
-                                                    checked={selectedImages.includes(imageUrl.publicUrl ?? '')}
-                                                    onChange={() => handleCheckboxChange(imageUrl.publicUrl ?? '')}
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
+            <div className="h-screen flex flex-col items-center justify-center">
+                <h1 className="text-3xl font-bold">Event Photos Album</h1>
+                <EventHero eventId={eventId} />
+                <div className="flex flex-col gap-8 items-center">
+                    <UpdateEventImagesAlbumDialog />
+                    <div className="grid grid-cols-3 gap-3">
+                        {currentItems.map((album, index) => (
+                            <div key={index}>
+                                <h2 className="text-xl font-bold">{album.name}</h2>
+                                <div className="grid grid-cols-3 gap-8">
+                                    {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
+                                        <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>
+                                            <img src={imageUrl.publicUrl} alt={`Image ${index}`} className="w-full h-auto" />
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
+                        <Pagination
+                            className="self-center"
+                            count={pageCount}
+                            page={currentPage}
+                            onChange={handlePageChange}
+                            variant="outlined"
+                            color="secondary"
+                        />
                     </div>
-                    <Button onClick={() => {
-                        deleteImagesMutation.mutate(Array.from(selectedImages));
-                        setSelectedImages([]);
-                    }
-                    }
-                        disabled={selectedImages.length === 0}>
-                        Delete Selected Images
-                    </Button>
                 </div>
+                <Button onClick={() => {
+                    deleteImagesMutation.mutate(Array.from(selectedImages));
+                    setSelectedImages([]);
+                }
+                }
+                    disabled={selectedImages.length === 0}>
+                    Delete Selected Images
+                </Button>
+            </div>
         </>
     );
 }

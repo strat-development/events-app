@@ -5,9 +5,11 @@ import { DeleteEventAlbumDialog } from "@/components/dashboard/modals/DeleteEven
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
+import { Pagination } from "@mui/material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { use } from "chai";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
 interface EventGalleryProps {
@@ -18,8 +20,10 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
     const supabase = createClientComponentClient<Database>();
 
     const [albums, setAlbums] = useState<any[]>([]);
-    const {eventCreatorId} = useGroupOwnerContext();
-    const {userId} = useUserContext();
+    const { eventCreatorId } = useGroupOwnerContext();
+    const { userId } = useUserContext();
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['event-picture-albums', eventId],
@@ -72,10 +76,21 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
         }
     }, [albumsData, albumsError]);
 
+    const memoizedAlbums = useMemo(() => albums, [albums]);
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = memoizedAlbums.slice(startIndex, endIndex);
+    const pageCount = Math.ceil(memoizedAlbums.length / itemsPerPage);
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+        setCurrentPage(page);
+    };
+
     return (
         <>
             <div className="grid grid-cols-3 w-full gap-[120px] justify-between">
-                {albums.map((album) => (
+                {currentItems.map((album) => (
                     <div key={album.id}>
                         <Link href={window.location.pathname.includes('dashboard') ? `/dashboard/event-photos-album/${eventId}?albumId=${album.id}` : `/event-photos-album/${eventId}?albumId=${album.id}`}>
                             <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
@@ -88,6 +103,14 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
 
                     </div>
                 ))}
+                <Pagination
+                    className="self-center"
+                    count={pageCount}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    variant="outlined"
+                    color="secondary"
+                />
             </div>
         </>
     );

@@ -9,6 +9,7 @@ import { EditGroupDialog } from "./modals/EditGroupModal"
 import Image from "next/image"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { useUserContext } from "@/providers/UserContextProvider"
+import { Pagination } from "@mui/material"
 
 
 
@@ -17,8 +18,10 @@ export const GroupCard = () => {
     const [groupData, setGroupData] = useState<GroupData[]>([]);
     const [imageUrls, setImageUrls] = useState<{ [groupId: string]: string }>({});
     const { ownerId } = useGroupOwnerContext();
-    const { userId } = useUserContext(); 
+    const { userId } = useUserContext();
     const queryClient = useQueryClient();
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
 
     useQuery(['groups'], async () => {
         const { data, error } = await supabase
@@ -85,10 +88,18 @@ export const GroupCard = () => {
 
     const memoizedGroupData = useMemo(() => groupData, [groupData]);
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = memoizedGroupData?.slice(startIndex, endIndex);
+    const pageCount = Math.ceil((memoizedGroupData?.length ?? 0) / itemsPerPage);
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+        setCurrentPage(page);
+    };
 
     return (
         <div className="flex gap-4">
-            {memoizedGroupData?.map((group) => (
+            {currentItems?.map((group) => (
                 <div key={group.id} className="bg-white p-4 rounded-md shadow-md">
                     <Link href={`/dashboard/group-page/${group.id}`} key={group.id}>
                         {memoizedImageUrls[group.id] && (
@@ -112,6 +123,14 @@ export const GroupCard = () => {
                     )}
                 </div>
             ))}
+            <Pagination
+                className="self-center"
+                count={pageCount}
+                page={currentPage}
+                onChange={handlePageChange}
+                variant="outlined"
+                color="secondary"
+            />
         </div>
     );
 };
