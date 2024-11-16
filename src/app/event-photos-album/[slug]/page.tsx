@@ -181,7 +181,20 @@ export default function EventPhotosAlbumPage({
                             page={currentPage}
                             onChange={handlePageChange}
                             variant="outlined"
-                            color="secondary"
+                            sx={{
+                                '& .MuiPaginationItem-root': {
+                                    color: 'white',
+                                    backgroundColor: 'rgba(255, 255, 255, 0)',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                    },
+                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                },
+                                '& .Mui-selected': {
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
+                                    color: 'white',
+                                },
+                            }}
                         />
                     </div>
                 </div>

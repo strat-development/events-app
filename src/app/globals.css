@@ -60,10 +60,14 @@
 }
 
 @layer base {
-  /* * {
+  * {
     @apply border-border;
-  } */
+  }
   body {
     @apply bg-background text-foreground;
+    padding: 0 1rem 0 1rem; 
+    background: linear-gradient(135deg, #0c0c0c, #090a0a);
+    background-blend-mode: overlay;
+    background-size: cover;
   }
 }

@@ -1,8 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
@@ -11,6 +13,7 @@ export const UserGroupsSection = () => {
     const { userId } = useUserContext();
     const [groupId, setGroupId] = useState<string[]>([]);
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
+    const router = useRouter();
 
     const fetchGroupId = useQuery(
         'groupIds',
@@ -95,28 +98,39 @@ export const UserGroupsSection = () => {
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
 
     return (
-        <div className="flex flex-col gap-16 w-fit">
+        <div className="flex gap-8 max-w-[440px] w-full max-[1200px]:overflow-y-scroll min-[1200px]:w-fit min-[1200px]:overflow-x-hidden max-h-[416px]">
             {memoizedGroupsData?.map((group) => (
-                <div key={group.id} className="bg-white p-4 rounded-md shadow-md">
-                    <Link href={`/group-page/${group.id}`}>
-                        <div className="flex gap-4">
-                            <div className="flex flex-col gap-4">
-                                {memoizedImageUrls.map((image) => (
-                                    <Image key={image.publicUrl}
-                                        src={image.publicUrl}
-                                        alt=""
-                                        width={200}
-                                        height={200}
+                <div key={group.id} className="border rounded-md border-white/10 w-full">
+                    <div className="flex w-full gap-4 p-4 h-[192px]">
+                        <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square">
+                            {memoizedImageUrls.length > 0 && (
+                                memoizedImageUrls.map((url) => (
+                                    <Image
+                                        key={url.publicUrl}
+                                        src={url.publicUrl}
+                                        alt="group image"
+                                        width={2000}
+                                        height={2000}
+                                        objectFit="cover"
+                                        className="rounded-md"
                                     />
-                                ))}
-                            </div>
-                            <div className="flex flex-col gap-4">
-                                <h1 className="text-2xl font-bold">{group.group_name}</h1>
-                                <p>{group.group_country}</p>
-                                <p>{group.group_city}</p>
-                            </div>
+                                ))
+                            ) || (
+                                    <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                        <p className="text-center font-medium">No image available 😔</p>
+                                    </div>
+                                )}
                         </div>
-                    </Link>
+                        <div className="flex flex-col gap-2">
+                            <h1 className="text-2xl font-bold line-clamp-2">{group.group_name}</h1>
+                            <div className="flex flex-col gap-1">
+                                <p className="text-lg font-medium text-white/70">{group.group_country}</p>
+                                <p className="text-white/50">{group.group_city}</p>
+                            </div>
+                            <Button className="rounded-md mt-2 w-fit"
+                                onClick={() => router.push(`/group-page/${group.id}`)}>View group</Button>
+                        </div>
+                    </div>
                 </div>
             ))}
         </div>

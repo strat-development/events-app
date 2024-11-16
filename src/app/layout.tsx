@@ -9,6 +9,7 @@ import UserContextProvider from "@/providers/UserContextProvider";
 import GroupDataModalProvider from "@/providers/GroupDataModalProvider";
 import GroupOwnerContextProvider, { GroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import CityContextProvider from "@/providers/cityContextProvider";
+import { Footer } from "@/components/Footer";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -23,7 +24,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`px-4 inter.className`}>
         <SupabaseProvider>
           <QueryClientProvider client={queryClient}>
             <UserContextProvider>
@@ -32,6 +33,7 @@ export default function RootLayout({
                   <CityContextProvider>
                     <Navbar />
                     {children}
+                    <Footer />
                   </CityContextProvider>
                 </GroupOwnerContextProvider>
               </GroupDataModalProvider>

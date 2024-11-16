@@ -5,6 +5,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Button } from "./ui/button";
 
 export const NavComponent = () => {
     const authModal = useModal();
@@ -13,14 +14,14 @@ export const NavComponent = () => {
     const router = useRouter();
 
     return (
-        <nav className="flex justify-between items-center h-[80px] w-full bg-gray-900 text-white">
+        <nav className="flex z-[999999999999999] justify-between items-center p-3 backdrop-blur-lg bg-[#090a0a/20] rounded-lg text-white border border-wihte/10 my-4">
             <div className="flex items-center">
                 <Link href="/"
                     className="text-2xl font-bold ml-4">Logo</Link>
             </div>
 
             {!session.session?.user.role === true && (
-                <div>
+                <div className="flex flex-gap-2">
                     <button onClick={() => {
                         authModal.onOpen();
                     }}>
@@ -33,11 +34,15 @@ export const NavComponent = () => {
                     </button>
                 </div>
             ) || (
-                    <div className="flex gap-4">
-                        <Link href="/dashboard">
-                            <button>Dashboard</button>
-                        </Link>
-                        <button onClick={(
+                    <div className="flex gap-2 items-center">
+                        <Button variant={"ghost"}
+                            onClick={() => {
+                                router.push("/dashboard");
+                            }}>
+                            Dashboard
+                        </Button>
+                        <Button variant={"outline"} 
+                        onClick={(
                             async () => {
                                 await supabase.auth.signOut();
 
@@ -45,7 +50,8 @@ export const NavComponent = () => {
                             }
                         )}>
                             Logout
-                        </button>
+                        </Button>
+
                     </div>
                 )}
             <AuthModal />
