@@ -7,7 +7,6 @@ import { useQuery } from "react-query";
 import stringSimilarity from "string-similarity";
 import { format, startOfToday, parseISO } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import Link from "next/link";
 import Image from "next/image";
 import { UserGroupsSection } from "./UserGroupsSection";
 import { Pagination } from "@mui/material";

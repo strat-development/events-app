@@ -42,7 +42,7 @@ export const EventSearchComponent = ({ city }: EventSearchComponentProps) => {
                     <Input className="rounded-r-none h-[48px] text-lg truncate"
                         id="search"
                         type="text"
-                        placeholder="Search for a business or service"
+                        placeholder="Search for events"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />

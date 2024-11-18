@@ -4,12 +4,12 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
-import { DeleteGroupDialog } from "./modals/DeleteGroupDialog"
-import { EditGroupDialog } from "./modals/EditGroupModal"
 import Image from "next/image"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { Pagination } from "@mui/material"
+import { Button } from "../ui/button"
+import { useRouter } from "next/navigation"
 
 
 
@@ -18,10 +18,10 @@ export const GroupCard = () => {
     const [groupData, setGroupData] = useState<GroupData[]>([]);
     const [imageUrls, setImageUrls] = useState<{ [groupId: string]: string }>({});
     const { ownerId } = useGroupOwnerContext();
-    const { userId } = useUserContext();
     const queryClient = useQueryClient();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
+    const router = useRouter();
 
     useQuery(['groups'], async () => {
         const { data, error } = await supabase
@@ -98,31 +98,37 @@ export const GroupCard = () => {
     };
 
     return (
-        <div className="flex gap-4">
-            {currentItems?.map((group) => (
-                <div key={group.id} className="bg-white p-4 rounded-md shadow-md">
-                    <Link href={`/dashboard/group-page/${group.id}`} key={group.id}>
-                        {memoizedImageUrls[group.id] && (
-                            <Image
-                                src={memoizedImageUrls[group.id]}
-                                alt={group.group_name || ""}
-                                width={200}
-                                height={200}
-                                className="mb-4"
-                            />
-                        )}
-                        <h1>{group.group_name}</h1>
-                        <p>{group.group_city}</p>
-                        <p>{group.group_country}</p>
-                    </Link>
-                    {window.location.pathname.includes("/dashboard") && ownerId === userId && (
-                        <div className="flex gap-4">
-                            <EditGroupDialog groupId={group.id} />
-                            <DeleteGroupDialog groupId={group.id} />
+        <div className="flex flex-col gap-4 items-start">
+            <div className="grid max-[480px]:grid-cols-1 min-[640px]:grid-cols-2 min-[900px]:grid-cols-3 gap-8 items-center">
+                {currentItems.map((group) => (
+                    <div key={group.id} className="flex flex-col gap-2 w-[280px] h-[440px] border rounded-md border-white/10 p-4">
+                        <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                            {group.id && memoizedImageUrls[group.id] ? (
+                                <Image
+                                    src={memoizedImageUrls[group.id]}
+                                    alt={`Group ${group.group_name}`}
+                                    width={200}
+                                    height={200}
+                                    className="object-cover w-full h-full"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                    <p className="text-center font-medium">No image available 😔</p>
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
-            ))}
+                        <div className="flex flex-col gap-1">
+                            <h1 className="text-lg font-bold tracking-wider line-clamp-2">{group.group_name}</h1>
+                            <div className="flex flex-col gap-1">
+                                <p className="text-sm text-white/70">{group.group_country}</p>
+                                <p className="text-sm text-white/60">{group.group_city}</p>
+                            </div>
+                            <Button className="rounded-md mt-2 w-fit text-sm"
+                                onClick={() => router.push(`/group-page/${group.id}`)}>View group</Button>
+                        </div>
+                    </div>
+                ))}
+            </div>
             <Pagination
                 className="self-center"
                 count={pageCount}

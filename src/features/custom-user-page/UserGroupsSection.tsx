@@ -130,34 +130,32 @@ export const UserGroupsSection = () => {
                 <h2 className='text-2xl font-bold'>Owned Groups</h2>
                 <div className="flex gap-8 max-[1200px]:max-w-[100vw] max-[1200px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:w-fit min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
                     {memoizedOwnedGroups?.map((group) => (
-                        <Link href={`/group-page/${group.id}`} key={group.id}>
-                            <div key={group.id} className="border rounded-md border-white/10 w-full">
-                                <div className="flex w-full gap-4 p-4 h-[192px]">
-                                    <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square">
-                                        {memoizedImageUrls[group.id] ? (
-                                            <Image
-                                                className="rounded-md"
-                                                src={memoizedImageUrls[group.id]}
-                                                alt={`Group ${group.group_name}`}
-                                                width={200}
-                                                height={200}
-                                            />
-                                        ) : (
-                                            <span>No image available</span>
-                                        )}
+                        <div key={group.id} className="border rounded-md border-white/10 w-full">
+                            <div className="flex w-full gap-4 p-4 h-[192px]">
+                                <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square">
+                                    {memoizedImageUrls[group.id] ? (
+                                        <Image
+                                            className="rounded-md"
+                                            src={memoizedImageUrls[group.id]}
+                                            alt={`Group ${group.group_name}`}
+                                            width={200}
+                                            height={200}
+                                        />
+                                    ) : (
+                                        <span>No image available</span>
+                                    )}
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <h1 className="text-2xl font-bold line-clamp-2">{group.group_name}</h1>
+                                    <div className="flex flex-col gap-1">
+                                        <p className="text-lg font-medium text-white/70">{group.group_country}</p>
+                                        <p className="text-white/50">{group.group_city}</p>
                                     </div>
-                                    <div className="flex flex-col gap-2">
-                                        <h1 className="text-2xl font-bold line-clamp-2">{group.group_name}</h1>
-                                        <div className="flex flex-col gap-1">
-                                            <p className="text-lg font-medium text-white/70">{group.group_country}</p>
-                                            <p className="text-white/50">{group.group_city}</p>
-                                        </div>
-                                        <Button className="rounded-md mt-2 w-fit"
-                                            onClick={() => router.push(`/group-page/${group.id}`)}>View group</Button>
-                                    </div>
+                                    <Button className="rounded-md mt-2 w-fit"
+                                        onClick={() => router.push(`/group-page/${group.id}`)}>View group</Button>
                                 </div>
                             </div>
-                        </Link>
+                        </div>
                     ))}
                 </div>
             </div>
@@ -166,34 +164,32 @@ export const UserGroupsSection = () => {
                 <h2 className='text-2xl font-bold'>Member Groups</h2>
                 <div className="flex gap-8 max-[1200px]:max-w-[100vw] max-[1200px]:overflow-x-scroll min-[1200px]:w-fit min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
                     {memoizedMemberGroups?.map((group) => (
-                        <Link href={`/group-page/${group.id}`} key={group.id}>
-                            <div key={group.id} className="border rounded-md border-white/10 w-full">
-                                <div className="flex w-full gap-4 p-4 h-[192px]">
-                                    <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square">
-                                        {memoizedImageUrls[group.id] ? (
-                                            <Image
-                                                className="rounded-md"
-                                                src={memoizedImageUrls[group.id]}
-                                                alt={`Group ${group.group_name}`}
-                                                width={200}
-                                                height={200}
-                                            />
-                                        ) : (
-                                            <span>No image available</span>
-                                        )}
+                        <div key={group.id} className="border rounded-md border-white/10 w-full">
+                            <div className="flex w-full gap-4 p-4 h-[192px]">
+                                <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square">
+                                    {memoizedImageUrls[group.id] ? (
+                                        <Image
+                                            className="rounded-md"
+                                            src={memoizedImageUrls[group.id]}
+                                            alt={`Group ${group.group_name}`}
+                                            width={200}
+                                            height={200}
+                                        />
+                                    ) : (
+                                        <span>No image available</span>
+                                    )}
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <h1 className="text-2xl font-bold line-clamp-2">{group.group_name}</h1>
+                                    <div className="flex flex-col gap-1">
+                                        <p className="text-lg font-medium text-white/70">{group.group_country}</p>
+                                        <p className="text-white/50">{group.group_city}</p>
                                     </div>
-                                    <div className="flex flex-col gap-2">
-                                        <h1 className="text-2xl font-bold line-clamp-2">{group.group_name}</h1>
-                                        <div className="flex flex-col gap-1">
-                                            <p className="text-lg font-medium text-white/70">{group.group_country}</p>
-                                            <p className="text-white/50">{group.group_city}</p>
-                                        </div>
-                                        <Button className="rounded-md mt-2 w-fit"
-                                            onClick={() => router.push(`/group-page/${group.id}`)}>View group</Button>
-                                    </div>
+                                    <Button className="rounded-md mt-2 w-fit"
+                                        onClick={() => router.push(`/group-page/${group.id}`)}>View group</Button>
                                 </div>
                             </div>
-                        </Link>
+                        </div>
                     ))}
                 </div>
             </div>

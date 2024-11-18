@@ -1,16 +1,21 @@
 "use client"
 
 import { GroupSection } from "@/components/dashboard/GroupSection";
-import { Navbar } from "@/components/Navbar";
+import { Navbar } from "@/components/dashboard/Navbar";
+import { useUserContext } from "@/providers/UserContextProvider";
 
 export default function YourGroupsPage() {
-
+    const { userId } = useUserContext();
 
     return (
         <>
-            <div className="flex justify-between items-center h-[100vh]">
+            <div className="flex justify-between items-start max-w-[1200px] w-full justify-self-center">
                 <Navbar />
-                <GroupSection />
+                {userId.length > 0 && (
+                    <div className="justify-self-center overflow-x-hidden w-full">
+                        <GroupSection />
+                    </div>
+                )}
             </div>
         </>
     );

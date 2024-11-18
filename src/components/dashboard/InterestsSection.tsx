@@ -104,22 +104,27 @@ export const InterestsSection = () => {
     }
 
     return (
-        <div>
-            <h1 className="text-2xl font-bold">Interests</h1>
+        <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-1">
+                <h1 className="text-2xl font-bold">Interests</h1>
+                <p className="text-white/70">Select to remove</p>
+            </div>
+
             <div className="flex gap-2">
-                {userInterests && (
-                    userInterests.map((interest, index) => (
-                        <Button onClick={() => {
-                            handleInterestToRemoveClick(interest)
-                            console.log(index)
-                        }
-                        }
-                            id={`user-interest-${index}`}
-                            key={index}
-                            className={`px-4 py-2 border ${interestsToDelete.includes(interest) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
-                            {interest}
-                        </Button>
-                    )))}
+                <div className="flex gap-4 flex-wrap">
+                    {userInterests && (
+                        userInterests.map((interest, index) => (
+                            <Button variant="outline"
+                                onClick={() => {
+                                    handleInterestToRemoveClick(interest)
+                                }}
+                                id={`user-interest-${index}`}
+                                key={index}
+                                className={`px-4 py-2 border ${interestsToDelete.includes(interest) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+                                {interest}
+                            </Button>
+                        )))}
+                </div>
 
                 {interestsToDelete.length > 0 && (
                     <Button onClick={() => {
@@ -131,7 +136,7 @@ export const InterestsSection = () => {
                     </Button>
                 )}
             </div>
-            <div className="flex gap-8 items-center">
+            <div className="flex flex-col gap-8 items-start min-[900px]:flex-row">
                 <div className="mb-4">
                     <label htmlFor="group-select" className="block text-lg font-medium">Select Interest Group:</label>
                     <Select
@@ -172,12 +177,13 @@ export const InterestsSection = () => {
                     .filter((group) => selectedGroup === "all" || group["group-name"] === selectedGroup)
                     .map((group, index) => (
                         <div key={group["group-name"]} className="flex flex-col gap-2">
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2">
                                 {group.interests
                                     .filter((interest) => !selectedInterests.includes(interest.name))
                                     .filter((interest) => interest.name.toLowerCase().includes(searchQuery.toLowerCase()))
                                     .map((interest) => (
                                         <Button key={interest.name}
+                                            variant="outline"
                                             id={`interest-${index}`}
                                             className="px-4 py-2 border bg-white text-black"
                                             onClick={() => handleInterestClick(interest.name)}>
@@ -188,11 +194,11 @@ export const InterestsSection = () => {
                         </div>
                     ))}
             </div>
-            <div>
+            <div className="flex flex-col gap-8">
                 {selectedInterests.length > 0 && (
-                    <div>
+                    <div className="flex flex-col gap-4">
                         <h2 className="text-xl font-semibold">Selected Interests</h2>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-4">
                             {selectedInterests.map((interest) => (
                                 <Button key={interest}
                                     className="px-4 py-2 border bg-blue-500 text-white"
@@ -203,19 +209,20 @@ export const InterestsSection = () => {
                         </div>
                     </div>
                 )}
-            </div>
-            <Button onClick={() => {
-                if (userId) {
-                    addInterests.mutateAsync({
-                        user_interests: selectedInterests,
-                        id: userId
-                    } as UserData)
-                }
+                <Button className="w-fit"
+                    onClick={() => {
+                        if (userId) {
+                            addInterests.mutateAsync({
+                                user_interests: selectedInterests,
+                                id: userId
+                            } as UserData)
+                        }
 
-                setSelectedInterests([])
-            }}>
-                Save Interests
-            </Button>
+                        setSelectedInterests([])
+                    }}>
+                    Save Interests
+                </Button>
+            </div>
         </div >
     )
 }

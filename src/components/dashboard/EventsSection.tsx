@@ -20,10 +20,9 @@ export const EventsSection = () => {
     return (
         <div className="flex flex-col gap-4">
             <CreateEventDialog />
+
             {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
-                <div className="flex flex-col gap-8">
-                    <EventCard />
-                </div>
+                <EventCard />
             )}
         </div>
     )

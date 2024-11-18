@@ -3,15 +3,15 @@
 import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import Link from "next/link"
 import { useQuery } from "react-query"
 import { Button } from "../ui/button"
 import { useEffect, useMemo, useState } from "react"
-import { DeleteEventDialog } from "./modals/DeleteEventDialog"
-import { EditEventDialog } from "./modals/EditEventDialog"
 import Image from "next/image"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { Pagination } from "@mui/material"
+import { Ticket } from "lucide-react"
+import { format, parseISO } from "date-fns";
+import { useRouter } from "next/navigation"
 
 export const EventCard = () => {
     const supabase = createClientComponentClient<Database>()
@@ -21,7 +21,7 @@ export const EventCard = () => {
     const [imageUrls, setImageUrls] = useState<{ [eventId: string]: string }>({});
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
-
+    const router = useRouter();
 
     const fetchedEventsByAttendees = useQuery(
         ['eventsByAttendees', userId],
@@ -148,52 +148,80 @@ export const EventCard = () => {
                     Hosting
                 </Button>
             </div>
-            <div className="flex gap-4 items-baseline">
+            <div className="grid max-[480px]:grid-cols-1 min-[640px]:grid-cols-2 min-[900px]:grid-cols-3 gap-8 items-center">
                 {attendingVisits && (
                     currentAttendingItems?.map((event) => (
-                        <div key={event.events?.id} className="flex flex-col items-center mb-4">
-                            {event.events?.id && imageUrls[event.events.id] && (
-                                <Image
-                                    src={imageUrls[event.events.id]}
-                                    alt={event.events.event_title || ""}
-                                    width={200}
-                                    height={200}
-                                />
-                            )}
-                            <Link href={`/dashboard/event-page/${event.events?.id}`}>
-                                <p>{event.events?.event_title}</p>
-                            </Link>
-
+                        <div key={event.events?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">
+                            <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                                {event.events?.id && imageUrls[event.events.id] ? (
+                                    <Image
+                                        src={imageUrls[event.events.id]}
+                                        alt={event.events.event_title || ""}
+                                        width={200}
+                                        height={200}
+                                        className="object-cover w-full max-h-[240px]"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                        <p className="text-center font-medium">No image available 😔</p>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.events?.event_title}</h1>
+                                <div className="flex flex-col gap-1">
+                                    <p className="text-sm text-white/70">{format(parseISO(event.events?.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                    <p className="text-sm text-white/60">{event.events?.event_address}</p>
+                                    <div className="flex gap-2 mt-1">
+                                        <Ticket className="h-4 w-4" />
+                                        <p className="text-sm font-bold tracking-wide text-white/70">{event.events?.ticket_price}</p>
+                                    </div>
+                                </div>
+                                <Button className="rounded-md mt-2 w-fit text-sm"
+                                    onClick={() => router.push(`/event-page/${event.events?.id}`)}>View event</Button>
+                            </div>
                         </div>
                     ))
                 )}
             </div>
 
-            <div className="flex gap-4 items-baseline">
+            <div className="grid max-[480px]:grid-cols-1 min-[640px]:grid-cols-2 min-[900px]:grid-cols-3 gap-8 items-center">
                 {!attendingVisits && (
                     currentHostItems?.map((event) => (
-                        <div key={event.id} className="flex flex-col items-center mb-4">
-                            {imageUrls[event.id] && (
-                                <Image
-                                    src={imageUrls[event.id]}
-                                    alt={event.event_title || ""}
-                                    width={200}
-                                    height={200}
-                                />
-                            )}
-                            <Link href={`/dashboard/event-page/${event.id}`}>
-                                <p>{event.event_title}</p>
-                            </Link>
-                            {window.location.pathname.includes("/dashboard") && eventCreatorId === userId && (
-                                <div className="flex gap-4">
-                                    <EditEventDialog eventId={event.id} />
-                                    <DeleteEventDialog eventId={event.id} />
+                        <div key={event.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">
+                            <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                                {event.id && imageUrls[event.id] ? (
+                                    <Image
+                                        src={imageUrls[event.id]}
+                                        alt={event.event_title || ""}
+                                        width={200}
+                                        height={200}
+                                        className="object-cover w-full max-h-[240px]"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                        <p className="text-center font-medium">No image available 😔</p>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.event_title}</h1>
+                                <div className="flex flex-col gap-1">
+                                    <p className="text-sm text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                    <p className="text-sm text-white/60">{event.event_address}</p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <Ticket className="h-4 w-4" />
+                                        <p className="text-sm font-bold tracking-wide text-white/70">{event.ticket_price}</p>
+                                    </div>
                                 </div>
-                            )}
+                                <Button className="rounded-md mt-2 w-fit text-sm"
+                                    onClick={() => router.push(`/event-page/${event.id}`)}>View event</Button>
+                            </div>
                         </div>
                     ))
                 )}
             </div>
+
             <Pagination
                 className="self-center"
                 count={pageCount}

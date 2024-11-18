@@ -135,7 +135,8 @@ export const CreateEventDialog = () => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button onClick={() => {
+                    <Button className="bg-transparent" 
+                    onClick={() => {
                         fetchGroups.refetch()
                     }}
                         variant="outline">Create event</Button>

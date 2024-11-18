@@ -40,7 +40,7 @@ export const UserInterestsSection = ({ userId }: UserInterestsProps) => {
             <div className="grid grid-cols-2 gap-4 min-[900px]:grid-cols-3">
                 {memoizedUserInterests && (
                     memoizedUserInterests.map((interest, index) => (
-                        <div className="border border-white/10 bg-transparent hover:bg-gradient-to-br hover:from-white/10 hover:to-transparent transition duration-300 p-2 rounded-md text-lg cursor-pointer w-f">
+                        <div className="border border-white/10 bg-gradient-to-br from-white/10 to-transparent transition duration-300 p-2 rounded-md text-lg cursor-pointer w-f">
                             <p key={index}>{interest}</p>
                         </div>
                     )))}

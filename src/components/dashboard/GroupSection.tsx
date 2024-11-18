@@ -19,17 +19,13 @@ export const GroupSection = () => {
 
     return (
         <>
+            <div className="flex flex-col gap-4 pt-24">
+                <CreateGroupDialog />
 
-            <div className="flex gap-16">
-                <Navbar />
-                <div className="flex flex-col gap-4">
-                    <CreateGroupDialog />
-                    {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
-                        <GroupCard />
-                    )}
-                </div>
+                {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
+                    <GroupCard />
+                )}
             </div>
-
         </>
     )
 }

@@ -16,12 +16,14 @@ export default function InterestsPage() {
 
     return (
         <>
-            {userId.length > 0 && (
-                <div className="flex justify-between items-center h-[100vh]">
-                    <Navbar />
-                    <InterestsSection />
-                </div>
-            )}
+            <div className="flex justify-between items-start pt-24 max-w-[1200px] w-full justify-self-center">
+                <Navbar />
+                {userId.length > 0 && (
+                    <div className="justify-self-center overflow-x-hidden w-full px-8">
+                        <InterestsSection />
+                    </div>
+                )}
+            </div>
         </>
     )
 }

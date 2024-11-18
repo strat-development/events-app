@@ -41,7 +41,8 @@ export const NavComponent = () => {
                             }}>
                             Dashboard
                         </Button>
-                        <Button variant={"outline"} 
+                        <Button className="bg-transparent" 
+                        variant={"outline"} 
                         onClick={(
                             async () => {
                                 await supabase.auth.signOut();

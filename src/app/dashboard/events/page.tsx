@@ -2,16 +2,20 @@
 
 import { EventsSection } from "@/components/dashboard/EventsSection";
 import { Navbar } from "@/components/dashboard/Navbar"
+import { useUserContext } from "@/providers/UserContextProvider";
 
 export default function EventPage() {
+    const { userId } = useUserContext();
 
     return (
         <>
-            <div className="flex items-center h-[100vh]">
+            <div className="flex justify-between items-start pt-24 max-w-[1200px] w-full justify-self-center">
                 <Navbar />
-                <div>
-                    <EventsSection />
-                </div>
+                {userId.length > 0 && (
+                    <div className="justify-self-center overflow-x-hidden w-full">
+                        <EventsSection />
+                    </div>
+                )}
             </div>
         </>
     );

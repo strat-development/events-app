@@ -79,7 +79,8 @@ export const CreateGroupDialog = () => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline">Create Group</Button>
+                    <Button className="bg-transparent" 
+                    variant="outline">Create Group</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
