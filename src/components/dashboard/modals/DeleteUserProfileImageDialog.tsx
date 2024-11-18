@@ -71,19 +71,20 @@ export const DeleteUserProfileImageDialog = () => {
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger asChild>
-                    <Trash className="text-red-500" />
+                <DialogTrigger className='absolute top-4 right-4' 
+                asChild>
+                    <Trash className="text-red-500 cursor-pointer" />
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit user</DialogTitle>
+                        <DialogTitle>Delete picture</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to edit user profile? If not please close this dialog.
+                            Are you sure you want to delete your profile picture? If not please close this dialog.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                         <Button variant="destructive"
-                        onClick={() => deleteProfilePicture.mutate()}>Delete Profile Picture</Button>
+                        onClick={() => deleteProfilePicture.mutate()}>Delete Picture</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

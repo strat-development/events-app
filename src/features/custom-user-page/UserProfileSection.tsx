@@ -134,24 +134,40 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
     return (
         <>
             {userId && (
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 max-w-[360px] w-full">
                     {memoizedUserData.data?.map((user) => (
-                        <div className="flex flex-col gap-4"
+                        <div className="flex flex-col gap-4 w-full"
                             key={user.id}>
-                            <div className="flex flex-col gap-4">
-                                <Image src={imageUrls[0]?.publicUrl} alt="profile picture" width={200} height={200} />
+                            <div className="flex flex-col relative items-center aspect-square gap-4 w-full border border-white/10 rounded-md">
+                                {imageUrls && imageUrls.map((image, index) => (
+                                    <Image
+                                        key={index}
+                                        src={image.publicUrl}
+                                        alt="Profile picture"
+                                        width={200}
+                                        height={200}
+                                        className="rounded-md"
+                                    />
+                                )) || (
+                                        <div className="w-full h-full flex items-center justify-center rounded-md bg-white/10">
+                                            <p className="text-white/60">No profile picture</p>
+                                        </div>
+                                    )}
+
                                 {window.location.pathname === "/dashboard" && (
                                     <DeleteUserProfileImageDialog />
                                 )}
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <h2>{user.full_name}</h2>
-                                <p>{user.email}</p>
-                                <p>{user.city}, {user.country}</p>
-                                {window.location.pathname === "/dashboard" && (
-                                    <EditUserProfileDialog />
-                                )}
+                                <div className="flex flex-col gap-4 absolute bottom-4 left-4">
+                                    <div className="flex flex-col gap-1">
+                                        <h2 className="text-xl font-bold tracking-wider">{user.full_name}</h2>
+                                        <p className="text-lg text-white/70">{user.email}</p>
+                                        <p className="text-white/60">{user.city}, {user.country}</p>
+                                    </div>
 
+                                    {window.location.pathname === "/dashboard" && (
+                                        <EditUserProfileDialog />
+                                    )}
+                                </div>
                             </div>
 
                             {isSetToEdit === false && (
@@ -188,8 +204,6 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                             }
                         </div>
                     ))}
-
-
 
                     <div className="flex gap-4">
                         {parsedSocials && Object.entries(parsedSocials).map(([socialsType, value]) => {

@@ -131,7 +131,8 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                         copyEventLink()
                                     }}>
                                     <div className="flex gap-1 items-center">
-                                        <Flag size={16} />
+                                        <Flag strokeWidth={1} 
+                                        size={16} />
                                         <p>Share</p>
                                     </div>
                                 </Button>

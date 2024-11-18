@@ -64,7 +64,7 @@ export const EditSocialsDialog = () => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button>Edit socials</Button>
+                    <Button className="w-fit">Edit socials</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>

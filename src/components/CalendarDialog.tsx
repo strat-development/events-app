@@ -16,7 +16,9 @@ export const CalendarDialog = ({ onDayClick }: CalendarDialogProps) => {
             <Dialog open={isOpen} 
             onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <CalendarIcon className="w-6 h-6 text-black" onClick={() => setIsOpen(true)} />
+                    <CalendarIcon strokeWidth={1}
+                    className="w-6 h-6 text-black" 
+                    onClick={() => setIsOpen(true)} />
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px] flex flex-col items-center">
                     <DialogHeader>

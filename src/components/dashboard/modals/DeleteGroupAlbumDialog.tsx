@@ -26,49 +26,49 @@ export const DeleteGroupAlbumDialog = ({ albumId }: DeleteGroupAlbumDialogProps)
                 .select('image_urls')
                 .eq('id', albumId)
                 .single();
-    
+
             if (fetchError) {
                 if (fetchError.code === 'PGRST116') {
                     throw new Error("Album not found");
                 }
                 throw fetchError;
             }
-    
+
             if (!albumData) {
                 throw new Error("Album data is empty");
             }
-    
+
             const { data: files, error: listError } = await supabaseAdmin.storage
                 .from('group-albums-pictures')
                 .list(albumId, { limit: 100 });
-    
+
             if (listError) {
                 console.error(`Error listing files in folder ${albumId}:`, listError);
                 throw listError;
             }
-    
+
             if (files.length === 0) {
                 console.warn(`No files found in folder ${albumId}`);
             }
-    
+
             const deleteFilePromises = files.map(async (file) => {
                 const { error: deleteFileError } = await supabaseAdmin.storage
                     .from('group-albums-pictures')
                     .remove([`${albumId}/${file.name}`]);
-    
+
                 if (deleteFileError) {
                     console.error(`Error deleting file ${file.name}:`, deleteFileError);
                     throw deleteFileError;
                 }
             });
-    
+
             await Promise.all(deleteFilePromises);
-    
+
             const { error: deleteError } = await supabase
                 .from('group-picture-albums')
                 .delete()
                 .eq('id', albumId);
-    
+
             if (deleteError) {
                 throw deleteError;
             }
@@ -80,7 +80,7 @@ export const DeleteGroupAlbumDialog = ({ albumId }: DeleteGroupAlbumDialogProps)
                     title: "Success",
                     description: "Album deleted successfully",
                 });
-    
+
                 setIsOpen(false);
             },
             onError: (error) => {
@@ -97,7 +97,8 @@ export const DeleteGroupAlbumDialog = ({ albumId }: DeleteGroupAlbumDialogProps)
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Trash className="text-red-500" />
+                    <Trash strokeWidth={1}
+                        className="text-red-500" />
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>

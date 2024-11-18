@@ -3,7 +3,6 @@ import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";

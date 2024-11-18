@@ -14,7 +14,7 @@ export const NavComponent = () => {
     const router = useRouter();
 
     return (
-        <nav className="flex z-[999999999999999] justify-between items-center p-3 backdrop-blur-lg bg-[#090a0a/20] rounded-lg text-white border border-wihte/10 my-4">
+        <nav className="flex z-[999999999999999] justify-between items-center p-2 backdrop-blur-lg bg-[#090a0a/20] rounded-lg text-white border border-wihte/10 max-[1200px]:m-4 my-4">
             <div className="flex items-center">
                 <Link href="/"
                     className="text-2xl font-bold ml-4">Logo</Link>

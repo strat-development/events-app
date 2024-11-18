@@ -11,7 +11,7 @@ export default function UserProfilePage({
         slug: string
     }
 }) {
-    const profileUserId = params.slug;   
+    const profileUserId = params.slug;
     const { userId } = useUserContext();
     const router = useRouter();
 
@@ -21,10 +21,8 @@ export default function UserProfilePage({
     }
 
     return (
-        <div className="flex justify-between items-center h-[100vh]">
-            <div>
-                <CustomUserPage userIdFromUrl={profileUserId} />
-            </div>
+        <div className="mt-24 max-w-[1200px] w-full justify-self-center">
+            <CustomUserPage userIdFromUrl={profileUserId} />
         </div>
     )
 }

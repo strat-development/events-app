@@ -154,7 +154,7 @@ export const EditUserProfileDialog = () => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button>Edit user</Button>
+                    <Button className="w-fit">Edit user</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
