@@ -1,9 +1,12 @@
-import { Github, Instagram, Twitter } from "lucide-react"
+import { Github, Instagram } from "lucide-react"
 import Link from "next/link"
+import { ContactDialog } from "./ContactDialog"
 
 export const Footer = () => {
     return (
         <>
+
+
             <footer className="footer flex justify-between gap-8 flex-wrap bg-base-200 text-base-content mt-24 mb-4 max-w-[1200px] justify-self-center w-full">
                 <nav className="flex flex-col gap-2">
                     <h6 className="text-lg font-bold">Services</h6>
@@ -20,8 +23,7 @@ export const Footer = () => {
                     <h6 className="text-lg font-bold">Company</h6>
                     <Link className="text-white/70"
                         href="/">About us</Link>
-                    <Link className="text-white/70"
-                        href="/">Contact</Link>
+                    <ContactDialog />
                     <Link className="text-white/70"
                         href="/">Jobs</Link>
                     <Link className="text-white/70"
@@ -39,7 +41,7 @@ export const Footer = () => {
             </footer>
             <footer className="footer bg-base-200 text-base-content border-base-300 border-t flex gap-4 justify-between flex-wrap border-white/10 py-4 max-w-[1200px] justify-self-center w-full">
                 <aside className="flex flex-col gap-2">
-                   LOGO
+                    LOGO
                     <p className="text-white/30 text-sm">
                         strat.dev
                         <br />

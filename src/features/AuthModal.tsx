@@ -60,11 +60,7 @@ export const AuthModal = () => {
                         theme: ThemeSupa,
                         variables: {
                             default: {
-                                colors: {
-                                    brand: '#854FF3',
-                                    brandAccent: "#8e5cf1",
-                                    inputText: "#FF",
-                                }
+
                             }
                         }
                     }}
