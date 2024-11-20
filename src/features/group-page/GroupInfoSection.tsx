@@ -12,6 +12,7 @@ import { useUserContext } from "@/providers/UserContextProvider"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 interface GroupInfoSectionProps {
     groupId: string
@@ -27,6 +28,7 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
     const { ownerId } = useGroupOwnerContext()
+    const router = useRouter()
 
     useQuery(['groups-description'], async () => {
         const { data, error } = await supabase
@@ -116,6 +118,7 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                 .from("group-members")
                 .select(`users (*)`)
                 .eq("group_id", groupId)
+                .limit(4)
 
             if (error) {
                 throw new Error(error.message)
@@ -212,7 +215,7 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                 <div className="flex flex-col gap-4">
                     <h2 className='text-2xl font-bold'>Members</h2>
                     <div className='grid grid-cols-4'>
-                        {memoizedGroupMembers?.map((member) => (
+                        {memoizedGroupMembers?.slice(0, 3).map((member) => (
                             <Link href={`/user-profile/${member.users?.id}`} key={member.users?.id}>
                                 <div key={member.users?.id}
                                     className='flex flex-col gap-2 items-center border p-4 rounded-lg'>
@@ -225,6 +228,14 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                                 </div>
                             </Link>
                         ))}
+                        {memoizedGroupMembers && memoizedGroupMembers?.length > 3 && (
+                            <Button
+                                variant="outline"
+                                onClick={() => router.push(`/group-members/${groupId}`)}
+                            >
+                                More
+                            </Button>
+                        )}
                     </div>
                 </div>
             </div>

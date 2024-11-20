@@ -99,7 +99,7 @@ export const GroupCard = () => {
 
     return (
         <div className="flex flex-col gap-4 items-start">
-            <div className="grid max-[480px]:grid-cols-1 min-[640px]:grid-cols-2 min-[900px]:grid-cols-3 gap-8 items-center">
+            <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                 {currentItems.map((group) => (
                     <div key={group.id} className="flex flex-col gap-2 w-[280px] h-[440px] border rounded-md border-white/10 p-4">
                         <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">

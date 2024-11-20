@@ -148,7 +148,7 @@ export const EventCard = () => {
                     Hosting
                 </Button>
             </div>
-            <div className="grid max-[480px]:grid-cols-1 min-[640px]:grid-cols-2 min-[900px]:grid-cols-3 gap-8 items-center">
+            <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                 {attendingVisits && (
                     currentAttendingItems?.map((event) => (
                         <div key={event.events?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">
@@ -185,7 +185,7 @@ export const EventCard = () => {
                 )}
             </div>
 
-            <div className="grid max-[480px]:grid-cols-1 min-[640px]:grid-cols-2 min-[900px]:grid-cols-3 gap-8 items-center">
+            <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                 {!attendingVisits && (
                     currentHostItems?.map((event) => (
                         <div key={event.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">

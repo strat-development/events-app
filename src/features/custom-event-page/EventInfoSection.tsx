@@ -12,6 +12,7 @@ import { useUserContext } from "@/providers/UserContextProvider"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 interface EventInfoSectionProps {
     eventId: string
@@ -30,6 +31,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
     const { eventCreatorId } = useGroupOwnerContext()
+    const router = useRouter()
 
     useQuery(['events-description'], async () => {
         const { data, error } = await supabase
@@ -61,7 +63,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                     *
                 )`)
                 .eq("event_id", eventId)
-                .limit(3)
+                .limit(4)
 
             if (error) {
                 throw new Error(error.message)
@@ -172,7 +174,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
         if (error) {
             throw error;
         }
-        
+
         const urlMap: Record<string, string> = {};
         if (data) {
             await Promise.all(
@@ -240,22 +242,34 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                     }
                 </div>
                 <div className="flex flex-col gap-4">
+
                     <h2 className='text-2xl font-bold'>Attendees</h2>
-                    <div className='grid grid-cols-4'>
-                        {memoizedEventAttendeesData.data?.map((attendee) => (
-                            <Link href={`/user-profile/${attendee.users?.id}`} key={attendee.users?.id}>
-                                <div key={attendee.users?.id}
-                                    className='flex flex-col gap-2 items-center border p-4 rounded-lg'>
-                                    <Image className="rounded-full shadow-xl"
-                                        src={attendee.users?.id ? profileImageUrls[attendee.users.id] : ''} width={50} height={50} alt="" />
-                                    <span className=''>{attendee.users?.full_name}</span>
-                                    {attendee.users?.id === eventHostId && (
-                                        <span className='text-sm text-red-500'>Host</span>
-                                    )}
-                                </div>
-                            </Link>
-                        ))}
+                    <div className="flex gap-4">
+                        <div className='flex gap-4'>
+                            {memoizedEventAttendeesData.data?.slice(0, 3).map((attendee) => (
+                                <Link href={`/user-profile/${attendee.users?.id}`} key={attendee.users?.id}>
+                                    <div key={attendee.users?.id}
+                                        className='flex flex-col gap-2 items-center border p-4 rounded-lg'>
+                                        <Image className="rounded-full shadow-xl"
+                                            src={attendee.users?.id ? profileImageUrls[attendee.users.id] : ''} width={50} height={50} alt="" />
+                                        <span className=''>{attendee.users?.full_name}</span>
+                                        {attendee.users?.id === eventHostId && (
+                                            <span className='text-sm text-red-500'>Host</span>
+                                        )}
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                        {memoizedEventAttendeesData.data && memoizedEventAttendeesData.data.length > 3 && (
+                            <Button
+                                variant="outline"
+                                onClick={() => router.push(`/event-attendees/${eventId}`)}
+                            >
+                                More
+                            </Button>
+                        )}
                     </div>
+
                 </div>
                 <div>
                     <h2 className='text-2xl font-bold'>Group Info</h2>
