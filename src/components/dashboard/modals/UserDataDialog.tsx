@@ -48,8 +48,6 @@ export const UserDataModal = () => {
     const [searchQuery, setSearchQuery] = useState<string>("")
     const [userInterests, setUserInterests] = useState<string[]>([])
 
-    console.log("fullName", fullName)
-
     const addUserData = useMutation(
         async (newUserData: UserData[]) => {
             await supabase

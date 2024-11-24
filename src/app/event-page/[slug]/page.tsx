@@ -15,13 +15,13 @@ export default function EventPage({
     const { userId } = useUserContext();
     const router = useRouter();
 
-    if (!userId) {
-        router.push('/');
-        return null
-    }
+    // if (!userId) {
+    //     router.push('/');
+    //     return null
+    // }
 
     return (
-        <div className="flex justify-between items-center h-[100vh]">
+        <div className="flex justify-center items-center min-h-screen">
             <CustomEventPage eventId={eventId} />
         </div>
     );

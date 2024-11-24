@@ -1,7 +1,7 @@
 import { EventNavbar } from "@/components/EventNavbar"
-import { EventsSection } from "../group-page/EventsSection"
 import { EventHero } from "./EventHero"
 import { EventInfoSection } from "./EventInfoSection"
+import { EventInfoSidebar } from "./EventInfoSidebar"
 
 
 interface EventPageProps {
@@ -13,12 +13,19 @@ export const CustomEventPage = ({
 }: EventPageProps) => {
     return (
         <>
-            <div className="w-full min-h-screen">
-                <div className="flex flex-col gap-8 items-center w-full relative top-24">
-                    <EventHero eventId={eventId} />
-                    <EventInfoSection eventId={eventId} />
+            <div className="max-w-[1200px] w-full justify-self-center">
+                <div className="flex justify-between pb-24">
+                    <div className="flex flex-col gap-8 items-center min-h-screen w-full relative top-24">
+                        <EventHero eventId={eventId} />
+                        <EventInfoSection eventId={eventId} />
+                    </div>
+                    <div className="w-[30%] max-[900px]:hidden">
+                        <EventInfoSidebar eventId={eventId} />  
+                    </div>
                 </div>
-                <EventNavbar eventId={eventId} />
+                <div className="sticky bottom-0">
+                    <EventNavbar eventId={eventId} />
+                </div>
             </div>
         </>
     )

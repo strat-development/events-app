@@ -13,6 +13,7 @@ import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Database } from "@/types/supabase"
+import { format, parseISO } from "date-fns"
 
 interface EventHeroProps {
     eventId: string
@@ -25,12 +26,11 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
     const { eventCreatorId } = useGroupOwnerContext()
 
     const [eventData, setEventData] = useState<EventData[]>()
+    const groupId = eventData?.[0].event_group
     const [eventNameToEdit, setEventNameToEdit] = useState(false)
     const [newEventName, setNewEventName] = useState("")
-    const [eventAddressToEdit, setEventAddressToEdit] = useState(false)
-    const [newEventAddress, setNewEventAddress] = useState("")
-    const [attendeesData, setEventAttendeessData] = useState<EventAttendeesData[]>()
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
+    const [groupImageUrls, setGroupImageUrls] = useState<{ publicUrl: string }[]>([]);
 
     useQuery(['events'], async () => {
         const { data, error } = await supabase
@@ -50,26 +50,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
             cacheTime: 10 * 60 * 1000,
         })
 
-    useQuery(['event-members'], async () => {
-        const { data, error } = await supabase
-            .from("event-attendees")
-            .select(`
-                users (
-                    *
-                )`)
-            .eq("event_id", eventId)
 
-        if (error) {
-            throw error
-        }
-
-        if (data) {
-            setEventAttendeessData(data as unknown as EventAttendeesData[])
-        }
-    },
-        {
-            cacheTime: 10 * 60 * 1000,
-        })
 
     const editEventNameMutation = useMutation(async (newEventName: string) => {
         const { data, error } = await supabase
@@ -97,36 +78,6 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
             toast({
                 title: "Error",
                 description: "An error occurred while changing the event name",
-            });
-        }
-    })
-
-    const editEventAddressMutation = useMutation(async () => {
-        const { data, error } = await supabase
-            .from("events")
-            .update({ event_address: newEventAddress })
-            .eq("created_by", userId)
-            .eq("id", eventId)
-        if (error) {
-            throw error
-        }
-
-        if (data) {
-            setEventAddressToEdit(false)
-        }
-    }, {
-        onSuccess: () => {
-            toast({
-                title: "Success",
-                description: "Event location changed successfully",
-            });
-
-            queryClient.invalidateQueries('events')
-        },
-        onError: () => {
-            toast({
-                title: "Error",
-                description: "An error occurred while changing the event location",
             });
         }
     })
@@ -302,50 +253,82 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
         }
     }, [images]);
 
+    const groupInfo = useQuery(
+        ['group-info'],
+        async () => {
+            const { data, error } = await supabase
+                .from("groups")
+                .select("group_name, group_country, group_city")
+                .eq("id", groupId || "")
+
+            if (error) {
+                throw new Error(error.message)
+            }
+
+            return data
+        },
+        {
+            enabled: !!groupId,
+            cacheTime: 10 * 60 * 1000,
+        })
+
+    const { data: groupImages } = useQuery(
+        ['group-pictures', groupId],
+        async () => {
+            const { data, error } = await supabase
+                .from('group-pictures')
+                .select('*')
+                .eq('group_id', groupId as string)
+            if (error) {
+                throw error;
+            }
+            return data || [];
+        },
+        {
+            enabled: !!groupId,
+            cacheTime: 10 * 60 * 1000,
+        }
+    );
+
+    useEffect(() => {
+        if (groupImages) {
+            Promise.all(groupImages.map(async (image) => {
+                const { data: publicURL } = await supabase.storage
+                    .from('group-pictures')
+                    .getPublicUrl(image.hero_picture_url || "")
+
+                return { publicUrl: publicURL.publicUrl };
+
+            }))
+                .then((publicUrls) => setGroupImageUrls(publicUrls))
+                .catch(console.error);
+        }
+    }, [groupImages]);
+
     const memoizedEventData = useMemo(() => eventData, [eventData]);
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
-    const memoizedAttendeesData = useMemo(() => attendeesData, [attendeesData]);
+    const memoizedGroupInfo = useMemo(() => groupInfo, [groupInfo])
+    const memoizedGroupImages = useMemo(() => groupImageUrls, [groupImageUrls])
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 max-w-[1200px] w-full justify-self-center">
             {memoizedEventData?.map((event) => (
-                <div key={event.id} className="bg-white p-4 rounded-md shadow-md">
+                <div key={event.id} className="rounded-md flex justify-between relative">
                     <div className="flex flex-col gap-4">
-                        <div className="flex gap-4">
-                            <div className="flex flex-col gap-4">
-                                {memoizedImageUrls.map((image) => (
-                                    <Image key={image.publicUrl}
-                                        src={image.publicUrl}
-                                        alt=""
-                                        width={200}
-                                        height={200}
-                                    />
-                                ))}
+                        <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-2">
+                                <div className="flex gap-4">
+                                    <h1 className="text-3xl tracking-wider font-bold">{event.event_title}</h1>
 
-                                {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
-                                    images?.length ?? 0) > 0 && (
-                                        <div className="flex gap-4">
-                                            <Button variant={"destructive"}
-                                                onClick={() => {
-                                                    if (images) {
-                                                        if (images[0].hero_picture_url) {
-                                                            deleteGroupPicture.mutateAsync(images[0].hero_picture_url);
-                                                        }
-                                                    }
-                                                }}>Delete</Button>
-                                        </div>
+                                    {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !eventNameToEdit && (
+                                        <Button onClick={() => setEventNameToEdit(true)}>Edit</Button>
                                     )}
+                                </div>
+                                <div className="flex flex-col gap-1 min-[900px]:hidden">
+                                    <p className="text-lg text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                    <p className="text-white/60">{event.event_address}</p>
+                                </div>
                             </div>
-                        </div>
-                
-                        <div className="flex gap-4">
-                            <h1>{event.event_title}</h1>
-
-                            {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !eventNameToEdit && (
-                                <Button onClick={() => setEventNameToEdit(true)}>Edit</Button>
-                            )}
-                        </div>
-                        <div>
                             {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && eventNameToEdit && (
                                 <div className="flex gap-4">
                                     <Input placeholder="New event name"
@@ -360,66 +343,83 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                                     }}>Save</Button>
                                 </div>
                             )}
-                        </div>
-                    </div>
 
-                    <div className="flex flex-col gap-4">
-                        <div className="flex gap-2">
-                            <p>{event.event_address}</p>
-                            {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !eventAddressToEdit && (
-                                <Button onClick={() => setEventAddressToEdit(true)}>
-                                    Edit
-                                </Button>
-                            )}
-                        </div>
-                        <div>
-                            {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && eventAddressToEdit && (
-                                <div className="flex gap-4">
-                                    <Input placeholder="New event address"
-                                        value={newEventAddress}
-                                        onChange={(e) => setNewEventAddress(e.target.value)}
-                                    />
-                                    <Button onClick={() => setEventAddressToEdit(false)}>Cancel</Button>
-                                    <Button onClick={() => {
-                                        editEventAddressMutation.mutateAsync()
-
-                                        setEventAddressToEdit(false)
-                                    }}>Save</Button>
+                            <Link className="min-[900px]:hidden"
+                                href={`/group-page/${groupId}`}>
+                                <div className='flex gap-4 items-start'>
+                                    {memoizedGroupImages?.map((image) => (
+                                        <Image className="max-w-[48px] min-[900px]:max-w-[72px] rounded-md"
+                                            key={image.publicUrl}
+                                            src={image.publicUrl}
+                                            alt=""
+                                            width={200}
+                                            height={200}
+                                        />
+                                    ))}
+                                    <div className="flex flex-col">
+                                        <h3 className="text-xl font-bold tracking-wider">{memoizedGroupInfo.data?.[0].group_name}</h3>
+                                        <p className="text-white/70">{memoizedGroupInfo.data?.[0].group_country}, {memoizedGroupInfo.data?.[0].group_city}</p>
+                                    </div>
                                 </div>
-                            )}
+                            </Link>
                         </div>
-                    </div>
 
-                    <div>
-                        {memoizedAttendeesData?.map((member) => (
-                            <div key={member.id}>
-                                <p>Attendees count: {attendeesData?.length || 0}</p>
+                        <div className="flex gap-4">
+                            <div className="flex flex-col gap-4">
+                                {memoizedImageUrls.map((image) => (
+                                    <Image className="aspect-square min-[768px]:aspect-video object-contain"
+                                        key={image.publicUrl}
+                                        src={image.publicUrl}
+                                        alt=""
+                                        width={2000}
+                                        height={2000}
+                                    />
+                                ))}
+
+                                {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
+                                    images?.length ?? 0) > 0 && (
+                                        <div className="flex gap-4">
+                                            <Button variant={"destructive"}
+                                                onClick={() => {
+                                                    if (images) {
+                                                        if (images[0].hero_picture_url) {
+                                                            deleteGroupPicture.mutateAsync(images[0].hero_picture_url);
+                                                        }
+                                                    }
+                                                }}>Delete picture</Button>
+                                        </div>
+                                    )}
                             </div>
-                        ))}
+                        </div>
                     </div>
                 </div>
-            ))}
+            ))
+            }
 
             {window.location.pathname.includes("dashboard") && (
                 <div className="flex gap-4">
-                    <Link href={`/dashboard/event-page/${eventId}`}>
+                    <Link className="tracking-wider text-lg active:underline"
+                        href={`/dashboard/event-page/${eventId}`}>
                         About
                     </Link>
-                    <Link href={`/dashboard/event-photos/${eventId}`}>
+                    <Link className="tracking-wider text-lg active:underline"
+                        href={`/dashboard/event-photos/${eventId}`}>
                         Photos
                     </Link>
                 </div>
             ) || (
                     <div className="flex gap-4">
-                        <Link href={`/event-page/${eventId}`}>
+                        <Link className="tracking-wider text-lg active:underline"
+                            href={`/event-page/${eventId}`}>
                             About
                         </Link>
-                        <Link href={`/event-photos/${eventId}`}>
+                        <Link className="tracking-wider text-lg active:underline"
+                            href={`/event-photos/${eventId}`}>
                             Photos
                         </Link>
                     </div>
                 )}
-        </div>
+        </div >
     )
 }
 

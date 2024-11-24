@@ -1,6 +1,6 @@
 "use client"
 
-import { Flag } from "lucide-react"
+import { Flag, Ticket } from "lucide-react"
 import { Button } from "./ui/button"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Database } from "@/types/supabase"
@@ -10,6 +10,7 @@ import { useMutation, useQuery } from "react-query"
 import { useMemo, useState } from "react"
 import { EventData } from "@/types/types"
 import { useUserContext } from "@/providers/UserContextProvider"
+import { format, parseISO } from "date-fns";
 
 interface EventNavbarProps {
     eventId: string
@@ -21,7 +22,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
     const [attendeeData, setAttendeeData] = useState<string[]>([])
     const { userId } = useUserContext()
 
-    useQuery(['event-data'], async () => {
+    useQuery(['event-navbar-data'], async () => {
         const { data, error } = await supabase
             .from("events")
             .select("*")
@@ -115,24 +116,26 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
 
     return (
         <>
-            <div className="sticky bottom-0 py-4 flex justify-center items-center w-full border-t-2 bg-white">
-                <div className="flex max-w-[1200px] w-full self-center justify-between">
+            <div className="py-4 flex justify-center items-center w-full border-t-2 border-t-white/10 bg-gradient-to-br from-[#0c0c0c] to-[#090a0a]">
+                <div className="flex max-w-[1200px] w-full self-center justify-between items-center">
                     {memoizedEventData?.map((event) => (
                         <>
-                            <div>
-                                <p>{event.starts_at}</p>
-                                <p>{event.event_address}</p>
-
+                            <div className="flex flex-col">
+                                <p className="text-lg font-medium">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                <p className="text-white/70">{event.event_address}</p>
                             </div>
                             <div className="flex gap-4">
-                                <p>{event.ticket_price}</p>
+                                <div className="flex gap-2 mt-1 items-center">
+                                    <Ticket className="h-4 w-4" />
+                                    <p className="text-sm font-bold tracking-wide text-white/70">{event.ticket_price}</p>
+                                </div>
                                 <Button variant="outline"
                                     onClick={() => {
                                         copyEventLink()
                                     }}>
                                     <div className="flex gap-1 items-center">
-                                        <Flag strokeWidth={1} 
-                                        size={16} />
+                                        <Flag strokeWidth={1}
+                                            size={16} />
                                         <p>Share</p>
                                     </div>
                                 </Button>

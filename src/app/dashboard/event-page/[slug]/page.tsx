@@ -25,10 +25,12 @@ export default function EventPage({
     }
 
     return (
-        <div className="flex justify-between items-center h-[100vh]">
+        <div className="max-w-[1200px] w-full flex justify-self-center justify-center items-center min-h-screen">
+            <div className="self-start sticky top-24">
+                <Navbar />
+            </div>
             {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 &&
                 <>
-                    <Navbar />
                     <CustomEventPage eventId={eventId} />
                 </>
             }

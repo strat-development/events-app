@@ -16,10 +16,10 @@ export default function GroupPage({
     const { userId } = useUserContext();
     const router = useRouter();
 
-    if (!userId) {
-        router.push('/');
-        return null
-    }
+    // if (!userId) {
+    //     router.push('/');
+    //     return null
+    // }
 
     return (
         <>

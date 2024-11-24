@@ -25,15 +25,16 @@ export default function GroupPage({
     }
 
     return (
-        <>
+        <div className="max-w-[1200px] w-full flex justify-self-center justify-center items-center min-h-screen">
+            <div className="self-start sticky top-24">
+                <Navbar />
+            </div>
+
             {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
-                <div className="w-full min-h-screen flex items-center">
-                    <Navbar />
-                    <div className="flex justify-between items-center h-[100vh]">
-                        <CustomGroupPage groupId={groupId} />
-                    </div>
-                </div>
+                <>
+                    <CustomGroupPage groupId={groupId} />
+                </>
             )}
-        </>
+        </div>
     );
 }

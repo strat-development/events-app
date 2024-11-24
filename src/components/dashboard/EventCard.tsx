@@ -215,7 +215,7 @@ export const EventCard = () => {
                                     </div>
                                 </div>
                                 <Button className="rounded-md mt-2 w-fit text-sm"
-                                    onClick={() => router.push(`/event-page/${event.id}`)}>View event</Button>
+                                    onClick={() => router.push(`/dashboard/event-page/${event.id}`)}>View event</Button>
                             </div>
                         </div>
                     ))

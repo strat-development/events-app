@@ -21,17 +21,14 @@ interface EventInfoSectionProps {
 export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const supabase = createClientComponentClient<Database>()
     const [eventDescription, setEventDescription] = useState<string>()
-    const [eventGroup, setEventGroup] = useState<string>()
-    const [isExpanded, setIsExpanded] = useState(false)
+    const [isExpanded, setIsExpanded] = useState(false) 
     const [isSetToEdit, setIsSetToEdit] = useState(false)
     const [eventHostId, setEventHostId] = useState<string>()
     const [attendeesId, setAttendeesId] = useState<string[]>([])
-    const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([])
     const [profileImageUrls, setProfileImageUrls] = useState<Record<string, string>>({});
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
     const { eventCreatorId } = useGroupOwnerContext()
-    const router = useRouter()
 
     useQuery(['events-description'], async () => {
         const { data, error } = await supabase
@@ -45,7 +42,6 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
 
         if (data) {
             setEventDescription(data[0].event_description as string)
-            setEventGroup(data[0].event_group as string)
             setEventHostId(data[0].created_by as string)
         }
     },
@@ -113,58 +109,6 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
             }
         })
 
-    const groupInfo = useQuery(
-        ['group-info'],
-        async () => {
-            const { data, error } = await supabase
-                .from("groups")
-                .select("group_name, group_country, group_city")
-                .eq("id", eventGroup as string)
-
-            if (error) {
-                throw new Error(error.message)
-            }
-
-            return data
-        },
-        {
-            enabled: !!eventGroup,
-            cacheTime: 10 * 60 * 1000,
-        })
-
-    const { data: images, isLoading } = useQuery(
-        ['group-pictures', eventGroup],
-        async () => {
-            const { data, error } = await supabase
-                .from('group-pictures')
-                .select('*')
-                .eq('group_id', eventGroup as string)
-            if (error) {
-                throw error;
-            }
-            return data || [];
-        },
-        {
-            enabled: !!eventGroup,
-            cacheTime: 10 * 60 * 1000,
-        }
-    );
-
-    useEffect(() => {
-        if (images) {
-            Promise.all(images.map(async (image) => {
-                const { data: publicURL } = await supabase.storage
-                    .from('group-pictures')
-                    .getPublicUrl(image.hero_picture_url || "")
-
-                return { publicUrl: publicURL.publicUrl };
-
-            }))
-                .then((publicUrls) => setImageUrls(publicUrls))
-                .catch(console.error);
-        }
-    }, [images]);
-
     const { data: profileImages } = useQuery(['profile-pictures', attendeesId], async () => {
         const { data, error } = await supabase
             .from('profile-pictures')
@@ -194,12 +138,12 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     });
 
     const memoizedEventAttendeesData = useMemo(() => eventAttendees, [eventAttendees])
-    const memoizedGroupInfo = useMemo(() => groupInfo, [groupInfo])
+    const memoizedProfileImages = useMemo(() => profileImageUrls, [profileImageUrls])
 
     return (
         <>
-            <div className="flex gap-8">
-                <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-8 max-w-[1200px] w-full justify-self-center">
+                <div className="flex flex-col gap-4 px-8">
                     <h2 className='text-2xl font-bold'>Little bit about us</h2>
                     <div className='relative'>
                         {isSetToEdit === false && (
@@ -242,17 +186,19 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                     }
                 </div>
                 <div className="flex flex-col gap-4">
-
-                    <h2 className='text-2xl font-bold'>Attendees</h2>
-                    <div className="flex gap-4">
+                    <h2 className='text-2xl font-bold tracking-wider'>Event attendees</h2>
+                    <div className="flex gap-4 w-full overflow-x-auto">
                         <div className='flex gap-4'>
                             {memoizedEventAttendeesData.data?.slice(0, 3).map((attendee) => (
                                 <Link href={`/user-profile/${attendee.users?.id}`} key={attendee.users?.id}>
                                     <div key={attendee.users?.id}
-                                        className='flex flex-col gap-2 items-center border p-4 rounded-lg'>
-                                        <Image className="rounded-full shadow-xl"
-                                            src={attendee.users?.id ? profileImageUrls[attendee.users.id] : ''} width={50} height={50} alt="" />
-                                        <span className=''>{attendee.users?.full_name}</span>
+                                        className='flex flex-col gap-2 items-center border border-white/10 p-4 rounded-md text-center w-[144px]'>
+                                        {attendee.users?.id && memoizedProfileImages[attendee.users.id] && (
+                                            <Image src={memoizedProfileImages[attendee.users?.id]} width={50} height={50} alt="" />
+                                        ) || (
+                                                <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                                            )}
+                                        <span className='font-medium w-full'>{attendee.users?.full_name}</span>
                                         {attendee.users?.id === eventHostId && (
                                             <span className='text-sm text-red-500'>Host</span>
                                         )}
@@ -260,29 +206,17 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                                 </Link>
                             ))}
                         </div>
-                        {memoizedEventAttendeesData.data && memoizedEventAttendeesData.data.length > 3 && (
-                            <Button
-                                variant="outline"
-                                onClick={() => router.push(`/event-attendees/${eventId}`)}
-                            >
-                                More
-                            </Button>
+
+                        {memoizedEventAttendeesData.data && memoizedEventAttendeesData.data.length > 0 && (
+                            <Link href={`/event-attendees/${eventId}`}>
+                                <div className="flex flex-col relative gap-2 items-center border border-white/10 p-4 rounded-md text-center w-[144px] h-full">
+                                    <Image className="rounded-full blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                                        src={memoizedProfileImages[attendeesId[0]]} width={50} height={50} alt="" />
+                                    <span className='text-white/70 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full text-xl tracking-wider font-bold'>+{memoizedEventAttendeesData.data.length} more</span>
+                                </div>
+                            </Link>
                         )}
                     </div>
-
-                </div>
-                <div>
-                    <h2 className='text-2xl font-bold'>Group Info</h2>
-                    <Link href={`/group-page/${eventGroup}`}>
-                        <div className='flex gap-4'>
-                            <Image src={imageUrls[0]?.publicUrl} width={200} height={200} alt="" />
-                            <div className="flex flex-col gap-4">
-                                <span>Group Name: {memoizedGroupInfo.data?.[0].group_name}</span>
-                                <span>Group Country: {memoizedGroupInfo.data?.[0].group_country}</span>
-                                <span>Group City: {memoizedGroupInfo.data?.[0].group_city}</span>
-                            </div>
-                        </div>
-                    </Link>
                 </div>
             </div>
 
