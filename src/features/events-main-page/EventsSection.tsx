@@ -139,11 +139,9 @@ export const EventsSection = () => {
     const currentItems = Object.values(memoizedEvents).flat().slice(startIndex, endIndex);
     const pageCount = Math.ceil((Object.values(memoizedEvents).flat().length ?? 0) / itemsPerPage);
 
-
     const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
         setCurrentPage(page);
     };
-
 
     return (
         <>

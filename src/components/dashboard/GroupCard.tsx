@@ -1,48 +1,77 @@
 import { Database } from "@/types/supabase"
 import { GroupData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 import Image from "next/image"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
-import { useUserContext } from "@/providers/UserContextProvider"
 import { Pagination } from "@mui/material"
 import { Button } from "../ui/button"
 import { useRouter } from "next/navigation"
+import { useUserContext } from "@/providers/UserContextProvider"
 
 
 
 export const GroupCard = () => {
-    const supabase = createClientComponentClient<Database>();
-    const [groupData, setGroupData] = useState<GroupData[]>([]);
-    const [imageUrls, setImageUrls] = useState<{ [groupId: string]: string }>({});
+    const supabase = createClientComponentClient<Database>()
     const { ownerId } = useGroupOwnerContext();
-    const queryClient = useQueryClient();
+    const { userId } = useUserContext();
+    const [attendingGroups, setAttendingGroups] = useState(true)
+    const [imageUrls, setImageUrls] = useState<{ [groupId: string]: string }>({});
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
     const router = useRouter();
 
-    useQuery(['groups'], async () => {
-        const { data, error } = await supabase
-            .from("groups")
-            .select("*")
-            .eq("group_owner", ownerId);
+    const fetchedGroups = useQuery(
+        ['groups', userId],
+        async () => {
+            const { data, error } = await supabase
+                .from("group-members")
+                .select(`
+                    groups(
+                        *
+                    )
+                    `
+                )
+                .eq('member_id', userId);
 
-        if (error) {
-            throw error;
-        }
+            if (error) {
+                console.error("Error fetching groups:", error.message);
+                throw new Error(error.message);
+            }
 
-        if (data) {
-            setGroupData(data);
-            queryClient.invalidateQueries(['groups']);
-        }
-    },
+            return data;
+        },
         {
+            enabled: !!userId,
             cacheTime: 10 * 60 * 1000,
-        });
+        }
+    );
 
-    const groupIds = groupData.map(group => group.id);
+    const fetchedGroupsByHosts = useQuery(
+        ['groupsByHosts', userId],
+        async () => {
+            const { data, error } = await supabase
+                .from("groups")
+                .select('*')
+                .eq('group_owner', ownerId);
+
+            if (error) {
+                console.error("Error fetching groups:", error.message);
+                throw new Error(error.message);
+            }
+
+            return data;
+        },
+        {
+            enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
+        }
+    );
+
+    const groupIds = attendingGroups
+        ? fetchedGroups.data?.map(group => group.groups?.id) || []
+        : fetchedGroupsByHosts.data?.map(group => group.id) || [];
 
     const { data: images } = useQuery(
         ['group-pictures', groupIds],
@@ -86,48 +115,103 @@ export const GroupCard = () => {
         }
     }, [images]);
 
-    const memoizedGroupData = useMemo(() => groupData, [groupData]);
-    const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
+    const memoizedGroupsByAttendees = useMemo(() => fetchedGroups.data, [fetchedGroups.data]);
+    const memoizedGroupsByHosts = useMemo(() => fetchedGroupsByHosts.data, [fetchedGroupsByHosts.data]);
+
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentItems = memoizedGroupData?.slice(startIndex, endIndex);
-    const pageCount = Math.ceil((memoizedGroupData?.length ?? 0) / itemsPerPage);
+    const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
+    const currentAttendingItems = memoizedGroupsByAttendees?.slice(startIndex, endIndex) ?? [];
+    const currentHostItems = memoizedGroupsByHosts?.slice(startIndex, endIndex) ?? [];
+
+    const pageCount = Math.ceil((attendingGroups ? (memoizedGroupsByAttendees?.length ?? 0) : (memoizedGroupsByHosts?.length ?? 0)) / itemsPerPage);
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
         setCurrentPage(page);
     };
 
     return (
-        <div className="flex flex-col gap-4 items-start">
+        <div className="flex flex-col gap-4">
+            <div className="flex">
+                <Button variant="link"
+                    onClick={() => {
+                        setAttendingGroups(true);
+                        fetchedGroups.refetch();
+                    }}>
+                    Member groups
+                </Button>
+                <Button variant="link"
+                    onClick={() => {
+                        setAttendingGroups(false);
+                        fetchedGroupsByHosts.refetch();
+                    }}>
+                    Owned groups
+                </Button>
+            </div>
             <div className="flex flex-wrap max-[800px]:justify-center gap-8">
-                {currentItems.map((group) => (
-                    <div key={group.id} className="flex flex-col gap-2 w-[280px] h-[440px] border rounded-md border-white/10 p-4">
-                        <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
-                            {group.id && memoizedImageUrls[group.id] ? (
-                                <Image
-                                    src={memoizedImageUrls[group.id]}
-                                    alt={`Group ${group.group_name}`}
-                                    width={200}
-                                    height={200}
-                                    className="object-cover w-full h-full"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
-                                    <p className="text-center font-medium">No image available 😔</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <h1 className="text-lg font-bold tracking-wider line-clamp-2">{group.group_name}</h1>
-                            <div className="flex flex-col gap-1">
-                                <p className="text-sm text-white/70">{group.group_country}</p>
-                                <p className="text-sm text-white/60">{group.group_city}</p>
+                {attendingGroups && (
+                    currentAttendingItems?.map((group) => (
+                        <div key={group.groups?.id} className="flex flex-col gap-2 w-[280px] h-[440px] border rounded-md border-white/10 p-4">
+                            <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                                {group.groups?.id && memoizedImageUrls[group.groups?.id] ? (
+                                    <Image
+                                        src={memoizedImageUrls[group.groups?.id]}
+                                        alt={group.groups?.group_name || ""}
+                                        width={200}
+                                        height={200}
+                                        className="object-cover w-full max-h-[240px]"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                        <p className="text-center font-medium">No image available 😔</p>
+                                    </div>
+                                )}
                             </div>
-                            <Button className="rounded-md mt-2 w-fit text-sm"
-                                onClick={() => router.push(`/group-page/${group.id}`)}>View group</Button>
+                            <div className="flex flex-col gap-1">
+                                <h1 className="text-lg font-bold tracking-wider line-clamp-2">{group.groups?.group_name}</h1>
+                                <div className="flex flex-col gap-1">
+
+                                    <p className="text-sm text-white/60">{group.groups?.group_city}, {group.groups?.group_country}</p>
+                                    
+                                </div>
+                                <Button className="rounded-md mt-2 w-fit text-sm"
+                                    onClick={() => router.push(`/group-page/${group.groups?.id}`)}>View group</Button>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                )}
+            </div>
+
+            <div className="flex flex-wrap max-[800px]:justify-center gap-8">
+                {!attendingGroups && (
+                    currentHostItems?.map((group) => (
+                        <div key={group.id} className="flex flex-col gap-2 w-[280px] h-[440px] border rounded-md border-white/10 p-4">
+                            <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                                {group.id && imageUrls[group.id] ? (
+                                    <Image
+                                        src={imageUrls[group.id]}
+                                        alt={group.group_name || ""}
+                                        width={200}
+                                        height={200}
+                                        className="object-cover w-full max-h-[240px]"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                        <p className="text-center font-medium">No image available 😔</p>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <h1 className="text-lg font-bold tracking-wider line-clamp-2">{group.group_name}</h1>
+                                <div className="flex flex-col gap-1">
+                                    <p className="text-sm text-white/60">{group.group_city}, {group.group_country}</p>
+                                </div>
+                                <Button className="rounded-md mt-2 w-fit text-sm"
+                                    onClick={() => router.push(`/dashboard/group-page/${group.id}`)}>View group</Button>
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
             <Pagination
                 className="self-center"
@@ -153,3 +237,4 @@ export const GroupCard = () => {
         </div>
     );
 };
+

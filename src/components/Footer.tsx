@@ -8,7 +8,7 @@ export const Footer = () => {
         <>
 
             <IonFooter>
-                <footer className="footer flex justify-between gap-8 flex-wrap bg-base-200 text-base-content  mb-4 max-w-[1200px] justify-self-center w-full">
+                <footer className="footer mt-24 flex justify-between gap-8 flex-wrap bg-base-200 text-base-content  mb-4 max-w-[1200px] justify-self-center w-full">
                     <nav className="flex flex-col gap-2">
                         <h6 className="text-lg font-bold">Services</h6>
                         <Link className="text-white/70"

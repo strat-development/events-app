@@ -120,7 +120,7 @@ export const EventCard = () => {
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-
+    const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
     const currentAttendingItems = memoizedEventsByAttendees?.slice(startIndex, endIndex) ?? [];
     const currentHostItems = memoizedEventsByHosts?.slice(startIndex, endIndex) ?? [];
 
@@ -153,10 +153,10 @@ export const EventCard = () => {
                     currentAttendingItems?.map((event) => (
                         <div key={event.events?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">
                             <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
-                                {event.events?.id && imageUrls[event.events.id] ? (
+                                {event.events?.id && memoizedImageUrls[event.events?.id] ? (
                                     <Image
-                                        src={imageUrls[event.events.id]}
-                                        alt={event.events.event_title || ""}
+                                        src={memoizedImageUrls[event.events?.id]}
+                                        alt={event.events?.event_title || ""}
                                         width={200}
                                         height={200}
                                         className="object-cover w-full max-h-[240px]"

@@ -23,10 +23,8 @@ export default function GroupPage({
 
     return (
         <>
-            <div className="w-full min-h-screen flex">
-                <div className="flex justify-between items-center h-[100vh]">
-                    <CustomGroupPage groupId={groupId} />
-                </div>
+            <div className="flex justify-between items-center min-h-screen justify-self-center max-w-[1200px] w-full">
+                <CustomGroupPage groupId={groupId} />
             </div>
         </>
     );

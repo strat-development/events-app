@@ -31,9 +31,7 @@ export default function GroupPage({
             </div>
 
             {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
-                <>
-                    <CustomGroupPage groupId={groupId} />
-                </>
+                <CustomGroupPage groupId={groupId} />
             )}
         </div>
     );

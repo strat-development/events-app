@@ -144,7 +144,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
         <>
             <div className="flex flex-col gap-8 max-w-[1200px] w-full justify-self-center">
                 <div className="flex flex-col gap-4 px-8">
-                    <h2 className='text-2xl font-bold'>Little bit about us</h2>
+                    <h2 className='text-xl font-bold tracking-wider'>Little bit about us</h2>
                     <div className='relative'>
                         {isSetToEdit === false && (
                             <>

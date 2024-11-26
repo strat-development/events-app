@@ -10,6 +10,7 @@ import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
 import { GroupData, GroupMembersData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { MapPin, Users } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
@@ -305,180 +306,262 @@ export const GroupHero = ({
         }
     }, [images]);
 
+    const joinGroupMutation = useMutation(
+        async () => {
+            const { data, error } = await supabase
+                .from('group-members')
+                .upsert({
+                    group_id: groupId,
+                    member_id: userId,
+                    joined_at: new Date().toISOString()
+                });
+            if (error) {
+                throw error;
+            }
+            return data;
+        },
+        {
+            onSuccess: () => {
+                toast({
+                    title: "Success",
+                    description: "Joined group successfully",
+                });
+
+                queryClient.invalidateQueries('group-members');
+            },
+            onError: () => {
+                toast({
+                    title: "Error",
+                    description: "Failed to join group",
+                });
+            }
+        }
+    );
+
+    const leaveGroupMutation = useMutation(
+        async () => {
+            const { data, error } = await supabase
+                .from('group-members')
+                .delete()
+                .eq('group_id', groupId)
+                .eq('member_id', userId);
+            if (error) {
+                throw error;
+            }
+            return data;
+        },
+        {
+            onSuccess: () => {
+                toast({
+                    title: "Success",
+                    description: "Left group successfully",
+                });
+
+                queryClient.invalidateQueries('group-members');
+            },
+            onError: () => {
+                toast({
+                    title: "Error",
+                    description: "Failed to leave group",
+                });
+            }
+        });
+
     const memoizedGroupData = useMemo(() => groupData, [groupData]);
     const memoizedGroupMembersData = useMemo(() => groupMembersData, [groupMembersData]);
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
 
     return (
         <>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 max-w-[1200px] w-full">
                 {memoizedGroupData?.map((group) => (
-                    <div key={group.id} className="bg-white p-4 rounded-md shadow-md">
-                        <div className="flex flex-col gap-4">
-                            <div className="flex gap-4">
-                                <div className="flex flex-col gap-4">
-                                    {memoizedImageUrls.map((image) => (
-                                        <Image key={image.publicUrl}
-                                            src={image.publicUrl}
-                                            alt=""
-                                            width={200}
-                                            height={200}
-                                        />
+                    <div key={group.id} className="w-full flex flex-wrap gap-8">
+                        <div className="flex gap-4 max-w-[600px] w-full">
+                            <div className="flex flex-col gap-4">
+                                {memoizedImageUrls.map((image) => (
+                                    <Image className="aspect-video rounded-md w-full"
+                                        key={image.publicUrl}
+                                        src={image.publicUrl}
+                                        alt=""
+                                        width={2000}
+                                        height={2000}
+                                    />
+                                ))}
+
+                                {window.location.pathname.includes("dashboard") && ownerId === userId && (
+                                    (images?.length ?? 0) > 0 && (
+                                        <div className="flex gap-4">
+                                            <Button variant={"destructive"}
+                                                onClick={() => {
+                                                    if (images) {
+                                                        if (images[0].hero_picture_url) {
+                                                            deleteGroupPicture.mutateAsync(images[0].hero_picture_url);
+                                                        }
+                                                    }
+                                                }}>Delete</Button>
+                                        </div>
                                     ))}
 
-                                    {window.location.pathname.includes("dashboard") && ownerId === userId && (
-                                        (images?.length ?? 0) > 0 && (
-                                            <div className="flex gap-4">
-                                                <Button variant={"destructive"}
-                                                    onClick={() => {
-                                                        if (images) {
-                                                            if (images[0].hero_picture_url) {
-                                                                deleteGroupPicture.mutateAsync(images[0].hero_picture_url);
-                                                            }
+
+                                {window.location.pathname.includes("dashboard") && ownerId === userId && (
+                                    <div className="flex gap-4">
+                                        <Input type="file"
+                                            onChange={(e) => {
+                                                if (e.target.files) {
+                                                    setFiles([...files, ...Array.from(e.target.files)]);
+                                                }
+                                            }} />
+
+                                        {files.length > 0 && (
+                                            <>
+                                                {(images?.length ?? 0) === 0 ? (
+                                                    <Button onClick={() => {
+                                                        if (files.length > 0) {
+                                                            uploadFiles(files)
+                                                                .then((paths) => {
+                                                                    addGroupPicture.mutateAsync(paths);
+
+                                                                    setFiles([]);
+                                                                })
+                                                                .catch((error) => console.error('Error uploading files:', error));
+                                                        } else {
+                                                            toast({
+                                                                title: "Error",
+                                                                description: "Error uploading image",
+                                                            });
                                                         }
-                                                    }}>Delete</Button>
-                                            </div>
-                                        ))}
+                                                    }}>Upload</Button>
+                                                ) : (
+                                                    <Button onClick={() => {
+                                                        if (files.length > 0) {
+                                                            uploadFiles(files)
+                                                                .then((paths) => {
+                                                                    updateGroupPicture.mutateAsync(paths[0]);
 
+                                                                    setFiles([]);
+                                                                })
+                                                                .catch((error) => console.error('Error uploading files:', error));
+                                                        } else {
+                                                            toast({
+                                                                title: "Error",
+                                                                description: "Error uploading image",
+                                                            });
+                                                        }
+                                                    }}>Update</Button>
+                                                )}
 
-                                    {window.location.pathname.includes("dashboard") && ownerId === userId && (
+                                                <Button variant={"destructive"}
+                                                    onClick={() => setFiles([])}>
+                                                    Clear
+                                                </Button>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col">
+                            <div className="flex gap-4">
+                                <div className="flex gap-4 mb-4">
+                                    <h1 className="text-2xl font-bold tracking-wider">{group.group_name}</h1>
+                                    {window.location.pathname.includes("/dashboard") && userId === ownerId && !groupNameToEdit && <Button onClick={() => setGroupNameToEdit(true)}>Edit</Button>}
+                                </div>
+                                <div>
+                                    {window.location.pathname.includes("/dashboard") && userId === ownerId && groupNameToEdit && (
                                         <div className="flex gap-4">
-                                            <Input type="file"
-                                                onChange={(e) => {
-                                                    if (e.target.files) {
-                                                        setFiles([...files, ...Array.from(e.target.files)]);
-                                                    }
-                                                }} />
+                                            <Input placeholder="New group name"
+                                                value={newGroupName}
+                                                onChange={(e) => setNewGroupName(e.target.value)}
+                                            />
+                                            <Button onClick={() => setGroupNameToEdit(false)}>Cancel</Button>
+                                            <Button onClick={() => {
+                                                editGroupNameMutation.mutateAsync(newGroupName)
 
-                                            {files.length > 0 && (
-                                                <>
-                                                    {(images?.length ?? 0) === 0 ? (
-                                                        <Button onClick={() => {
-                                                            if (files.length > 0) {
-                                                                uploadFiles(files)
-                                                                    .then((paths) => {
-                                                                        addGroupPicture.mutateAsync(paths);
-
-                                                                        setFiles([]);
-                                                                    })
-                                                                    .catch((error) => console.error('Error uploading files:', error));
-                                                            } else {
-                                                                toast({
-                                                                    title: "Error",
-                                                                    description: "Error uploading image",
-                                                                });
-                                                            }
-                                                        }}>Upload</Button>
-                                                    ) : (
-                                                        <Button onClick={() => {
-                                                            if (files.length > 0) {
-                                                                uploadFiles(files)
-                                                                    .then((paths) => {
-                                                                        updateGroupPicture.mutateAsync(paths[0]);
-
-                                                                        setFiles([]);
-                                                                    })
-                                                                    .catch((error) => console.error('Error uploading files:', error));
-                                                            } else {
-                                                                toast({
-                                                                    title: "Error",
-                                                                    description: "Error uploading image",
-                                                                });
-                                                            }
-                                                        }}>Update</Button>
-                                                    )}
-
-                                                    <Button variant={"destructive"}
-                                                        onClick={() => setFiles([])}>
-                                                        Clear
-                                                    </Button>
-                                                </>
-                                            )}
+                                                setGroupNameToEdit(false)
+                                            }}>Save</Button>
                                         </div>
                                     )}
                                 </div>
-
                             </div>
-                            <div className="flex gap-4">
-                                <h1>{group.group_name}</h1>
-                                {window.location.pathname.includes("/dashboard") && userId === ownerId && !groupNameToEdit && <Button onClick={() => setGroupNameToEdit(true)}>Edit</Button>}
-                            </div>
-                            <div>
-                            {window.location.pathname.includes("/dashboard") && userId === ownerId && groupNameToEdit && (
-                                    <div className="flex gap-4">
-                                        <Input placeholder="New group name"
-                                            value={newGroupName}
-                                            onChange={(e) => setNewGroupName(e.target.value)}
-                                        />
-                                        <Button onClick={() => setGroupNameToEdit(false)}>Cancel</Button>
-                                        <Button onClick={() => {
-                                            editGroupNameMutation.mutateAsync(newGroupName)
 
-                                            setGroupNameToEdit(false)
-                                        }}>Save</Button>
+                            <div className="flex flex-col gap-4">
+                                <div className="flex gap-4">
+                                    <div className="flex gap-2">
+                                        <div className="flex items-center gap-2">
+                                            <MapPin size={24}
+                                                strokeWidth={1} />
+                                            <p className="text-lg text-white/70">{group.group_city}, {group.group_country}</p>
+                                        </div>
+                                        {window.location.pathname.includes("/dashboard") && userId === ownerId && !groupCityToEdit && <Button onClick={() => setGroupCityToEdit(true)}>Edit</Button>}
                                     </div>
-                                )}
-                            </div>
-                        </div>
+                                    <div>
+                                        {window.location.pathname.includes("/dashboard") && userId === ownerId && groupCityToEdit && (
+                                            <div className="flex gap-4">
+                                                <Input placeholder="New group city"
 
-                        <div className="flex flex-col gap-4">
-                            <div className="flex gap-2">
-                                <p>{group.group_city},</p>
-                                <p>{group.group_country}</p>
-                                {window.location.pathname.includes("/dashboard") && userId === ownerId && !groupCityToEdit && <Button onClick={() => setGroupCityToEdit(true)}>Edit</Button>}
-                            </div>
-                            <div>
-                            {window.location.pathname.includes("/dashboard") && userId === ownerId && groupCityToEdit && (
-                                    <div className="flex gap-4">
-                                        <Input placeholder="New group city"
+                                                    value={newGroupCity}
+                                                    onChange={(e) => setNewGroupCity(e.target.value)}
+                                                />
+                                                <Input placeholder="New group country"
+                                                    value={newGroupCountry}
+                                                    onChange={(e) => setNewGroupCountry(e.target.value)}
+                                                />
+                                                <Button onClick={() => setGroupCityToEdit(false)}>Cancel</Button>
+                                                <Button onClick={() => {
+                                                    editGroupLocationMutation.mutateAsync()
 
-                                            value={newGroupCity}
-                                            onChange={(e) => setNewGroupCity(e.target.value)}
-                                        />
-                                        <Input placeholder="New group country"
-                                            value={newGroupCountry}
-                                            onChange={(e) => setNewGroupCountry(e.target.value)}
-                                        />
-                                        <Button onClick={() => setGroupCityToEdit(false)}>Cancel</Button>
-                                        <Button onClick={() => {
-                                            editGroupLocationMutation.mutateAsync()
-
-                                            setGroupCityToEdit(false)
-                                        }}>Save</Button>
+                                                    setGroupCityToEdit(false)
+                                                }}>Save</Button>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div>
-                            {memoizedGroupMembersData?.map((member) => (
-                                <div key={member.id}>
-                                    <p>Members count: {memoizedGroupMembersData?.length || 0}</p>
                                 </div>
-                            ))}
+                            </div>
+
+
+                            <div className="flex gap-2 items-center">
+                                <Users size={24}
+                                    strokeWidth={1} />
+                                <p className="text-white/60 font-medium tracking-wide">{memoizedGroupMembersData?.length || 0} {memoizedGroupMembersData?.length === 1 ? "member" : "members"}</p>
+                            </div>
+
                         </div>
                     </div>
                 ))}
 
-                {window.location.pathname.includes("dashboard") && (
-                    <div className="flex gap-4">
-                        <Link href={`/dashboard/group-page/${groupId}`}>
-                            About
-                        </Link>
-                        <Link href={`/dashboard/group-photos/${groupId}`}>
-                            Photos
-                        </Link>
-                    </div>
-                ) || (
-                        <div className="flex gap-4">
-                            <Link href={`/group-page/${groupId}`}>
+                <div className="py-4 sticky top-24 flex justify-between max-w-[1200px] w-full justify-self-center">
+                    {window.location.pathname.includes("dashboard") && (
+                        <div className="flex gap-8">
+                            <Link className="text-lg" href={`/dashboard/group-page/${groupId}`}>
                                 About
                             </Link>
-                            <Link href={`/group-photos/${groupId}`}>
+                            <Link className="text-lg" href={`/dashboard/group-photos/${groupId}`}>
                                 Photos
                             </Link>
                         </div>
+                    ) || (
+                            <div className="flex gap-4">
+                                <Link className="text-lg" href={`/group-page/${groupId}`}>
+                                    About
+                                </Link>
+                                <Link className="text-lg" href={`/group-photos/${groupId}`}>
+                                    Photos
+                                </Link>
+                            </div>
+                        )}
+
+                    {userId && ownerId && (
+                        <>
+                            {memoizedGroupMembersData?.some((member) => member.member_id === userId) ? (
+                                <Button variant={"destructive"}
+                                    onClick={() => leaveGroupMutation.mutateAsync()}>Leave group</Button>
+                            ) : (
+                                <Button onClick={() => joinGroupMutation.mutateAsync()}>Join group</Button>
+                            )}
+                        </>
                     )}
+                </div>
             </div>
 
             <Toaster />
