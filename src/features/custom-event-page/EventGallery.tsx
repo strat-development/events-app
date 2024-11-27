@@ -1,14 +1,12 @@
 "use client"
 
-import { ImageCarousel } from "@/components/dashboard/ImageCarouel"
+import { ImageCarousel } from "@/components/dashboard/ImageCarouel";
 import { DeleteEventAlbumDialog } from "@/components/dashboard/modals/DeleteEventAlbumDialog";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { Pagination } from "@mui/material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { use } from "chai";
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
@@ -89,20 +87,21 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
 
     return (
         <>
-            <div className="grid grid-cols-3 w-full gap-[120px] justify-between">
-                {currentItems.map((album) => (
-                    <div key={album.id}>
-                        <Link href={window.location.pathname.includes('dashboard') ? `/dashboard/event-photos-album/${eventId}?albumId=${album.id}` : `/event-photos-album/${eventId}?albumId=${album.id}`}>
-                            <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
-                            <p>{album.album_name}</p>
-                        </Link>
+            <div className="flex flex-col max-w-[1200px] w-full gap-8 justify-center mb-24">
+                <div className="max-w-[1200px] w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
+                    {currentItems.map((album) => (
+                        <div className="flex flex-col relative gap-2 max-w-[280px] text-center items-center"
+                            key={album.id}>
+                            <ImageCarousel eventId={eventId} album={album}
+                                imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
+                            <p className="text-lg">{album.album_name}</p>
 
-                        {window.location.pathname.includes("/dashboard") && eventCreatorId === userId && (
-                            <DeleteEventAlbumDialog albumId={album.id} />
-                        )}
-
-                    </div>
-                ))}
+                            {window.location.pathname.includes("/dashboard") && eventCreatorId === userId && (
+                                <DeleteEventAlbumDialog albumId={album.id} />
+                            )}
+                        </div>
+                    ))}
+                </div>
                 <Pagination
                     className="self-center"
                     count={pageCount}

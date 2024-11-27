@@ -14,6 +14,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Database } from "@/types/supabase"
 import { format, parseISO } from "date-fns"
+import { UpdateEventHeroImageDialog } from "@/components/dashboard/modals/UpdateEventHeroImageDialog"
 
 interface EventHeroProps {
     eventId: string
@@ -367,7 +368,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                         <div className="flex gap-4">
                             <div className="flex flex-col gap-4">
                                 {memoizedImageUrls.map((image) => (
-                                    <Image className="aspect-square min-[768px]:aspect-video object-contain"
+                                    <Image className="aspect-square min-[768px]:aspect-video rounded-md object-contain"
                                         key={image.publicUrl}
                                         src={image.publicUrl}
                                         alt=""
@@ -387,6 +388,8 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                                                         }
                                                     }
                                                 }}>Delete picture</Button>
+
+                                            <UpdateEventHeroImageDialog eventId={eventId} />
                                         </div>
                                     )}
                             </div>

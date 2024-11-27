@@ -2,12 +2,15 @@
 
 import { UpdateGroupImagesAlbumDialog } from "@/components/dashboard/modals/UpdateGroupImagesDialog";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/toaster";
 import { GroupHero } from "@/features/group-page/GroupHero";
 import { supabaseAdmin } from "@/lib/admin";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
+import { Pagination } from "@mui/material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Trash } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useMemo, useState } from "react";
@@ -28,11 +31,13 @@ export default function GroupPhotosAlbumPage({
     const { userId } = useUserContext();
     const { ownerId } = useGroupOwnerContext()
     const router = useRouter();
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
 
-    if (!ownerId || !userId) {
-        router.push('/');
-        return null
-    }
+    // if (!ownerId || !userId) {
+    //     router.push('/');
+    //     return null
+    // }
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['group-picture-albums', groupId],
@@ -157,53 +162,113 @@ export default function GroupPhotosAlbumPage({
 
     const memoizedAlbums = useMemo(() => albums, [albums]);
 
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = memoizedAlbums.slice(startIndex, endIndex);
+    const pageCount = Math.ceil(memoizedAlbums.length / itemsPerPage);
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+        setCurrentPage(page);
+    };
+
     return (
         <>
-        {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
-            <div className="h-screen flex flex-col items-center justify-center w-full">
-                <h1 className="text-3xl font-bold">Group Photos Album</h1>
-                <GroupHero groupId={groupId} />
-                <div className="flex flex-col gap-8 items-center justify-center">
-                    {window.location.pathname.includes("/dashboard") && ownerId === userId && (
-                        <UpdateGroupImagesAlbumDialog />
-                    )}
-                    <div className="grid grid-cols-3 gap-8 items-center">
-                        {memoizedAlbums.map((album, index) => (
-                            <div key={index}>
-                                <h2 className="text-xl font-bold">{album.name}</h2>
-                                <div className="grid grid-cols-3 gap-8">
-                                    {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
-                                        <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>
-                                            <Image src={imageUrl.publicUrl || ""}
-                                                alt={`Image ${index}`}
-                                                width={2000}
-                                                height={2000} />
-                                            <input
-                                                type="checkbox"
-                                                className="absolute top-2 right-2"
-                                                checked={selectedImages.includes(imageUrl.publicUrl ?? '')}
-                                                onChange={() => handleCheckboxChange(imageUrl.publicUrl ?? '')}
-                                            />
-                                        </div>
-                                    ))}
+            <div className="flex flex-col gap-8 items-center max-w-[1200px] w-full justify-self-center">
+                {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
+                    <div className="min-h-screen mt-24 flex flex-col gap-8 items-center justify-center w-full">
+                        <GroupHero groupId={groupId} />
+                        <div className="flex flex-col gap-8 w-full">
+                            {window.location.pathname.includes("/dashboard") && ownerId === userId && (
+                                <div className="flex gap-4 justify-self-end justify-end">
+                                    {selectedImages.length > 0 && (
+                                        <Button className="max-[900px]:hidden"
+                                            onClick={() => {
+                                                deleteImagesMutation.mutate(Array.from(selectedImages));
+                                                setSelectedImages([]);
+                                            }
+                                            }
+                                            disabled={selectedImages.length === 0}>
+                                            <Trash className="text-red-600"
+                                                strokeWidth={1}
+                                                size={24} />
+                                        </Button>
+                                    )}
+                                    <UpdateGroupImagesAlbumDialog />
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                            )}
 
-                {window.location.pathname.includes("/dashboard") && ownerId === userId && (
-                    <Button onClick={() => {
-                        deleteImagesMutation.mutate(Array.from(selectedImages));
-                        setSelectedImages([]);
-                    }
-                    }
-                        disabled={selectedImages.length === 0}>
-                        Delete Selected Images
-                    </Button>
+                            <div className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-between min-[768px]:gap-24">
+                                {memoizedAlbums.map((album, index) => (
+                                    <div className="flex flex-col gap-4">
+                                        <h2 className="text-xl font-bold tracking-wider">{album.name}</h2>
+                                        <div key={index}
+                                            className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
+                                            {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
+                                                <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-2 outline-blue-500 rounded-md' : ''}`}>
+                                                    <Image src={imageUrl.publicUrl ?? ''}
+                                                        alt={`Image ${index}`}
+                                                        className="max-w-[280px] w-full h-auto border border-white/10 rounded-md"
+                                                        height={2000}
+                                                        width={2000}
+                                                    />
+                                                    <input
+                                                        type="checkbox"
+                                                        className="absolute top-2 right-2"
+                                                        checked={selectedImages.includes(imageUrl.publicUrl ?? '')}
+                                                        onChange={() => handleCheckboxChange(imageUrl.publicUrl ?? '')}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {selectedImages.length > 0 && (
+                            <Button className="fixed w-fit p-2 rounded-full bottom-8 right-8 min-[900px]:hidden"
+                                onClick={() => {
+                                    deleteImagesMutation.mutate(Array.from(selectedImages));
+                                    setSelectedImages([]);
+                                }
+                                }
+                                disabled={selectedImages.length === 0}>
+                                <Trash className="text-red-600"
+                                    strokeWidth={1}
+                                    size={24} />
+                            </Button>
+                        )}
+                    </div>
                 )}
+
+
+                <Pagination
+                    className="self-center"
+                    count={pageCount}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    variant="outlined"
+                    sx={{
+                        '& .MuiPaginationItem-root': {
+                            color: 'white',
+                            backgroundColor: 'rgba(255, 255, 255, 0)',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                            },
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                        },
+                        '& .Mui-selected': {
+                            backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
+                            color: 'white',
+                        },
+                    }}
+                />
             </div>
-        )}
-    </>
-    );
+
+            <Toaster />
+        </>
+    )
 }
+
+
+
+

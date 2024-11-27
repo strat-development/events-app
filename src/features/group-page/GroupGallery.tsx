@@ -87,18 +87,22 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
 
     return (
         <>
-            <div className="grid grid-cols-3 w-full gap-[120px] justify-between">
-                {currentItems.map((album) => (
-                    <div key={album.id}>
-                        <Link href={window.location.pathname.includes('dashboard') ? `/dashboard/group-photos-album/${groupId}?albumId=${album.id}` : `/group-photos-album/${groupId}?albumId=${album.id}`}>
-                            <ImageCarousel imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
-                            <p>{album.album_name}</p>
-                        </Link>
-                        {window.location.pathname.includes("/dashboard") && ownerId === userId && (
-                            <DeleteGroupAlbumDialog albumId={album.id} />
-                        )}
-                    </div>
-                ))}
+            <div className="flex flex-col w-full gap-8 justify-center mb-24">
+                <div className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
+                    {currentItems.map((album) => (
+                        <div className="flex flex-col relative gap-2 max-w-[280px] text-center items-center"
+                            key={album.id}>
+                            <ImageCarousel groupId={groupId} album={album}
+                                imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
+
+                            <p className="text-lg justify-self-center">{album.album_name}</p>
+
+                            {window.location.pathname.includes("/dashboard") && ownerId === userId && (
+                                <DeleteGroupAlbumDialog albumId={album.id} />
+                            )}
+                        </div>
+                    ))}
+                </div>
                 <Pagination
                     className="self-center"
                     count={pageCount}

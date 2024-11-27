@@ -1,5 +1,6 @@
 "use client"
 
+import { UpdateGroupHeroImageDialog } from "@/components/dashboard/modals/UpdateGroupHeroImageDialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Toaster } from "@/components/ui/toaster"
@@ -37,7 +38,6 @@ export const GroupHero = ({
     const [newGroupCountry, setNewGroupCountry] = useState("")
     const [groupMembersData, setGroupMembersData] = useState<GroupMembersData[]>()
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
-    const [files, setFiles] = useState<File[]>([]);
 
     useQuery(['groups'], async () => {
         const { data, error } = await supabase
@@ -399,65 +399,10 @@ export const GroupHero = ({
                                                         }
                                                     }
                                                 }}>Delete</Button>
+
+                                            <UpdateGroupHeroImageDialog groupId={groupId} />
                                         </div>
                                     ))}
-
-
-                                {window.location.pathname.includes("dashboard") && ownerId === userId && (
-                                    <div className="flex gap-4">
-                                        <Input type="file"
-                                            onChange={(e) => {
-                                                if (e.target.files) {
-                                                    setFiles([...files, ...Array.from(e.target.files)]);
-                                                }
-                                            }} />
-
-                                        {files.length > 0 && (
-                                            <>
-                                                {(images?.length ?? 0) === 0 ? (
-                                                    <Button onClick={() => {
-                                                        if (files.length > 0) {
-                                                            uploadFiles(files)
-                                                                .then((paths) => {
-                                                                    addGroupPicture.mutateAsync(paths);
-
-                                                                    setFiles([]);
-                                                                })
-                                                                .catch((error) => console.error('Error uploading files:', error));
-                                                        } else {
-                                                            toast({
-                                                                title: "Error",
-                                                                description: "Error uploading image",
-                                                            });
-                                                        }
-                                                    }}>Upload</Button>
-                                                ) : (
-                                                    <Button onClick={() => {
-                                                        if (files.length > 0) {
-                                                            uploadFiles(files)
-                                                                .then((paths) => {
-                                                                    updateGroupPicture.mutateAsync(paths[0]);
-
-                                                                    setFiles([]);
-                                                                })
-                                                                .catch((error) => console.error('Error uploading files:', error));
-                                                        } else {
-                                                            toast({
-                                                                title: "Error",
-                                                                description: "Error uploading image",
-                                                            });
-                                                        }
-                                                    }}>Update</Button>
-                                                )}
-
-                                                <Button variant={"destructive"}
-                                                    onClick={() => setFiles([])}>
-                                                    Clear
-                                                </Button>
-                                            </>
-                                        )}
-                                    </div>
-                                )}
                             </div>
                         </div>
 
@@ -562,7 +507,7 @@ export const GroupHero = ({
                         </>
                     )}
                 </div>
-            </div>
+            </div >
 
             <Toaster />
         </>

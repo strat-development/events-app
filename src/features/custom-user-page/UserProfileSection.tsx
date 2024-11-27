@@ -17,6 +17,7 @@ import Link from "next/link";
 import { TextEditor } from "@/features/TextEditor";
 import { Button } from "../../components/ui/button";
 import { toast } from "../../components/ui/use-toast";
+import { UpdateUserImageDialog } from "@/components/dashboard/modals/UpdateUserImageDialog";
 
 interface UserProfileSectionProps {
     userId: string;
@@ -144,8 +145,8 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                         key={index}
                                         src={image.publicUrl}
                                         alt="Profile picture"
-                                        width={200}
-                                        height={200}
+                                        width={2000}
+                                        height={2000}
                                         className="rounded-md"
                                     />
                                 )) || (
@@ -157,15 +158,19 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                 {window.location.pathname === "/dashboard" && (
                                     <DeleteUserProfileImageDialog />
                                 )}
-                                <div className="flex flex-col gap-4 absolute bottom-4 left-4">
-                                    <div className="flex flex-col gap-1">
+                                <div className="flex flex-col gap-4 absolute bottom-0 w-full pl-2 pb-2">
+                                    <div className="absolute inset-0 bg-black/30 blur-sm"></div>
+                                    <div className="relative flex flex-col gap-1">
                                         <h2 className="text-xl font-bold tracking-wider">{user.full_name}</h2>
-                                        <p className="text-lg text-white/70">{user.email}</p>
-                                        <p className="text-white/60">{user.city}, {user.country}</p>
+                                        <p className="text-lg text-white/90">{user.email}</p>
+                                        <p className="text-white/80">{user.city}, {user.country}</p>
                                     </div>
 
                                     {window.location.pathname === "/dashboard" && (
-                                        <EditUserProfileDialog />
+                                        <div className="relative flex gap-2">
+                                            <EditUserProfileDialog />
+                                            <UpdateUserImageDialog />
+                                        </div>
                                     )}
                                 </div>
                             </div>

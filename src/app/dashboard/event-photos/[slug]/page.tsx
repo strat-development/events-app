@@ -20,26 +20,26 @@ export default function EventPhotosPage({
     const { eventCreatorId } = useGroupOwnerContext();
     const router = useRouter();
 
-    if (!eventCreatorId || !userId) {
-        router.push('/');
-        return null
-    }
+    // if (!eventCreatorId || !userId) {
+    //     router.push('/');
+    //     return null
+    // }
 
     return (
         <>
             {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 &&
-            <div className="flex justify-between items-center h-[100vh]">
-                <Navbar />
-                <div className="flex flex-col gap-8 items-center w-full min-h-screen relative top-24">
-                    <EventHero eventId={eventId} />
-                    <div>
-                        <CreateEventImagesAlbumDialog eventId={eventId} />
-                    </div>
-                    <div className="grid grid-cols-3 gap-8">
+                <div className="flex justify-self-center justify-between items-start min-h-screen max-w-[1200px] w-full">
+                    <Navbar />
+                    <div className="flex flex-col gap-8 max-w-[1200px] w-full min-h-screen relative top-24">
+                        <EventHero eventId={eventId} />
+                        {window.location.pathname.includes("/dashboard") && (
+                            <div className="jusify-self-end">
+                                <CreateEventImagesAlbumDialog eventId={eventId} />
+                            </div>
+                        )}
                         <EventGallery eventId={eventId} />
                     </div>
                 </div>
-            </div>
             }
         </>
     )

@@ -159,7 +159,7 @@ export const EventCard = () => {
                                         alt={event.events?.event_title || ""}
                                         width={200}
                                         height={200}
-                                        className="object-cover w-full max-h-[240px]"
+                                        className="object-cover rounded-md w-full max-h-[240px]"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
@@ -172,7 +172,7 @@ export const EventCard = () => {
                                 <div className="flex flex-col gap-1">
                                     <p className="text-sm text-white/70">{format(parseISO(event.events?.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
                                     <p className="text-sm text-white/60">{event.events?.event_address}</p>
-                                    <div className="flex gap-2 mt-1">
+                                    <div className="flex gap-2 mt-1 items-center">
                                         <Ticket className="h-4 w-4" />
                                         <p className="text-sm font-bold tracking-wide text-white/70">{event.events?.ticket_price}</p>
                                     </div>
@@ -196,7 +196,7 @@ export const EventCard = () => {
                                         alt={event.event_title || ""}
                                         width={200}
                                         height={200}
-                                        className="object-cover w-full max-h-[240px]"
+                                        className="object-cover rounded-md w-full max-h-[240px]"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">

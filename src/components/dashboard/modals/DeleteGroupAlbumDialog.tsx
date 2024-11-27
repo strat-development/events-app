@@ -95,29 +95,31 @@ export const DeleteGroupAlbumDialog = ({ albumId }: DeleteGroupAlbumDialogProps)
 
     return (
         <>
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger asChild>
-                    <Trash strokeWidth={1}
-                        className="text-red-500" />
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Delete Album</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to delete this Album? If not please close this dialog.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="destructive"
-                            type="submit"
-                            onClick={() => {
-                                deleteAlbumData.mutate(albumId);
-                            }}>
-                            Delete Album
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <div className="absolute top-8 right-8">
+                <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                    <DialogTrigger asChild>
+                        <Trash strokeWidth={1}
+                            className="text-red-500" />
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <DialogTitle>Delete Album</DialogTitle>
+                            <DialogDescription>
+                                Are you sure you want to delete this Album? If not please close this dialog.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button variant="destructive"
+                                type="submit"
+                                onClick={() => {
+                                    deleteAlbumData.mutate(albumId);
+                                }}>
+                                Delete Album
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </div>
 
             <Toaster />
         </>

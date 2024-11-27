@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { FileUpload } from "@/components/ui/file-upload";
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
 import { supabaseAdmin } from "@/lib/admin";
@@ -100,33 +101,17 @@ export const UpdateEventImagesAlbumDialog = () => {
     };
 
     return (
-        <div>
+        <div className="justify-self-end">
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button>Update album</Button>
+                    <Button>Upload more</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Update album</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to add images to this album? Please fill out all fields.
-                        </DialogDescription>
-                    </DialogHeader>
+                    <FileUpload onChange={setFiles} />
 
-                    <div className="flex flex-col gap-4">
-                        <div className="flex gap-4">
-                            <Input type="file"
-                                multiple
-                                onChange={(e) => {
-                                    if (e.target.files) {
-                                        setFiles(Array.from(e.target.files));
-                                    }
-                                }}
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button onClick={handleSubmit}>Update album</Button>
+                    <DialogFooter className="flex justify-center w-full">
+                        <Button variant="outline"
+                            onClick={handleSubmit}>Update album</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

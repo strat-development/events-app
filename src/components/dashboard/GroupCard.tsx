@@ -159,7 +159,7 @@ export const GroupCard = () => {
                                         alt={group.groups?.group_name || ""}
                                         width={200}
                                         height={200}
-                                        className="object-cover w-full max-h-[240px]"
+                                        className="object-cover rounded-md w-full max-h-[240px]"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
@@ -193,7 +193,7 @@ export const GroupCard = () => {
                                         alt={group.group_name || ""}
                                         width={200}
                                         height={200}
-                                        className="object-cover w-full max-h-[240px]"
+                                        className="object-cover rounded-md w-full max-h-[240px]"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">

@@ -2,6 +2,8 @@
 
 import { UpdateEventImagesAlbumDialog } from "@/components/dashboard/modals/UpdateEventImagesDialog";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/toaster";
+import { toast } from "@/components/ui/use-toast";
 import { EventHero } from "@/features/custom-event-page/EventHero";
 import { supabaseAdmin } from "@/lib/admin";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
@@ -9,6 +11,7 @@ import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { Pagination } from "@mui/material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Trash } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useMemo, useState } from "react";
@@ -32,10 +35,10 @@ export default function EventPhotosAlbumPage({
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
 
-    if (!eventCreatorId || !userId) {
-        router.push('/');
-        return null
-    }
+    // if (!eventCreatorId || !userId) {
+    //     router.push('/');
+    //     return null
+    // }
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['event-picture-albums', eventId],
@@ -143,6 +146,14 @@ export default function EventPhotosAlbumPage({
             await Promise.all(updatePromises);
 
             queryClient.invalidateQueries(['event-albums', eventId]);
+        },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(['event-picture-albums', eventId]);
+                toast({
+                    title: 'Images deleted',
+                })
+            }
         }
     );
 
@@ -171,69 +182,96 @@ export default function EventPhotosAlbumPage({
 
     return (
         <>
-            {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
-                <div className="h-screen flex flex-col items-center justify-center w-full">
-                    <h1 className="text-3xl font-bold">Event Photos Album</h1>
-                    <EventHero eventId={eventId} />
-                    <div className="flex flex-col gap-8 items-center">
-                        <UpdateEventImagesAlbumDialog />
-                        <div className="grid grid-cols-3 gap-3">
-                            {currentItems.map((album, index) => (
-                                <div key={index}>
-                                    <h2 className="text-xl font-bold">{album.name}</h2>
-                                    <div className="grid grid-cols-3 gap-8">
-                                        {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
-                                            <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>
-                                                <Image src={imageUrl.publicUrl ?? ''}
-                                                    alt={`Image ${index}`}
-                                                    className="w-full h-auto"
-                                                    height={2000}
-                                                    width={2000}
-                                                />
-                                                <input
-                                                    type="checkbox"
-                                                    className="absolute top-2 right-2"
-                                                    checked={selectedImages.includes(imageUrl.publicUrl ?? '')}
-                                                    onChange={() => handleCheckboxChange(imageUrl.publicUrl ?? '')}
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
+            <div className="flex flex-col gap-8 items-center max-w-[1200px] w-full justify-self-center">
+                {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
+                    <div className="min-h-screen mt-24 flex flex-col gap-8 items-center justify-center w-full">
+                        <EventHero eventId={eventId} />
+                        <div className="flex flex-col gap-8 w-full">
+                            {window.location.pathname.includes("/dashboard") && eventCreatorId === userId && (
+                                <div className="flex gap-4 justify-self-end justify-end">
+                                    {selectedImages.length > 0 && (
+                                        <Button className="max-[900px]:hidden"
+                                            onClick={() => {
+                                                deleteImagesMutation.mutate(Array.from(selectedImages));
+                                                setSelectedImages([]);
+                                            }
+                                            }
+                                            disabled={selectedImages.length === 0}>
+                                            <Trash className="text-red-600"
+                                                strokeWidth={1}
+                                                size={24} />
+                                        </Button>
+                                    )}
+                                    <UpdateEventImagesAlbumDialog />
                                 </div>
-                            ))}
+                            )}
+                            <div className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-between min-[768px]:gap-24">
+                                {currentItems.map((album, index) => (
+                                    <div className="flex flex-col gap-4">
+                                        <h2 className="text-xl font-bold tracking-wider">{album.name}</h2>
+                                        <div key={index}
+                                            className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
+                                            {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
+                                                <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-2 outline-blue-500 rounded-md' : ''}`}>
+                                                    <Image src={imageUrl.publicUrl ?? ''}
+                                                        alt={`Image ${index}`}
+                                                        className="max-w-[280px] w-full h-auto border border-white/10 rounded-md"
+                                                        height={2000}
+                                                        width={2000}
+                                                    />
+                                                    <input
+                                                        type="checkbox"
+                                                        className="absolute top-2 right-2"
+                                                        checked={selectedImages.includes(imageUrl.publicUrl ?? '')}
+                                                        onChange={() => handleCheckboxChange(imageUrl.publicUrl ?? '')}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
+                        {selectedImages.length > 0 && (
+                            <Button className="fixed w-fit p-2 rounded-full bottom-8 right-8 min-[900px]:hidden"
+                                onClick={() => {
+                                    deleteImagesMutation.mutate(Array.from(selectedImages));
+                                    setSelectedImages([]);
+                                }
+                                }
+                                disabled={selectedImages.length === 0}>
+                                <Trash className="text-red-600"
+                                    strokeWidth={1}
+                                    size={24} />
+                            </Button>
+                        )}
                     </div>
-                    <Button onClick={() => {
-                        deleteImagesMutation.mutate(Array.from(selectedImages));
-                        setSelectedImages([]);
-                    }
-                    }
-                        disabled={selectedImages.length === 0}>
-                        Delete Selected Images
-                    </Button>
-                </div>
-            )}
-            <Pagination
-                className="self-center"
-                count={pageCount}
-                page={currentPage}
-                onChange={handlePageChange}
-                variant="outlined"
-                sx={{
-                    '& .MuiPaginationItem-root': {
-                        color: 'white',
-                        backgroundColor: 'rgba(255, 255, 255, 0)', 
-                        '&:hover': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                )}
+
+                <Pagination
+                    className="self-center"
+                    count={pageCount}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    variant="outlined"
+                    sx={{
+                        '& .MuiPaginationItem-root': {
+                            color: 'white',
+                            backgroundColor: 'rgba(255, 255, 255, 0)',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                            },
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
                         },
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                    },
-                    '& .Mui-selected': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
-                        color: 'white',
-                    },
-                }}
-            />
+                        '& .Mui-selected': {
+                            backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
+                            color: 'white',
+                        },
+                    }}
+                />
+            </div>
+
+            <Toaster />
         </>
     );
 }
