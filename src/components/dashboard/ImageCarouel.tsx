@@ -10,6 +10,7 @@ import {
 import { Card, CardContent } from "../ui/card"
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface ImageCarouselProps {
     imageUrls: string[];
@@ -19,32 +20,39 @@ interface ImageCarouselProps {
 }
 
 export function ImageCarousel({ imageUrls, eventId, groupId, album }: ImageCarouselProps) {
+    const pathname = usePathname();
+
+    const isDashboard = pathname.includes('dashboard');
+    const isEventPhotos = pathname.includes('event-photos');
+    const isGroupPhotos = pathname.includes('group-photos');
+
+    const getHref = () => {
+        if (isEventPhotos) {
+            return isDashboard
+                ? `/dashboard/event-photos-album/${eventId}?albumId=${album.id}`
+                : `/event-photos-album/${eventId}?albumId=${album.id}`;
+        }
+        if (isGroupPhotos) {
+            return isDashboard
+                ? `/dashboard/group-photos-album/${groupId}?albumId=${album.id}`
+                : `/group-photos-album/${groupId}?albumId=${album.id}`;
+        }
+        return '#';
+    };
+
     return (
         <Carousel className="justify-self-center">
             <CarouselContent>
                 {imageUrls.map((imageUrl, index) => (
                     <CarouselItem key={index}>
-
-                        {window.location.pathname.includes('dashboard/event-photos') && (
-                            <Link href={window.location.pathname.includes('dashboard') ? `/dashboard/event-photos-album/${eventId}?albumId=${album.id}` : `/event-photos-album/${eventId}?albumId=${album.id}`}>
-                                <Card>
-                                    <CardContent className="flex aspect-square items-center justify-center p-4">
-                                        <Image className="rounded-md"
-                                            src={imageUrl} alt={`Image ${index}`} width={2000} height={2000} />
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        ) || window.location.pathname.includes('dashboard/group-photos') && (
-                            <Link href={window.location.pathname.includes('dashboard') ? `/dashboard/group-photos-album/${groupId}?albumId=${album.id}` : `/group-photos-album/${groupId}?albumId=${album.id}`}>
-                                <Card>
-                                    <CardContent className="flex aspect-square items-center justify-center p-4">
-                                        <Image className="rounded-md"
-                                            src={imageUrl} alt={`Image ${index}`} width={2000} height={2000} />
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        )}
-
+                        <Link href={getHref()}>
+                            <Card>
+                                <CardContent className="flex aspect-square items-center justify-center p-4">
+                                    <Image className="rounded-md"
+                                        src={imageUrl} alt={`Image ${index}`} width={2000} height={2000} />
+                                </CardContent>
+                            </Card>
+                        </Link>
                     </CarouselItem>
                 ))}
             </CarouselContent>

@@ -28,16 +28,18 @@ export default function GroupPhotosAlbumPage({
     const queryClient = useQueryClient();
     const [albums, setAlbums] = useState<any[]>([]);
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
-    const { userId } = useUserContext();
+    const { userId, loading } = useUserContext();
     const { ownerId } = useGroupOwnerContext()
     const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
 
-    // if (!ownerId || !userId) {
-    //     router.push('/');
-    //     return null
-    // }
+    useEffect(() => {
+        if (!ownerId || !userId && !loading) {
+            router.push('/');
+            return
+        }
+    }, [ownerId, userId, router]);
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['group-picture-albums', groupId],
@@ -198,11 +200,11 @@ export default function GroupPhotosAlbumPage({
                             )}
 
                             <div className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-between min-[768px]:gap-24">
-                                {memoizedAlbums.map((album, index) => (
-                                    <div className="flex flex-col gap-4">
+                                {currentItems.map((album, index) => (
+                                    <div key={index}
+                                        className="flex flex-col gap-4">
                                         <h2 className="text-xl font-bold tracking-wider">{album.name}</h2>
-                                        <div key={index}
-                                            className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
+                                        <div className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
                                             {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
                                                 <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-2 outline-blue-500 rounded-md' : ''}`}>
                                                     <Image src={imageUrl.publicUrl ?? ''}

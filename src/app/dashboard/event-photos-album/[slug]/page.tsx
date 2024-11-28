@@ -29,16 +29,19 @@ export default function EventPhotosAlbumPage({
     const queryClient = useQueryClient();
     const [albums, setAlbums] = useState<any[]>([]);
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
-    const { userId } = useUserContext();
+    const { userId, loading } = useUserContext();
     const { eventCreatorId } = useGroupOwnerContext();
     const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
 
-    // if (!eventCreatorId || !userId) {
-    //     router.push('/');
-    //     return null
-    // }
+    useEffect(() => {
+        if (!eventCreatorId || !userId && !loading) {
+            router.push('/');
+            return
+        }
+    })
+
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['event-picture-albums', eventId],
@@ -207,7 +210,8 @@ export default function EventPhotosAlbumPage({
                             )}
                             <div className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-between min-[768px]:gap-24">
                                 {currentItems.map((album, index) => (
-                                    <div className="flex flex-col gap-4">
+                                    <div key={index}
+                                        className="flex flex-col gap-4">
                                         <h2 className="text-xl font-bold tracking-wider">{album.name}</h2>
                                         <div key={index}
                                             className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">

@@ -131,7 +131,6 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
     const parsedSocials = typeof socials?.social_media === 'string' ? JSON.parse(socials.social_media) : {};
     const memoizedUserData = useMemo(() => getUserData, [getUserData]);
 
-
     return (
         <>
             {userId && (

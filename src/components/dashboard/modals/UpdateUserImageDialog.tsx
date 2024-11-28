@@ -98,7 +98,8 @@ export const UpdateUserImageDialog = () => {
             return data || [];
         },
         {
-            enabled: !!userId
+            enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
         }
     );
 

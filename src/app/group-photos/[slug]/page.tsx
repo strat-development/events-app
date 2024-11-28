@@ -5,6 +5,7 @@ import { GroupGallery } from "@/features/group-page/GroupGallery";
 import { GroupHero } from "@/features/group-page/GroupHero";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function GroupPhotosPage({
     params
@@ -14,13 +15,14 @@ export default function GroupPhotosPage({
     }
 }) {
     const groupId = params.slug;
-    const { userId } = useUserContext();
+    const { userId, loading } = useUserContext();
     const router = useRouter();
 
-    if (!userId) {
-        router.push('/');
-        return null
-    }
+    useEffect(() => {
+        if (!loading && !userId) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
 
     return (
         <>
@@ -32,10 +34,7 @@ export default function GroupPhotosPage({
                             <CreateGroupImagesAlbumDialog groupId={groupId} />
                         </div>
                     )}
-                    <div className="grid grid-cols-3 gap-8">
-                        <GroupGallery
-                            groupId={groupId} />
-                    </div>
+                    <GroupGallery groupId={groupId} />
                 </div>
             </div>
         </>

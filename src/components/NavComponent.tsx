@@ -15,10 +15,8 @@ export const NavComponent = () => {
 
     return (
         <nav className="flex z-[999999999999999] justify-between items-center p-2 backdrop-blur-lg bg-[#090a0a/20] rounded-lg text-white border border-wihte/10 max-[1200px]:m-4 my-4">
-            <div className="flex items-center">
-                <Link href="/"
-                    className="text-2xl font-bold ml-4">Logo</Link>
-            </div>
+            <Link href="/" className="text-2xl font-bold ml-4">Logo</Link>
+            <Link href="/change-log">Change log</Link>
 
             {!session.session?.user.role === true && (
                 <div className="flex flex-gap-2">
@@ -41,15 +39,15 @@ export const NavComponent = () => {
                             }}>
                             Dashboard
                         </Button>
-                        <Button className="bg-transparent" 
-                        variant={"outline"} 
-                        onClick={(
-                            async () => {
-                                await supabase.auth.signOut();
+                        <Button className="bg-transparent"
+                            variant={"outline"}
+                            onClick={(
+                                async () => {
+                                    await supabase.auth.signOut();
 
-                                router.push("/");
-                            }
-                        )}>
+                                    router.push("/");
+                                }
+                            )}>
                             Logout
                         </Button>
 

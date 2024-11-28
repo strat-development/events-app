@@ -88,7 +88,9 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
             setGroupDescription(data[0].group_description as string)
         }
     },
-        { cacheTime: 10 * 60 * 1000 })
+        {
+            cacheTime: 10 * 60 * 1000,
+        })
 
     return (
         <>

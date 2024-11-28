@@ -7,7 +7,6 @@ import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { Pagination } from "@mui/material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 

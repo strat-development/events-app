@@ -77,7 +77,7 @@ export const ContactDialog = () => {
                                 type="text"
                                 placeholder="Full Name"
                                 autoComplete="false"
-                                className={`w-full px-4 py-3 outline-1 outline-black/30 placeholder:text-black/50 text-black/70 rounded-xl outline-none bg-white  ${errors.name
+                                className={`w-full px-4 py-3 outline-1 outline-white/10 placeholder:text-white/50 text-white/70 rounded-xl outline-none bg-transparent  ${errors.name
                                     ? "border-red-600 focus:border-red-600 ring-red-100 ring-0"
                                     : "border-white/10 ring-gray-100 focus:border-white/10 ring-0"
                                     } `}
@@ -102,7 +102,7 @@ export const ContactDialog = () => {
                                 type="email"
                                 placeholder="Email Address"
                                 autoComplete="false"
-                                className={`w-full px-4 py-3 outline-1 outline-black/30 placeholder:text-black/50 text-black/70 rounded-xl outline-none bg-white  ${errors.name
+                                className={`w-full px-4 py-3 outline-1 outline-white/10 placeholder:text-white/50 text-white/70 rounded-xl outline-none bg-transparent  ${errors.name
                                     ? "border-red-600 focus:border-red-600 ring-red-100 ring-0"
                                     : "border-white/10 ring-gray-100 focus:border-white/10 ring-0"
                                     } `}
@@ -124,7 +124,7 @@ export const ContactDialog = () => {
                         <div className="mb-3">
                             <textarea
                                 placeholder="Your Message"
-                                className={`max-w-[400px] h-[300px] w-full px-4 py-3 outline-1 outline-black/30 placeholder:text-black/50 text-black/70 rounded-xl outline-none bg-white  ${errors.name
+                                className={`max-w-[400px] h-[300px] w-full px-4 py-3 outline-1 outline-white/10 placeholder:text-white/50 text-white/70 rounded-xl outline-none bg-transparent  ${errors.name
                                     ? "border-red-600 focus:border-red-600 ring-red-100 ring-0"
                                     : "border-white/10 ring-gray-100 focus:border-white/10 ring-0"
                                     } `}

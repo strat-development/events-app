@@ -185,8 +185,8 @@ export const UserDataModal = () => {
                                     value={country}
                                     onChange={(e) => setCountry(e.target.value)}
                                 />
-                                <Button id="nextBtn" 
-                                onClick={() => setTabValue("user-interests")}>
+                                <Button id="nextBtn"
+                                    onClick={() => setTabValue("user-interests")}>
                                     Next
                                 </Button>
                             </TabsContent>
@@ -279,41 +279,41 @@ export const UserDataModal = () => {
                     </Tabs>
 
                     {fullName && email && city && country && selectedInterests.length > 0 && userId && (
-                    <Button onClick={() => {
-                        if (!fullName || !email || !city || !country) {
-                            toast({
-                                variant: "destructive",
-                                title: "Error",
-                                description: "Please fill out all fields"
-                            });
-                            return;
-                        } else {
-                            addUserData.mutateAsync([{
-                                full_name: fullName,
-                                email: email,
-                                city: city,
-                                country: country,
-                                user_role: "User",
-                                id: userId
-                            }] as UserData[]);
+                        <Button onClick={() => {
+                            if (!fullName || !email || !city || !country) {
+                                toast({
+                                    variant: "destructive",
+                                    title: "Error",
+                                    description: "Please fill out all fields"
+                                });
+                                return;
+                            } else {
+                                addUserData.mutateAsync([{
+                                    full_name: fullName,
+                                    email: email,
+                                    city: city,
+                                    country: country,
+                                    user_role: "User",
+                                    id: userId
+                                }] as UserData[]);
 
-                            {
-                                if (userId) {
-                                    addInterests.mutateAsync({
-                                        user_interests: selectedInterests,
-                                        id: userId
-                                    } as UserInterestsData, {
-                                        onSuccess: () => {
-                                            window.location.reload()
-                                        }
-                                    })
+                                {
+                                    if (userId) {
+                                        addInterests.mutateAsync({
+                                            user_interests: selectedInterests,
+                                            id: userId
+                                        } as UserInterestsData, {
+                                            onSuccess: () => {
+                                                window.location.reload()
+                                            }
+                                        })
+                                    }
                                 }
-                            }
 
-                            setTabValue("user-interests");
-                        }
-                    }}>Create User</Button>
-                    )}  
+                                setTabValue("user-interests");
+                            }
+                        }}>Create User</Button>
+                    )}
                 </DialogContent>
             </Dialog >
 

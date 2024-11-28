@@ -20,14 +20,14 @@ export default function EventsPage() {
     const [eventInterestFromUrl, setEventInterestFromUrl] = useState<string | null>(null);
     const [eventCityFromUrl, setEventCityFromUrl] = useState<string | null>(null);
     const { city } = useCityContext();
-    const { userId } = useUserContext();
-    const { eventCreatorId } = useGroupOwnerContext();
+    const { userId, loading } = useUserContext();
     const router = useRouter();
 
-    if (!userId) {
-        router.push('/');
-        return null
-    }
+    useEffect(() => {
+        if (!loading && !userId) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
 
     useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
@@ -36,7 +36,7 @@ export default function EventsPage() {
 
         setEventCityFromUrl(cityParam);
         setEventInterestFromUrl(searchParam);
-    });
+    }, []);
 
     const eventQuery = useQuery(
         ['events', eventInterestFromUrl, eventCityFromUrl, city],
@@ -123,7 +123,7 @@ export default function EventsPage() {
                 })
                 .catch(console.error);
         }
-    }, [imageQuery.data]);
+    }, [imageQuery.data, supabase.storage]);
 
     const memoizedEvents = useMemo(() => events, [events]);
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);

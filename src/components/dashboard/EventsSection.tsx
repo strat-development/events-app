@@ -5,16 +5,18 @@ import { CreateEventDialog } from "./modals/CreateEventDialog"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export const EventsSection = () => {
-    const { userId } = useUserContext();
     const { eventCreatorId } = useGroupOwnerContext()
+    const { userId, loading } = useUserContext();
     const router = useRouter();
 
-    if (!userId) {
-        router.push('/');
-        return null
-    }
+    useEffect(() => {
+        if (!loading && !userId) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
 
 
     return (

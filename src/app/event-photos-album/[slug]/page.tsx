@@ -25,15 +25,16 @@ export default function EventPhotosAlbumPage({
     const queryClient = useQueryClient();
     const [albums, setAlbums] = useState<any[]>([]);
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
-    const { userId } = useUserContext();
-    const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
+    const { userId, loading } = useUserContext();
+    const router = useRouter();
 
-    if (!userId) {
-        router.push('/');
-        return null
-    }
+    useEffect(() => {
+        if (!loading && !userId) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['event-picture-albums', eventId],
@@ -93,7 +94,7 @@ export default function EventPhotosAlbumPage({
                 fetchAlbumImages();
             }
         }
-    }, [albumsData, albumsError]);
+    }, [albumsData, albumsError, supabase.storage]);
 
     const deleteImagesMutation = useMutation(
         async (imageUrls: string[]) => {

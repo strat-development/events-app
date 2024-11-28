@@ -3,6 +3,7 @@
 import { CustomEventPage } from "@/features/custom-event-page/CustomEventPage";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function EventPage({
     params
@@ -12,13 +13,15 @@ export default function EventPage({
     }
 }) {
     const eventId = params.slug;
-    const { userId } = useUserContext();
+
+    const { userId, loading } = useUserContext();
     const router = useRouter();
 
-    // if (!userId) {
-    //     router.push('/');
-    //     return null
-    // }
+    useEffect(() => {
+        if (!loading && !userId) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
 
     return (
         <div className="flex justify-center items-center min-h-screen">

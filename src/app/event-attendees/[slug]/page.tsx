@@ -107,8 +107,9 @@ export default function EventAttendeesPage({
         <div className="pt-24 flex flex-col gap-8 max-w-[1200px] w-full justify-self-center">
             <div className="flex flex-col gap-1">
                 <p className="text-white/70">Event attendees for </p>
-                {eventData.data?.map((event) => (
-                    <div className="flex flex-col gap-2">
+                {eventData.data?.map((event, index) => (
+                    <div key={index}
+                        className="flex flex-col gap-2">
                         <div className="flex gap-2 items-end">
                             <h2 key={event.id} className="text-2xl font-bold">{event.event_title}</h2>
                             <p className="text-white/60">({memoizedEventAttendeesData.data?.length} in total)</p>

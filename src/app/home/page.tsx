@@ -5,21 +5,26 @@ import { EventsSection } from "@/features/events-main-page/EventsSection";
 import { useCityContext } from "@/providers/cityContextProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
     const { city } = useCityContext();
-    const { userId, userName } = useUserContext();
+    const { userId, loading, userName } = useUserContext();
     const router = useRouter();
 
-    if (!userId) {
-        router.push('/');
-        return null
-    }
+    useEffect(() => {
+        if (!loading && !userId) {
+            router.push('/');
+        }
 
-    if (!userName) {
-        router.push('/dashboard');
-        return null
-    }
+        if (!userName && !loading) {
+            router.push('/dashboard');
+            return;
+        }
+        
+    }, [loading, userId, userName, router]);
+
+
 
     return (
         <div className="flex flex-col items-center mt-24 gap-16">

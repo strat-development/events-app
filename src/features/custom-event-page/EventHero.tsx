@@ -425,4 +425,3 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
         </div >
     )
 }
-

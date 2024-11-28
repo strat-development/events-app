@@ -13,26 +13,15 @@ import { useRouter } from "next/navigation";
 import { Key, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-export default function GroupPhotosAlbumPage({
-    params
-}: {
-    params: {
-        slug: string
-    }
-}) {
+export default function GroupPhotosAlbumPage({ params }: { params: { slug: string } }) {
     const groupId = params.slug;
     const supabase = createClientComponentClient<Database>();
     const queryClient = useQueryClient();
     const [albums, setAlbums] = useState<any[]>([]);
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
     const { userId } = useUserContext();
-    const { ownerId } = useGroupOwnerContext()
+    const { ownerId } = useGroupOwnerContext();
     const router = useRouter();
-
-    if (!userId) {
-        router.push('/');
-        return null
-    }
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['group-picture-albums', groupId],
@@ -67,7 +56,7 @@ export default function GroupPhotosAlbumPage({
                     const imageUrlsArray = JSON.parse(imageUrls);
 
                     const publicUrls = await Promise.all(imageUrlsArray.map(async (imagePath: string) => {
-                        const { data: publicURL } = await supabase.storage
+                        const { data: publicURL } = await supabaseAdmin.storage
                             .from('group-albums-pictures')
                             .getPublicUrl(imagePath);
 
@@ -92,7 +81,7 @@ export default function GroupPhotosAlbumPage({
                 fetchAlbumImages();
             }
         }
-    }, [albumsData, albumsError]);
+    }, [albumsData, albumsError, supabase.storage]);
 
     const deleteImagesMutation = useMutation(
         async (imageUrls: string[]) => {
@@ -139,7 +128,7 @@ export default function GroupPhotosAlbumPage({
 
             await Promise.all(updatePromises);
 
-            queryClient.invalidateQueries(['group-albums-pictures', groupId]);
+            queryClient.invalidateQueries(['group-picture-albums', groupId]);
         }
     );
 
@@ -158,50 +147,51 @@ export default function GroupPhotosAlbumPage({
     const memoizedAlbums = useMemo(() => albums, [albums]);
 
     return (
-        <>
-            <div className="h-screen flex flex-col items-center justify-center w-full">
-                <h1 className="text-3xl font-bold">Group Photos Album</h1>
-                <GroupHero groupId={groupId} />
-                <div className="flex flex-col gap-8 items-center justify-center">
-                    {window.location.pathname.includes("/dashboard") && ownerId === userId && (
-                        <UpdateGroupImagesAlbumDialog />
-                    )}
-                    <div className="grid grid-cols-3 gap-8 items-center">
-                        {memoizedAlbums.map((album, index) => (
-                            <div key={index}>
-                                <h2 className="text-xl font-bold">{album.name}</h2>
-                                <div className="grid grid-cols-3 gap-8">
-                                    {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
-                                        <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>
-                                            <Image src={imageUrl.publicUrl || ""}
-                                                alt={`Image ${index}`}
-                                                width={2000}
-                                                height={2000} />
-                                            <input
-                                                type="checkbox"
-                                                className="absolute top-2 right-2"
-                                                checked={selectedImages.includes(imageUrl.publicUrl ?? '')}
-                                                onChange={() => handleCheckboxChange(imageUrl.publicUrl ?? '')}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
+        <div className="h-screen flex flex-col items-center justify-center w-full">
+            <h1 className="text-3xl font-bold">Group Photos Album</h1>
+            <GroupHero groupId={groupId} />
+            <div className="flex flex-col gap-8 items-center justify-center">
                 {window.location.pathname.includes("/dashboard") && ownerId === userId && (
-                    <Button onClick={() => {
+                    <UpdateGroupImagesAlbumDialog />
+                )}
+                <div className="grid grid-cols-3 gap-8 items-center">
+                    {memoizedAlbums.map((album, index) => (
+                        <div key={index}>
+                            <h2 className="text-xl font-bold">{album.name}</h2>
+                            <div className="grid grid-cols-3 gap-8">
+                                {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
+                                    <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>
+                                        <Image
+                                            src={imageUrl.publicUrl || ""}
+                                            alt={`Image ${index}`}
+                                            width={2000}
+                                            height={2000}
+                                        />
+                                        <input
+                                            type="checkbox"
+                                            className="absolute top-2 right-2"
+                                            checked={selectedImages.includes(imageUrl.publicUrl ?? '')}
+                                            onChange={() => handleCheckboxChange(imageUrl.publicUrl ?? '')}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {window.location.pathname.includes("/dashboard") && ownerId === userId && (
+                <Button
+                    onClick={() => {
                         deleteImagesMutation.mutate(Array.from(selectedImages));
                         setSelectedImages([]);
-                    }
-                    }
-                        disabled={selectedImages.length === 0}>
-                        Delete Selected Images
-                    </Button>
-                )}
-            </div>
-        </>
+                    }}
+                    disabled={selectedImages.length === 0}
+                >
+                    Delete Selected Images
+                </Button>
+            )}
+        </div>
     );
 }

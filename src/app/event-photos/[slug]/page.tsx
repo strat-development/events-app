@@ -6,6 +6,7 @@ import { EventHero } from "@/features/custom-event-page/EventHero";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function EventPhotosPage({
     params
@@ -15,27 +16,26 @@ export default function EventPhotosPage({
     }
 }) {
     const eventId = params.slug;
-    const { userId } = useUserContext();
+    const { userId, loading } = useUserContext();
     const router = useRouter();
 
-    if (!userId) {
-        router.push('/');
-        return null
-    }
+    useEffect(() => {
+        if (!loading && !userId) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
 
     return (
         <>
-            <div className="flex justify-between items-center h-[100vh]">
-                <div className="flex flex-col gap-8 items-center w-full min-h-screen relative top-24">
+            <div className="flex justify-self-center justify-between items-start min-h-screen max-w-[1200px] w-full">
+                <div className="flex flex-col gap-8 max-w-[1200px] w-full min-h-screen relative top-24">
                     <EventHero eventId={eventId} />
                     {window.location.pathname.includes("/dashboard") && (
-                        <div>
+                        <div className="jusify-self-end">
                             <CreateEventImagesAlbumDialog eventId={eventId} />
                         </div>
                     )}
-                    <div className="grid grid-cols-3 gap-8">
-                        <EventGallery eventId={eventId} />
-                    </div>
+                    <EventGallery eventId={eventId} />
                 </div>
             </div>
         </>

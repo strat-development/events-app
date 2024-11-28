@@ -111,8 +111,9 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
                 </div>
             </Link>
 
-            {eventData?.map((event) => (
-                <div className="flex flex-col gap-2">
+            {eventData?.map((event, index) => (
+                <div key={index}
+                    className="flex flex-col gap-2">
                     <div className="flex gap-2 items-center">
                         <Clock className="text-white/70"
                             size={18}

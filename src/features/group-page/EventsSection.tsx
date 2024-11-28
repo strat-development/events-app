@@ -23,8 +23,6 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
     const [imageUrls, setImageUrls] = useState<{ [eventId: string]: string }>({});
     const router = useRouter();
 
-    console.log(eventIds)
-
     const events = useQuery(['upcoming-events'], async () => {
         const { data, error } = await supabase
             .from("events")

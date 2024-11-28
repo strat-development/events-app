@@ -104,7 +104,7 @@ export const DeleteGroupAlbumDialog = ({ albumId }: DeleteGroupAlbumDialogProps)
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
                             <DialogTitle>Delete Album</DialogTitle>
-                            <DialogDescription>
+                            <DialogDescription className="text-white/70">
                                 Are you sure you want to delete this Album? If not please close this dialog.
                             </DialogDescription>
                         </DialogHeader>

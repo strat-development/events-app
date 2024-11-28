@@ -84,7 +84,7 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
                             </Link>
                         ))}
                     </div>
-                    {memoizedGroupMembers && memoizedGroupMembers?.length > 0 && (
+                    {memoizedGroupMembers && memoizedGroupMembers?.length > 3 && (
                         <Link className="text-white/70" 
                         href={`/group-members/${groupId}`}>
                             More

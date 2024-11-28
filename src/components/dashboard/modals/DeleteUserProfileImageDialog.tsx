@@ -78,7 +78,7 @@ export const DeleteUserProfileImageDialog = () => {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Delete picture</DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="text-white/70">
                             Are you sure you want to delete your profile picture? If not please close this dialog.
                         </DialogDescription>
                     </DialogHeader>

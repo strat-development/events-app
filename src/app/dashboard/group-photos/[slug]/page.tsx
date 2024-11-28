@@ -7,6 +7,7 @@ import { GroupHero } from "@/features/group-page/GroupHero";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function GroupPhotosPage({
     params
@@ -16,14 +17,15 @@ export default function GroupPhotosPage({
     }
 }) {
     const groupId = params.slug;
-    const { userId } = useUserContext();
+    const { userId, loading } = useUserContext();
     const { ownerId } = useGroupOwnerContext();
     const router = useRouter();
 
-    // if (!ownerId || !userId) {
-    //     router.push('/');
-    //     return null
-    // }
+    useEffect(() => {
+        if (!loading && !userId && !ownerId) {
+            router.push('/');
+        }
+    }, [loading, userId, ownerId, router]);
 
     return (
         <>

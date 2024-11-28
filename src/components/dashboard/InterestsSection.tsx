@@ -35,6 +35,7 @@ export const InterestsSection = () => {
             .from("users")
             .select("user_interests")
             .eq("id", userId)
+
         if (error) {
             throw error
         }
@@ -46,6 +47,7 @@ export const InterestsSection = () => {
         return data
     }, {
         enabled: !!userId,
+        cacheTime: 10 * 60 * 1000,
     })
 
 

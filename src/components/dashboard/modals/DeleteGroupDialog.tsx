@@ -59,7 +59,7 @@ export const DeleteGroupDialog = ({ groupId }: DeleteGroupDialogProps) => {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Delete Group</DialogTitle>
+                        <DialogTitle className="text-white/70">Delete Group</DialogTitle>
                         <DialogDescription>
                             Are you sure you want to delete this Group? If not please close this dialog.
                         </DialogDescription>

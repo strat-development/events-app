@@ -3,6 +3,7 @@
 import { CustomUserPage } from "@/features/custom-user-page/CustomUserPage";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function UserProfilePage({
     params
@@ -12,13 +13,14 @@ export default function UserProfilePage({
     }
 }) {
     const profileUserId = params.slug;
-    const { userId } = useUserContext();
+    const { userId, loading } = useUserContext();
     const router = useRouter();
 
-    if (!userId) {
-        router.push('/');
-        return null
-    }
+    useEffect(() => {
+        if (!loading && !userId) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
 
     return (
         <div className="mt-24 max-w-[1200px] w-full justify-self-center">

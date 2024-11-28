@@ -16,6 +16,7 @@ type UserContextType = {
     clearUserRole: () => void;
     userInterests: string[];
     setUserInterests: (userInterests: string[]) => void;
+    loading: boolean;
 };
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -26,6 +27,7 @@ export default function UserContextProvider({ children }: { children: React.Reac
     const [userEmail, setUserEmail] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
     const [userInterests, setUserInterests] = useState<string[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const {
         supabaseClient: supabase
@@ -35,13 +37,14 @@ export default function UserContextProvider({ children }: { children: React.Reac
 
     useEffect(() => {
         if (user) {
+            setLoading(true);
             const getUserRole = async () => {
                 const { data: userData, error } = await supabase
                     .from("users")
                     .select("user_role, full_name, email, id, user_interests")
                     .eq("id", user.id)
                     .single();
-                    
+
                 if (error) {
                     console.log(error);
                 }
@@ -59,18 +62,20 @@ export default function UserContextProvider({ children }: { children: React.Reac
     }, [user, supabase]);
 
     return (
-        <UserContext.Provider value={{ 
-            userRole, 
-            setUserRole, 
-            userName, 
-            setUserName, 
+        <UserContext.Provider value={{
+            userRole,
+            setUserRole,
+            userName,
+            setUserName,
             userEmail,
             setUserEmail,
             userId,
             setUserId,
             userInterests,
             setUserInterests,
-            clearUserRole }}>
+            clearUserRole,
+            loading
+        }}>
             {children}
         </UserContext.Provider>
     );

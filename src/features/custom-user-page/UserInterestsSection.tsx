@@ -37,10 +37,11 @@ export const UserInterestsSection = ({ userId }: UserInterestsProps) => {
     return (
         <div className="flex flex-col gap-4 items-start w-fit">
             <h1 className="text-2xl font-bold">Interests</h1>
-            <div className="grid grid-cols-2 gap-4 min-[900px]:grid-cols-3">
+            <div className="grid grid-cols-2 gap-4 min-[900px]:grid-cols-3 min-[1200px]:grid-cols-4">
                 {memoizedUserInterests && (
                     memoizedUserInterests.map((interest, index) => (
-                        <div className="border border-white/10 bg-gradient-to-br from-white/10 to-transparent transition duration-300 p-2 rounded-md text-lg cursor-pointer w-f">
+                        <div key={index}
+                            className="border border-white/10 bg-gradient-to-br from-white/10 to-transparent transition duration-300 p-2 rounded-md text-lg cursor-pointer w-f">
                             <p key={index}>{interest}</p>
                         </div>
                     )))}

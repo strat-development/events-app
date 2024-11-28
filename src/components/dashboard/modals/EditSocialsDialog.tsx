@@ -69,7 +69,7 @@ export const EditSocialsDialog = () => {
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Delete event</DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="text-white/70">
                             Are you sure you want to delete this event? If not please close this dialog.
                         </DialogDescription>
                     </DialogHeader>

@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react";
 import { GroupCard } from "./GroupCard"
 import { Navbar } from "./Navbar"
 import { CreateGroupDialog } from "./modals/CreateGroupDialog"
@@ -8,14 +9,15 @@ import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
 
 export const GroupSection = () => {
-    const { userId } = useUserContext();
     const { ownerId } = useGroupOwnerContext()
+    const { userId, loading } = useUserContext();
     const router = useRouter();
 
-    if (!userId) {
-        router.push('/');
-        return null
-    }
+    useEffect(() => {
+        if (!loading && !userId) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
 
     return (
         <>

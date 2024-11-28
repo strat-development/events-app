@@ -4,15 +4,17 @@ import { InterestsSection } from "@/components/dashboard/InterestsSection";
 import { Navbar } from "@/components/dashboard/Navbar";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function InterestsPage() {
-    const { userId } = useUserContext();
+    const { userId, loading } = useUserContext();
     const router = useRouter();
 
-    if (!userId) {
-        router.push('/');
-        return null
-    }
+    useEffect(() => {
+        if (!loading && !userId) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
 
     return (
         <>

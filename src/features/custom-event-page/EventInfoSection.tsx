@@ -21,7 +21,7 @@ interface EventInfoSectionProps {
 export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const supabase = createClientComponentClient<Database>()
     const [eventDescription, setEventDescription] = useState<string>()
-    const [isExpanded, setIsExpanded] = useState(false) 
+    const [isExpanded, setIsExpanded] = useState(false)
     const [isSetToEdit, setIsSetToEdit] = useState(false)
     const [eventHostId, setEventHostId] = useState<string>()
     const [attendeesId, setAttendeesId] = useState<string[]>([])
@@ -207,7 +207,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                             ))}
                         </div>
 
-                        {memoizedEventAttendeesData.data && memoizedEventAttendeesData.data.length > 0 && (
+                        {memoizedEventAttendeesData.data && memoizedEventAttendeesData.data.length > 3 && (
                             <Link href={`/event-attendees/${eventId}`}>
                                 <div className="flex flex-col relative gap-2 items-center border border-white/10 p-4 rounded-md text-center w-[144px] h-full">
                                     <Image className="rounded-full blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
