@@ -15,6 +15,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Database } from "@/types/supabase"
 import { format, parseISO } from "date-fns"
 import { UpdateEventHeroImageDialog } from "@/components/dashboard/modals/UpdateEventHeroImageDialog"
+import { DeleteEventPictureDialog } from "@/components/dashboard/modals/DeleteEventPictureDialog"
 
 interface EventHeroProps {
     eventId: string
@@ -83,143 +84,9 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
         }
     })
 
-    const addGroupPicture = useMutation(
-        async (paths: string[]) => {
-            const results = await Promise.all(paths.map(async (path) => {
-                const { data, error } = await supabase
-                    .from('event-pictures')
-                    .upsert({
-                        event_id: eventId,
-                        hero_picture_url: path
-                    });
-                if (error) {
-                    throw error;
-                }
-                return data;
-            }));
 
-            return results;
-        },
-    );
 
-    const updateGroupPicture = useMutation(
-        async (path: string) => {
-            const { data: currentData, error: fetchError } = await supabase
-                .from('event-pictures')
-                .select('hero_picture_url')
-                .eq('event_id', eventId)
-                .single();
 
-            if (fetchError) {
-                throw fetchError;
-            }
-
-            const currentUrl = currentData?.hero_picture_url;
-
-            if (currentUrl) {
-                const { error: deleteError } = await supabaseAdmin.storage
-                    .from('event-pictures')
-                    .remove([currentUrl]);
-
-                if (deleteError) {
-                    throw deleteError;
-                }
-            }
-
-            const { data, error } = await supabase
-                .from('event-pictures')
-                .update({
-                    hero_picture_url: path
-                })
-                .eq('event_id', eventId);
-
-            if (error) {
-                throw error;
-            }
-
-            return data;
-        },
-        {
-            onSuccess: () => {
-                toast({
-                    title: "Success",
-                    description: "Image updated successfully",
-                });
-
-                queryClient.invalidateQueries('event-pictures');
-            },
-            onError: () => {
-                toast({
-                    title: "Error",
-                    description: "Failed to update image",
-                });
-            }
-        }
-    );
-
-    const deleteGroupPicture = useMutation(
-        async (path: string) => {
-            const { data, error } = await supabase
-                .from('event-pictures')
-                .delete()
-                .eq('hero_picture_url', path);
-            if (error) {
-                throw error;
-            }
-
-            const { error: storageError } = await supabaseAdmin.storage
-                .from('event-pictures')
-                .remove([path]);
-
-            if (storageError) {
-                throw storageError;
-            }
-
-            return data;
-        },
-        {
-            onSuccess: () => {
-                toast({
-                    title: "Success",
-                    description: "Image deleted successfully",
-                });
-
-                queryClient.invalidateQueries('event-pictures');
-            },
-            onError: () => {
-                toast({
-                    title: "Error",
-                    description: "Failed to delete image",
-                });
-            }
-        }
-    );
-
-    const uploadFiles = async (files: File[]) => {
-        const uploadPromises = files.map((file) => {
-            const path = `${file.name}${Math.random()}.${file.name.split('.').pop()}`;
-            return { promise: supabaseAdmin.storage.from('event-pictures').upload(path, file), path };
-        });
-
-        const responses = await Promise.all(uploadPromises.map(({ promise }) => promise));
-
-        responses.forEach((response, index) => {
-            if (response.error) {
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: `Error uploading file ${files[index].name}`
-                })
-            } else {
-                toast({
-                    title: "Success",
-                    description: `File ${files[index].name} uploaded successfully`
-                })
-            }
-        });
-
-        return uploadPromises.map(({ path }) => path);
-    }
 
     const { data: images, isLoading } = useQuery(
         ['event-pictures', eventId],
@@ -319,11 +186,12 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                         <div className="flex flex-col gap-2">
                             <div className="flex flex-col gap-2">
                                 <div className="flex gap-4">
-                                    <h1 className="text-3xl tracking-wider font-bold">{event.event_title}</h1>
+                                    <h1 className="text-3xl tracking-wider font-semibold">{event.event_title}</h1>
 
                                     {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !eventNameToEdit && (
                                         <Button onClick={() => setEventNameToEdit(true)}>Edit</Button>
                                     )}
+
                                 </div>
                                 <div className="flex flex-col gap-1 min-[900px]:hidden">
                                     <p className="text-lg text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
@@ -358,7 +226,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                                         />
                                     ))}
                                     <div className="flex flex-col">
-                                        <h3 className="text-xl font-bold tracking-wider">{memoizedGroupInfo.data?.[0].group_name}</h3>
+                                        <h3 className="text-xl font-semibold tracking-wide">{memoizedGroupInfo.data?.[0].group_name}</h3>
                                         <p className="text-white/70">{memoizedGroupInfo.data?.[0].group_country}, {memoizedGroupInfo.data?.[0].group_city}</p>
                                     </div>
                                 </div>
@@ -368,7 +236,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                         <div className="flex gap-4">
                             <div className="flex flex-col gap-4">
                                 {memoizedImageUrls.map((image) => (
-                                    <Image className="aspect-square min-[768px]:aspect-video rounded-md object-contain"
+                                    <Image className="aspect-square min-[768px]:aspect-video rounded-md object-contain border border-white/10"
                                         key={image.publicUrl}
                                         src={image.publicUrl}
                                         alt=""
@@ -380,17 +248,12 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                                 {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
                                     images?.length ?? 0) > 0 && (
                                         <div className="flex gap-4">
-                                            <Button variant={"destructive"}
-                                                onClick={() => {
-                                                    if (images) {
-                                                        if (images[0].hero_picture_url) {
-                                                            deleteGroupPicture.mutateAsync(images[0].hero_picture_url);
-                                                        }
-                                                    }
-                                                }}>Delete picture</Button>
+                                            <DeleteEventPictureDialog images={images} />
 
                                             <UpdateEventHeroImageDialog eventId={eventId} />
                                         </div>
+                                    ) || (
+                                        <UpdateEventHeroImageDialog eventId={eventId} />
                                     )}
                             </div>
                         </div>

@@ -108,7 +108,7 @@ export const InterestsSection = () => {
     return (
         <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-1">
-                <h1 className="text-2xl font-bold">Interests</h1>
+                <h1 className="text-2xl font-bold tracking-wider">Interests</h1>
                 <p className="text-white/70">Select to remove</p>
             </div>
 
@@ -199,7 +199,7 @@ export const InterestsSection = () => {
             <div className="flex flex-col gap-8">
                 {selectedInterests.length > 0 && (
                     <div className="flex flex-col gap-4">
-                        <h2 className="text-xl font-semibold">Selected Interests</h2>
+                        <h2 className="text-xl tracking-wider font-semibold">Selected Interests</h2>
                         <div className="flex flex-wrap gap-4">
                             {selectedInterests.map((interest) => (
                                 <Button key={interest}

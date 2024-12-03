@@ -74,7 +74,7 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
     return (
         <>
             <div className="flex flex-col gap-4 sticky top-24">
-                <h2 className='text-2xl font-bold'>Group members</h2>
+                <h2 className='text-2xl tracking-wider font-bold'>Group members</h2>
                 <div className="flex items-start gap-4">
                     <div className='grid grid-cols-4'>
                         {memoizedGroupMembers?.slice(0, 12).map((member) => (

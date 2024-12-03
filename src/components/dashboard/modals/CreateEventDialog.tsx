@@ -141,7 +141,7 @@ export const CreateEventDialog = () => {
                     }}
                         variant="outline">Create event</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Edit event</DialogTitle>
                         <DialogDescription>

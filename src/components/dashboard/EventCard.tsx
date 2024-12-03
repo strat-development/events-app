@@ -12,6 +12,7 @@ import { Pagination } from "@mui/material"
 import { Ticket } from "lucide-react"
 import { format, parseISO } from "date-fns";
 import { useRouter } from "next/navigation"
+import { DeleteEventDialog } from "./modals/DeleteEventDialog"
 
 export const EventCard = () => {
     const supabase = createClientComponentClient<Database>()
@@ -162,7 +163,7 @@ export const EventCard = () => {
                                         className="object-cover rounded-md w-full max-h-[240px]"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                    <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-md">
                                         <p className="text-center font-medium">No image available 😔</p>
                                     </div>
                                 )}
@@ -214,8 +215,11 @@ export const EventCard = () => {
                                         <p className="text-sm font-bold tracking-wide text-white/70">{event.ticket_price}</p>
                                     </div>
                                 </div>
-                                <Button className="rounded-md mt-2 w-fit text-sm"
-                                    onClick={() => router.push(`/dashboard/event-page/${event.id}`)}>View event</Button>
+                                <div className="flex gap-4 items-baseline">
+                                    <Button className="rounded-md mt-2 w-fit text-sm"
+                                        onClick={() => router.push(`/dashboard/event-page/${event.id}`)}>View event</Button>
+                                    <DeleteEventDialog eventId={event.id} />
+                                </div>
                             </div>
                         </div>
                     ))

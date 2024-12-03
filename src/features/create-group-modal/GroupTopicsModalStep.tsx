@@ -85,7 +85,7 @@ export const GroupTopicsModalStep = () => {
             <div>
                 {selectedInterests.length > 0 && (
                     <div>
-                        <h2 className="text-xl font-semibold">Selected Interests</h2>
+                        <h2 className="text-xl tracking-wider font-semibold">Selected Interests</h2>
                         <div className="flex gap-2">
                             {selectedInterests.map((interest) => (
                                 <Button

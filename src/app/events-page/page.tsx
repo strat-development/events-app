@@ -142,7 +142,7 @@ export default function EventsPage() {
                             />
                         )}
                         <Link href={`/event-page/${event.id}`}>
-                            <h1 className="text-2xl font-bold">{event.event_title}</h1>
+                            <h1 className="text-2xl font-bold tracking-wider">{event.event_title}</h1>
                         </Link>
                         <p>{event.starts_at}</p>
                         <p>{event.event_address}</p>

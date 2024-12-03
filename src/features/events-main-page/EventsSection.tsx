@@ -159,7 +159,7 @@ export const EventsSection = () => {
                     <UserGroupsSection />
                 </div>
                 <div className="flex flex-col gap-8 w-full">
-                    <h1 className="text-2xl font-bold tracking-wider">Upcoming events</h1>
+                    <h1 className="text-2xl font-bold tracking-wider text-white/70">Upcoming events</h1>
                     {currentItems.map((event: EventData) => (
                         <div key={event.id} className="flex flex-col w-full gap-8">
                             <div className="flex flex-col gap-2">

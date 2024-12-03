@@ -104,7 +104,8 @@ export default function GroupMembersPage({
                     <div key={index}
                         className="flex flex-col gap-2">
                         <div className="flex gap-2 items-end">
-                            <h2 key={group.id} className="text-2xl font-bold">{group.group_name}</h2>
+                            <h2 key={group.id} 
+                            className="text-2xl tracking-wider font-bold">{group.group_name}</h2>
                             <p className="text-white/60">({memoizedGroupMembersData.data?.length} in total)</p>
                         </div>
                         <div className="flex gap-4">

@@ -14,7 +14,7 @@ export const EditUserProfileDialog = () => {
     const supabase = createClientComponentClient<Database>();
     const queryClient = useQueryClient();
     const { userId } = useUserContext();
-    const [firstName, setFirstName] = useState("");
+    const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [city, setCity] = useState("");
     const [country, setCountry] = useState("");
@@ -53,12 +53,12 @@ export const EditUserProfileDialog = () => {
                 <DialogTrigger asChild>
                     <Button className="w-fit">Edit user</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="max-w-[425px]">
                     <Input className="mt-8" 
                     id="fullName"
-                        placeholder="First Name"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        placeholder="Full Name"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
                     />
                     <Input id="email"
                         placeholder="Email"
@@ -78,7 +78,7 @@ export const EditUserProfileDialog = () => {
 
                     <DialogFooter>
                         <Button onClick={() => {
-                            if (!firstName || !email || !city || !country) {
+                            if (!fullName || !email || !city || !country) {
                                 toast({
                                     variant: "destructive",
                                     title: "Error",
@@ -87,7 +87,7 @@ export const EditUserProfileDialog = () => {
                                 return;
                             } else {
                                 addUserData.mutateAsync([{
-                                    full_name: firstName,
+                                    full_name: fullName,
                                     email: email,
                                     city: city,
                                     country: country,

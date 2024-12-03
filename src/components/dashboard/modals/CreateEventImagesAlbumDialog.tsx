@@ -121,7 +121,7 @@ export const CreateEventImagesAlbumDialog = ({ eventId }: CreateEventImagesAlbum
                 <DialogTrigger asChild>
                     <Button>Add images</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="max-w-[425px]">
                     <Input className="mt-8"
                         placeholder="Album Name"
                         value={albumName}

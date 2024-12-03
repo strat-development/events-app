@@ -148,7 +148,7 @@ export default function GroupPhotosAlbumPage({ params }: { params: { slug: strin
 
     return (
         <div className="h-screen flex flex-col items-center justify-center w-full">
-            <h1 className="text-3xl font-bold">Group Photos Album</h1>
+            <h1 className="text-3xl font-bold tracking-wider">Group Photos Album</h1>
             <GroupHero groupId={groupId} />
             <div className="flex flex-col gap-8 items-center justify-center">
                 {window.location.pathname.includes("/dashboard") && ownerId === userId && (
@@ -157,7 +157,7 @@ export default function GroupPhotosAlbumPage({ params }: { params: { slug: strin
                 <div className="grid grid-cols-3 gap-8 items-center">
                     {memoizedAlbums.map((album, index) => (
                         <div key={index}>
-                            <h2 className="text-xl font-bold">{album.name}</h2>
+                            <h2 className="text-xl tracking-wider font-bold">{album.name}</h2>
                             <div className="grid grid-cols-3 gap-8">
                                 {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
                                     <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>

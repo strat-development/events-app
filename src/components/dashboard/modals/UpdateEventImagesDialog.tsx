@@ -106,7 +106,7 @@ export const UpdateEventImagesAlbumDialog = () => {
                 <DialogTrigger asChild>
                     <Button>Upload more</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="max-w-[425px]">
                     <FileUpload onChange={setFiles} />
 
                     <DialogFooter className="flex justify-center w-full">

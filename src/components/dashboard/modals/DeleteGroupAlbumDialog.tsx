@@ -101,7 +101,7 @@ export const DeleteGroupAlbumDialog = ({ albumId }: DeleteGroupAlbumDialogProps)
                         <Trash strokeWidth={1}
                             className="text-red-500" />
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
+                    <DialogContent className="max-w-[425px]">
                         <DialogHeader>
                             <DialogTitle>Delete Album</DialogTitle>
                             <DialogDescription className="text-white/70">

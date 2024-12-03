@@ -19,7 +19,7 @@ export const CalendarDialog = ({ onDayClick }: CalendarDialogProps) => {
                     className="w-6 h-6 text-black" 
                     onClick={() => setIsOpen(true)} />
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] flex flex-col items-center">
+                <DialogContent className="max-w-[425px] flex flex-col items-center">
                     <DialogHeader>
                         <DialogTitle>Select date</DialogTitle>
                     </DialogHeader>

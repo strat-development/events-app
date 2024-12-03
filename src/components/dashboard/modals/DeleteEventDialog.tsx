@@ -57,7 +57,7 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
                 <DialogTrigger asChild>
                 <Button variant="destructive">Delete</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Delete event</DialogTitle>
                         <DialogDescription className="text-white/70">

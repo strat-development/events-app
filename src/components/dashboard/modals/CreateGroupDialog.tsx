@@ -82,7 +82,7 @@ export const CreateGroupDialog = () => {
                     <Button className="bg-transparent" 
                     variant="outline">Create Group</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Create Group</DialogTitle>
                         <DialogDescription>

@@ -18,6 +18,7 @@ import { TextEditor } from "@/features/TextEditor";
 import { Button } from "../../components/ui/button";
 import { toast } from "../../components/ui/use-toast";
 import { UpdateUserImageDialog } from "@/components/dashboard/modals/UpdateUserImageDialog";
+import { IconGhost2Filled } from "@tabler/icons-react";
 
 interface UserProfileSectionProps {
     userId: string;
@@ -149,8 +150,10 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                         className="rounded-md"
                                     />
                                 )) || (
-                                        <div className="w-full h-full flex items-center justify-center rounded-md bg-white/10">
-                                            <p className="text-white/60">No profile picture</p>
+                                        <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-md bg-white/5">
+                                            <IconGhost2Filled className="w-24 h-24 text-white/70"
+                                                strokeWidth={1} />
+                                            <p className="text-white/50 text-lg">No profile picture</p>
                                         </div>
                                     )}
 

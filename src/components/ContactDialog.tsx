@@ -9,7 +9,11 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
-export const ContactDialog = () => {
+interface ContactDialogProps {
+    expanded?: (expanded: boolean) => void;
+}
+
+export const ContactDialog = ({ expanded }: ContactDialogProps) => {
     const {
         register,
         handleSubmit,
@@ -55,16 +59,19 @@ export const ContactDialog = () => {
     return (
         <>
             <Dialog open={isOpen}
-                onOpenChange={setIsOpen}>
+                onOpenChange={(open) => {
+                    setIsOpen(open);
+                    if (expanded) expanded(false);
+                }}>
                 <DialogTrigger asChild>
                     <p className="cursor-pointer text-white/70"
                         onClick={() => setIsOpen(true)}>
                         Contact
                     </p>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] w-full flex flex-col items-center">
-                    <form className="p-4 w-full" 
-                    onSubmit={handleSubmit(onSubmit)}>
+                <DialogContent className="max-w-[425px] w-full flex flex-col items-center z-[999999999999999]">
+                    <form className="p-4 w-full"
+                        onSubmit={handleSubmit(onSubmit)}>
                         <Input
                             type="checkbox"
                             id=""

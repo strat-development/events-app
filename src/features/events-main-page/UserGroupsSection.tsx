@@ -97,7 +97,7 @@ export const UserGroupsSection = () => {
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
 
     return (
-        <div className="flex gap-8 max-w-[440px] w-full max-[1200px]:overflow-y-scroll min-[1200px]:w-fit min-[1200px]:overflow-x-hidden max-h-[416px]">
+        <div className="flex gap-8 max-w-[440px] w-full min-[1200px]:w-fit overflow-y-auto max-h-[416px]">
             {memoizedGroupsData?.map((group) => (
                 <div key={group.id} className="border rounded-md border-white/10 w-full">
                     <div className="flex w-full gap-4 p-4 h-[192px]">
@@ -121,7 +121,7 @@ export const UserGroupsSection = () => {
                                 )}
                         </div>
                         <div className="flex flex-col gap-2">
-                            <h1 className="text-2xl font-bold line-clamp-2">{group.group_name}</h1>
+                            <h1 className="text-2xl font-bold line-clamp-2 tracking-wider">{group.group_name}</h1>
                             <div className="flex flex-col gap-1">
                                 <p className="text-lg font-medium text-white/70">{group.group_country}</p>
                                 <p className="text-white/50">{group.group_city}</p>

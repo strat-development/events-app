@@ -14,7 +14,7 @@ export const CustomEventPage = ({
     return (
         <>
             <div className="max-w-[1200px] w-full justify-self-center">
-                <div className="flex justify-between pb-24">
+                <div className="flex justify-between gap-8 pb-24">
                     <div className="flex flex-col gap-8 items-center min-h-screen w-full relative top-24">
                         <EventHero eventId={eventId} />
                         <EventInfoSection eventId={eventId} />

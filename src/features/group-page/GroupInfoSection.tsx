@@ -116,16 +116,21 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                                         editorContent={groupDescription as string}
                                         onChange={setGroupDescription}
                                     />
-                                    <Button onClick={() => setIsSetToEdit(false)}>
-                                        Cancel
-                                    </Button>
-                                    <Button onClick={() => {
-                                        editGroupDescriptionMutation.mutate(groupDescription as string)
+                                    <div className="flex gap-4">
+                                        <Button className="w-fit"
+                                            onClick={() => {
+                                                editGroupDescriptionMutation.mutate(groupDescription as string)
 
-                                        setIsSetToEdit(false)
-                                    }}>
-                                        Save changes
-                                    </Button>
+                                                setIsSetToEdit(false)
+                                            }}>
+                                            Save changes
+                                        </Button>
+                                        <Button className="w-fit"
+                                            variant="outline"
+                                            onClick={() => setIsSetToEdit(false)}>
+                                            Cancel
+                                        </Button>
+                                    </div>
                                 </div>
                             )}
                     </div>

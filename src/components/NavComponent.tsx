@@ -6,53 +6,108 @@ import { useSessionContext } from "@supabase/auth-helpers-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
+import { IconMenuDeep } from "@tabler/icons-react";
+import { useState } from "react";
+import { Github, Instagram, Mail } from "lucide-react";
+import Image from "next/image";
 
 export const NavComponent = () => {
     const authModal = useModal();
     const session = useSessionContext();
     const supabase = createClientComponentClient<Database>();
     const router = useRouter();
+    const [expanded, setExpanded] = useState(false);
 
     return (
-        <nav className="flex z-[999999999999999] justify-between items-center p-2 backdrop-blur-lg bg-[#090a0a/20] rounded-lg text-white border border-wihte/10 max-[1200px]:m-4 my-4">
-            <Link href="/" className="text-2xl font-bold ml-4">Logo</Link>
-            <Link href="/change-log">Change log</Link>
+        <nav className={`flex z-[999999999] justify-between items-start px-4 py-2 backdrop-blur-lg bg-[#090a0a/20] rounded-lg text-white/85 border border-wihte/10 max-[1200px]:m-4 my-4 transition-all duration-100 ${expanded ? 'h-[160px] flex-col backdrop-blur-2xl' : ''}`}>
+            <div className="flex w-full justify-between items-center">
+                <Link href="/">
+                    <Image src="/Huddle-logo.svg" alt="Huddle." width={84} height={64} />
+                </Link>
 
-            {!session.session?.user.role === true && (
-                <div className="flex flex-gap-2">
-                    <button onClick={() => {
-                        authModal.onOpen();
-                    }}>
-                        Login
-                    </button>
-                    <button onClick={() => {
-                        authModal.onOpen();
-                    }}>
-                        Register
-                    </button>
-                </div>
-            ) || (
-                    <div className="flex gap-2 items-center">
-                        <Button variant={"ghost"}
-                            onClick={() => {
-                                router.push("/dashboard");
+                {!session.session?.user.role === true && (
+                    <div className="flex gap-4">
+                        <div className="flex gap-2">
+                            <Button onClick={() => {
+                                authModal.onOpen();
                             }}>
-                            Dashboard
-                        </Button>
-                        <Button className="bg-transparent"
-                            variant={"outline"}
-                            onClick={(
-                                async () => {
-                                    await supabase.auth.signOut();
+                                Login
+                            </Button>
+                            <Button variant="ghost"
+                                onClick={() => {
+                                    authModal.onOpen();
+                                }}>
+                                Register
+                            </Button>
+                        </div>
 
-                                    router.push("/");
-                                }
-                            )}>
-                            Logout
-                        </Button>
-
+                        <IconMenuDeep className="min-[768px]:hidden"
+                            onClick={() => {
+                                setExpanded(!expanded);
+                            }}
+                            strokeWidth={1} />
                     </div>
-                )}
+                ) || (
+                        <div className="flex gap-2 items-center">
+                            <Button variant={"ghost"}
+                                onClick={() => {
+                                    router.push("/dashboard");
+                                }}>
+                                Dashboard
+                            </Button>
+                            <Button className="bg-transparent"
+                                variant={"outline"}
+                                onClick={(
+                                    async () => {
+                                        await supabase.auth.signOut();
+
+                                        router.push("/");
+                                    }
+                                )}>
+                                Logout
+                            </Button>
+                            <IconMenuDeep className="min-[768px]:hidden"
+                                onClick={() => {
+                                    setExpanded(!expanded);
+                                }}
+                                strokeWidth={1} />
+                        </div>
+                    )}
+            </div>
+
+            {expanded == true && (
+                <div className="flex flex-col justify-between p-2 h-full mt-4">
+                    <Link className="min-[768px]:hidden text-xl font-semibold text-white/70"
+                        onClick={() => {
+                            setExpanded(!expanded);
+                        }}
+                        href="/change-log">
+                        Change log
+                    </Link>
+
+                    <div className="flex gap-8 text-white/50">
+                        <Link href=""
+                            onClick={() => {
+                                setExpanded(!expanded);
+                            }}>
+                            <Github size={20} strokeWidth={1} />
+                        </Link>
+                        <Link href=""
+                            onClick={() => {
+                                setExpanded(!expanded);
+                            }}>
+                            <Instagram size={20} strokeWidth={1} />
+                        </Link>
+                        <Link href=""
+                            onClick={() => {
+                                setExpanded(!expanded);
+                            }}>
+                            <Mail size={20} strokeWidth={1} />
+                        </Link>
+                    </div>
+                </div>
+            )}
+
             <AuthModal />
         </nav>
     )

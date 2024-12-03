@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --background: 210,11.11%,3.53%;
+    --background: 210, 11.11%, 3.53%;
     --foreground: 210 40% 98%;
-    --card: 210,11.11%,3.53%;
-    --card-foreground: 210,11.11%,3.53%;
-    --popover: 210,11.11%,3.53%;
+    --card: 210, 11.11%, 3.53%;
+    --card-foreground: 210, 11.11%, 3.53%;
+    --popover: 210, 11.11%, 3.53%;
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
@@ -16,12 +16,12 @@
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 210 40% 98%;
-    --accent:  180,0.74%,26.47%;
+    --accent: 180, 0.74%, 26.47%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 180,0.74%,26.47%;
-    --input: 180,0.74%,26.47%;
+    --border: 180, 0.74%, 26.47%;
+    --input: 180, 0.74%, 26.47%;
     --ring: 212.7 26.8% 83.9%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -63,12 +63,17 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
-    padding: 0 1rem 0 1rem; 
-    background: linear-gradient(135deg, #0c0c0c, #090a0a);
+    background: linear-gradient(135deg, #050505, #070707);
     background-blend-mode: overlay;
     background-size: cover;
+    /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
   }
 }
 
+.custom-body .no-padding {
+  padding: 0 !important;
+}

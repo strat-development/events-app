@@ -7,6 +7,7 @@ import { EventHero } from "@/features/custom-event-page/EventHero";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function EventPhotosPage({
     params
@@ -16,14 +17,15 @@ export default function EventPhotosPage({
     }
 }) {
     const eventId = params.slug;
-    const { userId } = useUserContext();
+    const { userId, loading } = useUserContext();
     const { eventCreatorId } = useGroupOwnerContext();
     const router = useRouter();
 
-    // if (!eventCreatorId || !userId) {
-    //     router.push('/');
-    //     return null
-    // }
+    useEffect(() => {
+        if (!loading && !userId) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
 
     return (
         <>

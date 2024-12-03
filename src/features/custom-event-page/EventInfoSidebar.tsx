@@ -105,7 +105,7 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
                         />
                     ))}
                     <div className="flex flex-col">
-                        <h3 className="text-xl font-bold tracking-wider">{memoizedGroupInfo.data?.[0].group_name}</h3>
+                        <h3 className="text-xl font-bold tracking-wide">{memoizedGroupInfo.data?.[0].group_name}</h3>
                         <p className="text-white/70">{memoizedGroupInfo.data?.[0].group_country}, {memoizedGroupInfo.data?.[0].group_city}</p>
                     </div>
                 </div>

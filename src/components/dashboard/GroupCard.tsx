@@ -9,6 +9,7 @@ import { Pagination } from "@mui/material"
 import { Button } from "../ui/button"
 import { useRouter } from "next/navigation"
 import { useUserContext } from "@/providers/UserContextProvider"
+import { DeleteGroupDialog } from "./modals/DeleteGroupDialog"
 
 
 
@@ -172,7 +173,7 @@ export const GroupCard = () => {
                                 <div className="flex flex-col gap-1">
 
                                     <p className="text-sm text-white/60">{group.groups?.group_city}, {group.groups?.group_country}</p>
-                                    
+
                                 </div>
                                 <Button className="rounded-md mt-2 w-fit text-sm"
                                     onClick={() => router.push(`/group-page/${group.groups?.id}`)}>View group</Button>
@@ -206,8 +207,11 @@ export const GroupCard = () => {
                                 <div className="flex flex-col gap-1">
                                     <p className="text-sm text-white/60">{group.group_city}, {group.group_country}</p>
                                 </div>
-                                <Button className="rounded-md mt-2 w-fit text-sm"
-                                    onClick={() => router.push(`/dashboard/group-page/${group.id}`)}>View group</Button>
+                                <div className="flex gap-4 items-baseline">
+                                    <Button className="rounded-md mt-2 w-fit text-sm"
+                                        onClick={() => router.push(`/dashboard/group-page/${group.id}`)}>View group</Button>
+                                    <DeleteGroupDialog groupId={group.id} />
+                                </div>
                             </div>
                         </div>
                     ))

@@ -163,16 +163,21 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                                         editorContent={eventDescription as string}
                                         onChange={setEventDescription}
                                     />
-                                    <Button onClick={() => setIsSetToEdit(false)}>
-                                        Cancel
-                                    </Button>
-                                    <Button onClick={() => {
-                                        editEventDescriptionMutation.mutate(eventDescription as string)
+                                    <div className="flex gap-4">
+                                        <Button className="w-fit" 
+                                        onClick={() => {
+                                            editEventDescriptionMutation.mutate(eventDescription as string)
 
-                                        setIsSetToEdit(false)
-                                    }}>
-                                        Save changes
-                                    </Button>
+                                            setIsSetToEdit(false)
+                                        }}>
+                                            Save changes
+                                        </Button>
+                                        <Button variant="ghost"
+                                        className="w-fit" 
+                                        onClick={() => setIsSetToEdit(false)}>
+                                            Cancel
+                                        </Button>
+                                    </div>
                                 </div>
 
                             )}

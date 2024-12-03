@@ -8,7 +8,7 @@ export const Footer = () => {
         <>
 
             <IonFooter>
-                <footer className="footer mt-24 flex justify-between gap-8 flex-wrap bg-base-200 text-base-content  mb-4 max-w-[1200px] justify-self-center w-full">
+                <footer className="footer px-4 mt-24 flex justify-between gap-8 flex-wrap bg-base-200 text-base-content mb-4 max-w-[1200px] justify-self-center w-full">
                     <nav className="flex flex-col gap-2">
                         <h6 className="text-lg font-bold">Services</h6>
                         <Link className="text-white/70"
@@ -24,9 +24,7 @@ export const Footer = () => {
                         <h6 className="text-lg font-bold">Company</h6>
                         <Link className="text-white/70"
                             href="/">About us</Link>
-                        <div>
-                            <ContactDialog />
-                        </div>
+                        <ContactDialog />
                         <Link className="text-white/70"
                             href="/">Jobs</Link>
                         <Link className="text-white/70"
@@ -42,7 +40,7 @@ export const Footer = () => {
                             href="/">Cookie policy</Link>
                     </nav>
                 </footer>
-                <footer className="footer bg-base-200 text-base-content border-base-300 border-t flex gap-4 justify-between flex-wrap border-white/10 py-4 max-w-[1200px] justify-self-center w-full">
+                <footer className="footer bg-base-200 text-base-content border-base-300 border-t flex gap-4 justify-between flex-wrap border-white/10 p-4 max-w-[1200px] justify-self-center w-full">
                     <aside className="flex flex-col gap-2">
                         LOGO
                         <p className="text-white/30 text-sm">

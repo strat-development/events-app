@@ -96,7 +96,7 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
 
             {events.isSuccess && (
                 <div className='flex flex-col gap-4 mt-8 w-full'>
-                    <h2 className='text-2xl font-bold'>Upcoming events</h2>
+                    <h2 className='text-2xl tracking-wider font-bold'>Upcoming events</h2>
                     {memoizedEvents?.map((event: EventData) => (
                         <div key={event.id} className="flex flex-col w-full gap-8">
                             <div className="flex flex-col gap-2">

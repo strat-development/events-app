@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "@/components
 import { FileUpload } from "@/components/ui/file-upload";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
-import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useState } from "react";
@@ -144,7 +143,7 @@ export const UpdateEventHeroImageDialog = ({ eventId }: UpdateEventHeroImageDial
                     <Button variant="outline"
                         className="w-fit">Update image</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="max-w-[425px]">
                     <FileUpload onChange={setFiles} />
 
                     <DialogFooter>

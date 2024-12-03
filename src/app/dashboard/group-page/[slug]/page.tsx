@@ -5,6 +5,7 @@ import { CustomGroupPage } from "@/features/group-page/CustomGroupPage";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 
 export default function GroupPage({
@@ -15,14 +16,15 @@ export default function GroupPage({
     }
 }) {
     const groupId = params.slug;
-    const { userId } = useUserContext();
+    const { userId, loading } = useUserContext();
     const { ownerId } = useGroupOwnerContext();
     const router = useRouter();
 
-    if (!ownerId || !userId) {
-        router.push('/');
-        return null
-    }
+    useEffect(() => {
+        if (!loading && !userId && !ownerId) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
 
     return (
         <div className="max-w-[1200px] w-full flex justify-self-center justify-center items-center min-h-screen">

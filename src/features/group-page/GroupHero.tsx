@@ -1,5 +1,6 @@
 "use client"
 
+import { DeleteGroupPictureDialog } from "@/components/dashboard/modals/DeleteGroupImageDialog"
 import { UpdateGroupHeroImageDialog } from "@/components/dashboard/modals/UpdateGroupHeroImageDialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -135,144 +136,6 @@ export const GroupHero = ({
             cacheTime: 10 * 60 * 1000,
         })
 
-    const addGroupPicture = useMutation(
-        async (paths: string[]) => {
-            const results = await Promise.all(paths.map(async (path) => {
-                const { data, error } = await supabase
-                    .from('group-pictures')
-                    .upsert({
-                        group_id: groupId,
-                        hero_picture_url: path
-                    });
-                if (error) {
-                    throw error;
-                }
-                return data;
-            }));
-
-            return results;
-        },
-    );
-
-    const updateGroupPicture = useMutation(
-        async (path: string) => {
-            const { data: currentData, error: fetchError } = await supabase
-                .from('group-pictures')
-                .select('hero_picture_url')
-                .eq('group_id', groupId)
-                .single();
-
-            if (fetchError) {
-                throw fetchError;
-            }
-
-            const currentUrl = currentData?.hero_picture_url;
-
-            if (currentUrl) {
-                const { error: deleteError } = await supabaseAdmin.storage
-                    .from('group-pictures')
-                    .remove([currentUrl]);
-
-                if (deleteError) {
-                    throw deleteError;
-                }
-            }
-
-            const { data, error } = await supabase
-                .from('group-pictures')
-                .update({
-                    hero_picture_url: path
-                })
-                .eq('group_id', groupId);
-
-            if (error) {
-                throw error;
-            }
-
-            return data;
-        },
-        {
-            onSuccess: () => {
-                toast({
-                    title: "Success",
-                    description: "Image updated successfully",
-                });
-
-                queryClient.invalidateQueries('group-pictures');
-            },
-            onError: () => {
-                toast({
-                    title: "Error",
-                    description: "Failed to update image",
-                });
-            }
-        }
-    );
-
-    const deleteGroupPicture = useMutation(
-        async (path: string) => {
-            const { data, error } = await supabase
-                .from('group-pictures')
-                .delete()
-                .eq('hero_picture_url', path);
-            if (error) {
-                throw error;
-            }
-
-            const { error: storageError } = await supabaseAdmin.storage
-                .from('group-pictures')
-                .remove([path]);
-
-            if (storageError) {
-                throw storageError;
-            }
-
-            return data;
-        },
-        {
-            onSuccess: () => {
-                toast({
-                    title: "Success",
-                    description: "Image deleted successfully",
-                });
-
-                queryClient.invalidateQueries('group-pictures');
-            },
-            onError: () => {
-                toast({
-                    title: "Error",
-                    description: "Failed to delete image",
-                });
-            }
-        }
-    );
-
-    const uploadFiles = async (files: File[]) => {
-        const uploadPromises = files.map((file) => {
-            const path = `${file.name}${Math.random()}.${file.name.split('.').pop()}`;
-            return { promise: supabaseAdmin.storage.from('group-pictures').upload(path, file), path };
-        });
-
-        const responses = await Promise.all(uploadPromises.map(({ promise }) => promise));
-
-        responses.forEach((response, index) => {
-            if (response.error) {
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: `Error uploading file ${files[index].name}`
-                })
-            } else {
-                toast({
-                    title: "Success",
-                    description: `File ${files[index].name} uploaded successfully`
-                })
-            }
-        });
-
-        return uploadPromises.map(({ path }) => path);
-    }
-
     const { data: images, isLoading } = useQuery(
         ['group-pictures', groupId],
         async () => {
@@ -379,7 +242,7 @@ export const GroupHero = ({
                         <div className="flex gap-4 max-w-[600px] w-full">
                             <div className="flex flex-col gap-4">
                                 {memoizedImageUrls.map((image) => (
-                                    <Image className="aspect-video rounded-md w-full"
+                                    <Image className="min-[768px]:aspect-video rounded-md object-contain border border-white/10"
                                         key={image.publicUrl}
                                         src={image.publicUrl}
                                         alt=""
@@ -391,18 +254,13 @@ export const GroupHero = ({
                                 {window.location.pathname.includes("dashboard") && ownerId === userId && (
                                     (images?.length ?? 0) > 0 && (
                                         <div className="flex gap-4">
-                                            <Button variant={"destructive"}
-                                                onClick={() => {
-                                                    if (images) {
-                                                        if (images[0].hero_picture_url) {
-                                                            deleteGroupPicture.mutateAsync(images[0].hero_picture_url);
-                                                        }
-                                                    }
-                                                }}>Delete</Button>
+                                            <DeleteGroupPictureDialog images={images} />
 
                                             <UpdateGroupHeroImageDialog groupId={groupId} />
                                         </div>
-                                    ))}
+                                    )) || (
+                                        <UpdateGroupHeroImageDialog groupId={groupId} />
+                                    )}
                             </div>
                         </div>
 

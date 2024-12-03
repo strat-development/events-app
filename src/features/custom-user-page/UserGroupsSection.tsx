@@ -125,12 +125,12 @@ export const UserGroupsSection = () => {
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
 
     return (
-        <div className="flex flex-col gap-8 w-fit">
-            <div className="flex flex-col gap-4">
-                <h2 className='text-2xl font-bold'>Owned Groups</h2>
-                <div className="flex gap-8 max-[1200px]:max-w-[100vw] max-[1200px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:w-fit min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
+        <div className="flex flex-col gap-4 w-full">
+            <div className="flex flex-col gap-4 w-full">
+                <h2 className='text-xl tracking-wider font-semibold'>Owned Groups</h2>
+                <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
                     {memoizedOwnedGroups?.map((group) => (
-                        <div key={group.id} className="border rounded-md border-white/10 w-full">
+                        <div key={group.id} className="border rounded-md border-white/10 min-[1200px]:w-fit">
                             <div className="flex w-full gap-4 p-4 h-[192px]">
                                 <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square">
                                     {memoizedImageUrls[group.id] ? (
@@ -142,11 +142,13 @@ export const UserGroupsSection = () => {
                                             height={200}
                                         />
                                     ) : (
-                                        <span>No image available</span>
+                                        <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-md bg-white/5">
+                                            <p className="text-white/50 text-lg">No picture available 😔</p>
+                                        </div>
                                     )}
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <h1 className="text-2xl font-bold line-clamp-2">{group.group_name}</h1>
+                                    <h1 className="text-xl font-semibold line-clamp-2 tracking-wider">{group.group_name}</h1>
                                     <div className="flex flex-col gap-1">
                                         <p className="text-lg font-medium text-white/70">{group.group_country}</p>
                                         <p className="text-white/50">{group.group_city}</p>
@@ -160,11 +162,11 @@ export const UserGroupsSection = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-4">
-                <h2 className='text-2xl font-bold'>Member Groups</h2>
-                <div className="flex gap-8 max-[1200px]:max-w-[100vw] max-[1200px]:overflow-x-scroll min-[1200px]:w-fit min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
+            <div className="flex flex-col gap-4 w-full">
+                <h2 className='text-xl tracking-wider font-semibold'>Member Groups</h2>
+                <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
                     {memoizedMemberGroups?.map((group) => (
-                        <div key={group.id} className="border rounded-md border-white/10 w-full">
+                        <div key={group.id} className="border rounded-md border-white/10 min-[1200px]:w-fit">
                             <div className="flex w-full gap-4 p-4 h-[192px]">
                                 <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square">
                                     {memoizedImageUrls[group.id] ? (
@@ -180,7 +182,7 @@ export const UserGroupsSection = () => {
                                     )}
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <h1 className="text-2xl font-bold line-clamp-2">{group.group_name}</h1>
+                                    <h1 className="text-xl font-semibold line-clamp-2 tracking-wider">{group.group_name}</h1>
                                     <div className="flex flex-col gap-1">
                                         <p className="text-lg font-medium text-white/70">{group.group_country}</p>
                                         <p className="text-white/50">{group.group_city}</p>

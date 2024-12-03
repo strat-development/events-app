@@ -58,7 +58,7 @@ export const Modal = ({
             <Dialog open={isOpen}
                 onOpenChange={handleOpenChange}>
                 <DialogContent>
-                    <h2>{title}</h2>
+                    <h2 className="tracking-wider">{title}</h2>
                     {body}
                     {children}
                 </DialogContent>

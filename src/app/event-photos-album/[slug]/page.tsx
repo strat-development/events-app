@@ -159,14 +159,14 @@ export default function EventPhotosAlbumPage({
     return (
         <>
             <div className="h-screen flex flex-col items-center justify-center">
-                <h1 className="text-3xl font-bold">Event Photos Album</h1>
+                <h1 className="text-3xl font-bold tracking-wider">Event Photos Album</h1>
                 <EventHero eventId={eventId} />
                 <div className="flex flex-col gap-8 items-center">
                     <UpdateEventImagesAlbumDialog />
                     <div className="grid grid-cols-3 gap-3">
                         {currentItems.map((album, index) => (
                             <div key={index}>
-                                <h2 className="text-xl font-bold">{album.name}</h2>
+                                <h2 className="text-xl tracking-wider font-bold">{album.name}</h2>
                                 <div className="grid grid-cols-3 gap-8">
                                     {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
                                         <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>

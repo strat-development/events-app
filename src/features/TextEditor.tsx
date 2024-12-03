@@ -3,6 +3,7 @@ import { TextEditorToolBar } from './TextEditorToolBar'
 import Heading from '@tiptap/extension-heading'
 import { Extension } from '@tiptap/core'
 import { EditorContent, useEditor } from '@tiptap/react'
+import "../styles/text-editor.css"
 
 const BreakOnEnter = Extension.create({
   name: 'breakOnEnter',
@@ -26,12 +27,9 @@ export const TextEditor = ({
 }) => {
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({}),
+      StarterKit,
       Heading.configure({
-        HTMLAttributes: {
-          class: 'text-2xl font-bold',
-          levels: [2]
-        }
+        levels: [1, 2, 3],
       }),
       BreakOnEnter,
     ],
@@ -47,11 +45,9 @@ export const TextEditor = ({
   })
 
   return (
-    <>
-      <div className='flex flex-col gap-4'>
-        <TextEditorToolBar editor={editor} />
-        <EditorContent editor={editor} />
-      </div>
-    </>
+    <div className='flex flex-col gap-4 max-w-[400px] w-full'>
+      <TextEditorToolBar editor={editor} />
+      <EditorContent editor={editor} />
+    </div>
   )
 }

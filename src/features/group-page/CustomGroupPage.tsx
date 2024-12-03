@@ -22,7 +22,6 @@ export const CustomGroupPage = ({
                     <div className="relative">
                         <GroupMembersSidebar groupId={groupId} />
                     </div>
-
                 </div>
             </div>
         </>

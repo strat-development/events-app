@@ -125,7 +125,7 @@ export const UpdateUserImageDialog = () => {
                     <Button variant="outline"
                     className="w-fit">Update image</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="max-w-[425px]">
                     <FileUpload onChange={setFiles} />
 
                     <DialogFooter>

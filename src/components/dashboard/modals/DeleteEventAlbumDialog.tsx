@@ -100,7 +100,7 @@ export const DeleteEventAlbumDialog = ({ albumId }: DeleteEventAlbumDialogProps)
                     <DialogTrigger asChild>
                         <Trash className="text-red-500 cursor-pointer" />
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
+                    <DialogContent className="max-w-[425px]">
                         <DialogHeader>
                             <DialogTitle>Delete Album</DialogTitle>
                             <DialogDescription>

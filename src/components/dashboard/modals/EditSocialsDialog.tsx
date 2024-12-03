@@ -66,7 +66,7 @@ export const EditSocialsDialog = () => {
                 <DialogTrigger asChild>
                     <Button className="w-fit">Edit socials</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Delete event</DialogTitle>
                         <DialogDescription className="text-white/70">

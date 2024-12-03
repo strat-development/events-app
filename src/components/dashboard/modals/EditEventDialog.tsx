@@ -71,7 +71,7 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
                 <DialogTrigger asChild>
                     <Button variant="outline">Edit</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Edit event</DialogTitle>
                         <DialogDescription>

@@ -148,7 +148,7 @@ export const UserDataModal = () => {
     return (
         <>
             <Dialog open={isOpen || !userRole} onOpenChange={setIsOpen}>
-                <DialogContent className="sm:max-w-[425px] flex flex-col items-center p-8">
+                <DialogContent className="max-w-[425px] flex flex-col items-center p-8">
                     <Tabs onValueChange={tabValue => setTabValue(tabValue)} value={tabValue}
                         className="w-[400px]">
                         <TabsList className="flex w-full">
@@ -253,7 +253,7 @@ export const UserDataModal = () => {
                                     <div>
                                         {selectedInterests.length > 0 && (
                                             <div>
-                                                <h2 className="text-xl font-semibold">Selected Interests</h2>
+                                                <h2 className="text-xl tracking-wider font-semibold">Selected Interests</h2>
                                                 <div className="flex gap-2">
                                                     {selectedInterests.map((interest) => (
                                                         <Button
