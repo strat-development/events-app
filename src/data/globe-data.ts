@@ -3,16 +3,16 @@ export const globeConfig = {
     globeColor: "#242424",
     showAtmosphere: true,
     atmosphereColor: "#FFFFFF",
-    atmosphereAltitude: 0.1,
-    emissive: "#202020",
+    atmosphereAltitude: 0.15,
+    emissive: "#080808",
     emissiveIntensity: 0.1,
-    shininess: 0.9,
+    shininess: 0.2,
     polygonColor: "#FFFFFF",
-    ambientLight: "#38bdff",
+    ambientLight: "#131727",
     directionalLeftLight: "#ffffff",
     directionalTopLight: "#ffffff",
     pointLight: "#ffffff",
-    arcTime: 1000,
+    arcTime: 2000,
     arcLength: 0.9,
     rings: 1,
     maxRings: 3,
@@ -21,7 +21,7 @@ export const globeConfig = {
     autoRotateSpeed: 0.5,
 };
 
-export const colors = ["#06b6d4", "#3b82f6", "#6366f1"];
+export const colors = ["#CA73FF", "#3FA3FF", "#6FF6FF"];
 
 export const sampleArcs = [
     {

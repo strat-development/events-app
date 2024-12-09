@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
 import { useUserContext } from "@/providers/UserContextProvider"
@@ -77,7 +78,7 @@ export const EditUserProfileDialog = () => {
                     />
 
                     <DialogFooter>
-                        <Button onClick={() => {
+                        <HoverBorderGradient onClick={() => {
                             if (!fullName || !email || !city || !country) {
                                 toast({
                                     variant: "destructive",
@@ -101,7 +102,7 @@ export const EditUserProfileDialog = () => {
                                     }
                                 });
                             }
-                        }}>Edit Profile</Button>
+                        }}>Edit Profile</HoverBorderGradient>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

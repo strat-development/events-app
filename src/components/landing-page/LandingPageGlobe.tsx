@@ -1,6 +1,7 @@
 import { globeConfig, sampleArcs } from "@/data/globe-data";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import "../../styles/landing-page.css"
 
 const World = dynamic(() => import("../../components/ui/globe").then((m) => m.World), {
     ssr: false,
@@ -10,8 +11,8 @@ const World = dynamic(() => import("../../components/ui/globe").then((m) => m.Wo
 export const LandingPageGlobe = () => {
     return (
         <>
-            <div className="flex flex-row relative items-center justify-center min-h-screen md:h-auto w-full">
-                <div className="max-w-[1200px] mx-auto w-full relative h-full md:h-[40rem] px-4">
+            <div className="flex flex-row relative items-center justify-center min-h-screen w-full">
+                <div className="max-w-[1200px] mx-auto w-full relative h-full">
                     <motion.div
                         initial={{
                             opacity: 0,
@@ -25,21 +26,23 @@ export const LandingPageGlobe = () => {
                             duration: 1,
                         }}
                         className="div">
-                        <h2 className="text-center tracking-wider text-xl md:text-4xl font-bold text-white w-fit justify-self-center">
-                            Our goal is to reach <br />
-                            <span className="text-black bg-metallic-gradient text-shadow-white rounded-lg shadow-metallic px-4 py-2 inline-block">
+                        <h2 className="text-center absolute -top-[5%] left-1/2 transform -translate-x-1/2 tracking-wider text-2xl min-[900px]:text-4xl font-medium text-[#545454] w-fit">
+                            Our goal is to connect <br />
+                            <span className="text-9xl min-[900px]:text-[256px] bg-gradient-to-br from-white to-black/20 bg-clip-text text-transparent font-bold text-glare">
                                 10,000
-                            </span> <br />
-                            users by the end of 2025
+                            </span>
                         </h2>
-
-                        <p className="text-center text-base md:text-lg font-normal text-neutral-700 dark:text-neutral-200 max-w-md mt-2 mx-auto">
-                            This globe is interactive and customizable. Have fun with it, and
-                            don&apos;t forget to share it. :)
-                        </p>
+                        <h2 className="w-full absolute text-center top-[25%] min-[900px]:top-[30%] text-2xl text-white/70 left-1/2 transform -translate-x-1/2 z-[9999]">
+                            <span className="text-4xl min-[900px]:text-[72px] font-bold uppercase">
+                                users worldwide
+                            </span>  <br />
+                            <span className="text-white/50">
+                                by the end of 2025
+                            </span>
+                        </h2>
                     </motion.div>
                     <div className="w-full bottom-0 inset-x-0 bg-gradient-to-b pointer-events-none select-none bg-transparent z-40" />
-                    <div className="w-full -bottom-20 max-[900px]:h-96 h-full z-10">
+                    <div className="w-full -bottom-20 max-[900px]:h-[600px] h-[900px] z-10 opacity-90">
                         <World data={sampleArcs} globeConfig={globeConfig} />
                     </div>
                 </div>

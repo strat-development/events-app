@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Toaster } from "@/components/ui/toaster"
@@ -198,7 +199,7 @@ export const CreateEventDialog = () => {
                     </div>
 
                     <DialogFooter>
-                        <Button onClick={() => {
+                        <HoverBorderGradient onClick={() => {
                             createEvent.mutate({
                                 event_title: eventTitle,
                                 event_description: eventDescription,
@@ -211,7 +212,7 @@ export const CreateEventDialog = () => {
                             } as unknown as EventData)
 
                             queryClient.invalidateQueries(['events'])
-                        }}>Create Event</Button>
+                        }}>Create Event</HoverBorderGradient>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

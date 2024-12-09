@@ -32,9 +32,9 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
     const [userBio, setUserBio] = useState<string>();
     const [isSetToEdit, setIsSetToEdit] = useState(false)
     const socialMediaIcons: Record<SocialMediaTypes, JSX.Element> = {
-        Facebook: <Facebook />,
-        Instagram: <Instagram />,
-        Twitter: <Twitter />,
+        Facebook: <Facebook className="text-white/70" size={24} />,
+        Instagram: <Instagram className="text-white/70" size={24} />,
+        Twitter: <Twitter className="text-white/70" size={24} />,
     };
 
     const { data: images, isLoading } = useQuery(
@@ -135,7 +135,7 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
     return (
         <>
             {userId && (
-                <div className="flex flex-col gap-4 max-w-[360px] w-full">
+                <div className="flex flex-col gap-4 max-w-[400px] w-full">
                     {memoizedUserData.data?.map((user) => (
                         <div className="flex flex-col gap-4 w-full"
                             key={user.id}>
@@ -188,7 +188,8 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                             editorContent={user.user_bio as string}
                                             onChange={setUserBio}
                                         />
-                                        <Button onClick={() => setIsSetToEdit(false)}>
+                                        <Button variant="outline"
+                                        onClick={() => setIsSetToEdit(false)}>
                                             Cancel
                                         </Button>
                                         <Button onClick={() => {

@@ -16,6 +16,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/supabase';
 import { toast } from '@/components/ui/use-toast';
+import { HoverBorderGradient } from '@/components/ui/hover-border-gradient';
 
 export const CreateGroupDialog = () => {
     const supabase = createClientComponentClient<Database>()
@@ -128,11 +129,11 @@ export const CreateGroupDialog = () => {
                                 <div className="flex gap-4">
                                     <Button onClick={() => setModalStepCount(2)}>Previous step</Button>
                                     {selectedInterests.length > 0 && editorContent.length > 0 && groupCity.length > 0 && groupCountry.length > 0 && groupName.length > 0 && (
-                                        <Button 
+                                        <HoverBorderGradient 
                                         onClick={() => {
                                             createGroupMutation.mutateAsync()
                                             setIsOpen(false);
-                                        }}>Create group</Button>
+                                        }}>Create group</HoverBorderGradient>
                                     )}
                                 </div>
                             </>

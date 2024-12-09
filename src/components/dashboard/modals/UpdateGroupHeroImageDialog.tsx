@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { FileUpload } from "@/components/ui/file-upload";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { useUserContext } from "@/providers/UserContextProvider";
@@ -149,7 +150,7 @@ export const UpdateGroupHeroImageDialog = ({ groupId }: UpdateGroupHeroImageDial
 
                     <DialogFooter>
                         {(images?.length ?? 0) === 0 ? (
-                            <Button onClick={() => {
+                            <HoverBorderGradient onClick={() => {
                                 if (files.length > 0) {
                                     uploadFiles(files)
                                         .then((paths) => {
@@ -164,9 +165,9 @@ export const UpdateGroupHeroImageDialog = ({ groupId }: UpdateGroupHeroImageDial
                                         description: "Error uploading image",
                                     });
                                 }
-                            }}>Upload</Button>
+                            }}>Upload</HoverBorderGradient>
                         ) : (
-                            <Button onClick={() => {
+                            <HoverBorderGradient onClick={() => {
                                 if (files.length > 0) {
                                     uploadFiles(files)
                                         .then((paths) => {
@@ -181,7 +182,7 @@ export const UpdateGroupHeroImageDialog = ({ groupId }: UpdateGroupHeroImageDial
                                         description: "Error uploading image",
                                     });
                                 }
-                            }}>Update</Button>
+                            }}>Update</HoverBorderGradient>
                         )}
                     </DialogFooter>
                 </DialogContent>

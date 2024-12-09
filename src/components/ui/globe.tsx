@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import { Color, Scene, Fog, PerspectiveCamera, Vector3 } from "three";
 import ThreeGlobe from "three-globe";
@@ -79,7 +80,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
     atmosphereColor: "#ffffff",
     showAtmosphere: true,
     atmosphereAltitude: 0.1,
-    polygonColor: "rgba(255,255,255,0.7)",
+    polygonColor: "rgba(255,255,0,0.5)",
     globeColor: "transparent",
     emissive: "#000000",
     emissiveIntensity: 0.1,
@@ -109,8 +110,8 @@ export function Globe({ globeConfig, data }: WorldProps) {
     };
     globeMaterial.color = new Color(globeConfig.globeColor);
     globeMaterial.emissive = new Color(globeConfig.emissive);
-    globeMaterial.emissiveIntensity = globeConfig.emissiveIntensity || 0.1;
-    globeMaterial.shininess = globeConfig.shininess || 0.9;
+    globeMaterial.emissiveIntensity = globeConfig.emissiveIntensity || 0.05;
+    globeMaterial.shininess = globeConfig.shininess || 0.1;
   };
 
   const _buildData = () => {
@@ -135,7 +136,6 @@ export function Globe({ globeConfig, data }: WorldProps) {
       });
     }
 
-    // remove duplicates for same lat and lng
     const filteredPoints = points.filter(
       (v, i, a) =>
         a.findIndex((v2) =>

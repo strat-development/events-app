@@ -133,7 +133,7 @@ export const EventCard = () => {
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex">
+            <div className="flex gap-4">
                 <Button variant="link"
                     onClick={() => {
                         setAttendingVisits(true);

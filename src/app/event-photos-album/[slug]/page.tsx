@@ -158,55 +158,47 @@ export default function EventPhotosAlbumPage({
 
     return (
         <>
-            <div className="h-screen flex flex-col items-center justify-center">
-                <h1 className="text-3xl font-bold tracking-wider">Event Photos Album</h1>
-                <EventHero eventId={eventId} />
-                <div className="flex flex-col gap-8 items-center">
-                    <UpdateEventImagesAlbumDialog />
-                    <div className="grid grid-cols-3 gap-3">
-                        {currentItems.map((album, index) => (
-                            <div key={index}>
-                                <h2 className="text-xl tracking-wider font-bold">{album.name}</h2>
-                                <div className="grid grid-cols-3 gap-8">
-                                    {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
-                                        <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>
-                                            <img src={imageUrl.publicUrl} alt={`Image ${index}`} className="w-full h-auto" />
-                                        </div>
-                                    ))}
+            <div className="flex flex-col gap-8 items-center max-w-[1200px] w-full justify-self-center">
+                <div className="min-h-screen mt-24 flex flex-col gap-8 items-center justify-center w-full">
+                    <EventHero eventId={eventId} />
+                    <div className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-between min-[768px]:gap-24">
+                        <div className="flex gap-4 justify-self-end justify-end">
+                            {currentItems.map((album, index) => (
+                                <div key={index}>
+                                    <h2 className="text-xl tracking-wider font-bold">{album.name}</h2>
+                                    <div className="grid grid-cols-3 gap-8">
+                                        {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
+                                            <div key={index} className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-4 outline-blue-500' : ''}`}>
+                                                <img src={imageUrl.publicUrl} alt={`Image ${index}`} className="w-full h-auto" />
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                        <Pagination
-                            className="self-center"
-                            count={pageCount}
-                            page={currentPage}
-                            onChange={handlePageChange}
-                            variant="outlined"
-                            sx={{
-                                '& .MuiPaginationItem-root': {
-                                    color: 'white',
-                                    backgroundColor: 'rgba(255, 255, 255, 0)',
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                            ))}
+                            <Pagination
+                                className="self-center"
+                                count={pageCount}
+                                page={currentPage}
+                                onChange={handlePageChange}
+                                variant="outlined"
+                                sx={{
+                                    '& .MuiPaginationItem-root': {
+                                        color: 'white',
+                                        backgroundColor: 'rgba(255, 255, 255, 0)',
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                        },
+                                        border: '1px solid rgba(255, 255, 255, 0.1)',
                                     },
-                                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                                },
-                                '& .Mui-selected': {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
-                                    color: 'white',
-                                },
-                            }}
-                        />
+                                    '& .Mui-selected': {
+                                        backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
+                                        color: 'white',
+                                    },
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
-                <Button onClick={() => {
-                    deleteImagesMutation.mutate(Array.from(selectedImages));
-                    setSelectedImages([]);
-                }
-                }
-                    disabled={selectedImages.length === 0}>
-                    Delete Selected Images
-                </Button>
             </div>
         </>
     );

@@ -9,12 +9,6 @@ import GroupDataModalProvider from "@/providers/GroupDataModalProvider";
 import GroupOwnerContextProvider from "@/providers/GroupOwnerProvider";
 import CityContextProvider from "@/providers/cityContextProvider";
 import { Footer } from "@/components/Footer";
-import { Roboto } from 'next/font/google'
-
-const inter = Roboto({
-  subsets: ['latin'],
-  weight: "100"
-})
 
 export default function RootLayout({
   children,
@@ -22,13 +16,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  
+
   const queryClient = new QueryClient();
   const isHomePage = window.location.pathname === "/";
 
   return (
     <html lang="en">
-      <body className={`inter.className ${!isHomePage ? "px-4" : ""}`}>
+      <head>
+        <link rel="icon" href="/Huddle-minimalistic-logo.svg" />
+      </head>
+      <body className={`${!isHomePage ? "px-4" : ""}`}>
         <SupabaseProvider>
           <QueryClientProvider client={queryClient}>
             <UserContextProvider>

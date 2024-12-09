@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useUserContext } from "@/providers/UserContextProvider";
@@ -68,9 +69,9 @@ export const EditSocialsDialog = () => {
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Delete event</DialogTitle>
+                        <DialogTitle>Edit socials</DialogTitle>
                         <DialogDescription className="text-white/70">
-                            Are you sure you want to delete this event? If not please close this dialog.
+                            Are you sure you want to delete your socials? If not please close this dialog.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -92,15 +93,14 @@ export const EditSocialsDialog = () => {
                     </div>
 
                     <DialogFooter>
-                        <Button variant="destructive"
-                            type="submit"
+                        <HoverBorderGradient
                             onClick={() => {
                                 editSocialsMutation.mutate();
                                 queryClient.invalidateQueries('users');
                                 setIsOpen(false);
                             }}>
                             Update socials
-                        </Button>
+                        </HoverBorderGradient>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

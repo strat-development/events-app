@@ -10,6 +10,7 @@ import { IconMenuDeep } from "@tabler/icons-react";
 import { useState } from "react";
 import { Github, Instagram, Mail } from "lucide-react";
 import Image from "next/image";
+import { HoverBorderGradient } from "./ui/hover-border-gradient";
 
 export const NavComponent = () => {
     const authModal = useModal();
@@ -19,26 +20,33 @@ export const NavComponent = () => {
     const [expanded, setExpanded] = useState(false);
 
     return (
-        <nav className={`flex z-[999999999] justify-between items-start px-4 py-2 backdrop-blur-lg bg-[#090a0a/20] rounded-lg text-white/85 border border-wihte/10 max-[1200px]:m-4 my-4 transition-all duration-100 ${expanded ? 'h-[160px] flex-col backdrop-blur-2xl' : ''}`}>
+        <nav className={`flex z-[999999999] justify-between items-start px-4 py-2 backdrop-blur-lg bg-[#090a0a/20] rounded-2xl text-white/85 border border-wihte/10 max-[1200px]:m-4 my-4 transition-all duration-100 ${expanded ? 'h-[160px] flex-col backdrop-blur-2xl' : ''}`}>
             <div className="flex w-full justify-between items-center">
                 <Link href="/">
-                    <Image src="/Huddle-logo.svg" alt="Huddle." width={84} height={64} />
+                    <Image className="w-16 min-[480px]:w-24"
+                        src="/Huddle-logo.svg" alt="Huddle." width={84} height={84} />
+                </Link>
+                <Link className="max-[768px]:hidden text-white/70"
+                    href="/change-log">
+                    Change log
                 </Link>
 
                 {!session.session?.user.role === true && (
                     <div className="flex gap-4">
-                        <div className="flex gap-2">
-                            <Button onClick={() => {
-                                authModal.onOpen();
-                            }}>
+                        <div className="flex gap-4">
+                            <Button className="text-white/70 rounded-lg"
+                                variant="ghost"
+                                onClick={() => {
+                                    authModal.onOpen();
+                                }}>
                                 Login
                             </Button>
-                            <Button variant="ghost"
+                            <HoverBorderGradient className="font-medium tracking-wide"
                                 onClick={() => {
                                     authModal.onOpen();
                                 }}>
                                 Register
-                            </Button>
+                            </HoverBorderGradient>
                         </div>
 
                         <IconMenuDeep className="min-[768px]:hidden"
@@ -49,14 +57,14 @@ export const NavComponent = () => {
                     </div>
                 ) || (
                         <div className="flex gap-2 items-center">
-                            <Button variant={"ghost"}
+                            <HoverBorderGradient className="font-medium tracking-wide"
                                 onClick={() => {
                                     router.push("/dashboard");
                                 }}>
                                 Dashboard
-                            </Button>
-                            <Button className="bg-transparent"
-                                variant={"outline"}
+                            </HoverBorderGradient>
+                            <Button className="bg-transparent rounded-lg"
+                                variant="ghost"
                                 onClick={(
                                     async () => {
                                         await supabase.auth.signOut();

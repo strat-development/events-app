@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { FileUpload } from "@/components/ui/file-upload";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { Database } from "@/types/supabase";
@@ -165,7 +166,7 @@ export const UpdateEventHeroImageDialog = ({ eventId }: UpdateEventHeroImageDial
                                 }
                             }}>Upload</Button>
                         ) : (
-                            <Button onClick={() => {
+                            <HoverBorderGradient onClick={() => {
                                 if (files.length > 0) {
                                     uploadFiles(files)
                                         .then((paths) => {
@@ -180,7 +181,7 @@ export const UpdateEventHeroImageDialog = ({ eventId }: UpdateEventHeroImageDial
                                         description: "Error uploading image",
                                     });
                                 }
-                            }}>Update</Button>
+                            }}>Update</HoverBorderGradient>
                         )}
                     </DialogFooter>
                 </DialogContent>

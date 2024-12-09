@@ -38,21 +38,30 @@ export const BentoGridItem = ({
     return (
         <div
             className={cn(
-                "row-span-1 rounded-xl group/bento hover:shadow-xl transition duration-200 shadow-none p-4 bg-black/30 border-white/[0.1] border justify-between flex flex-col space-y-4",
+                "row-span-1 relative overflow-hidden rounded-xl group/bento hover:shadow-xl transition duration-200 shadow-none border-white/[0.1] border justify-between flex flex-col space-y-4",
                 className
-            )}
-        >
+            )}>
             {header}
-            <Image src={imagePath || ""} alt="" width={100} height={100} />
-            <div className="group-hover/bento:translate-x-2 transition duration-200">
+            <div  className="max-h-[296px] p-4">
+                <Image objectFit="cover"
+                    src={imagePath || ""} alt="" width={2000} height={2000} />
+            </div>
+            <div className="group-hover/bento:translate-x-2 p-4 transition duration-200 w-full backdrop-blur-md">
                 {icon}
-                <div className="font-sans font-bold text-neutral-200 mb-2 mt-2">
+                <div className="font-sans font-bold text-2xl text-white/70 mb-2 mt-2">
                     {title}
                 </div>
-                <div className="font-sans font-normal text-xs text-neutral-300">
+                <div className="font-sans font-normal text-white/50">
                     {description}
                 </div>
             </div>
+            <div
+                className="absolute inset-0 w-full h-full scale-[1.2] transform opacity-[.04] [mask-image:radial-gradient(#fff,transparent,75%)]"
+                style={{
+                    backgroundImage: "url(https://assets.aceternity.com/noise.webp)",
+                    backgroundSize: "30%",
+                }}
+            ></div>
         </div>
     );
 };

@@ -2,11 +2,11 @@ import { Github, Instagram } from "lucide-react"
 import Link from "next/link"
 import { ContactDialog } from "./ContactDialog"
 import { IonFooter } from "@ionic/react"
+import Image from "next/image"
 
 export const Footer = () => {
     return (
         <>
-
             <IonFooter>
                 <footer className="footer px-4 mt-24 flex justify-between gap-8 flex-wrap bg-base-200 text-base-content mb-4 max-w-[1200px] justify-self-center w-full">
                     <nav className="flex flex-col gap-2">
@@ -42,7 +42,7 @@ export const Footer = () => {
                 </footer>
                 <footer className="footer bg-base-200 text-base-content border-base-300 border-t flex gap-4 justify-between flex-wrap border-white/10 p-4 max-w-[1200px] justify-self-center w-full">
                     <aside className="flex flex-col gap-2">
-                        LOGO
+                        <Image src="/Huddle-logo.svg" alt="Huddle." width={84} height={84} />
                         <p className="text-white/30 text-sm">
                             strat.dev
                             <br />

@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider"
+import { HoverBorderGradient } from "../ui/hover-border-gradient"
 
 interface UserData {
     user_interests: string[]
@@ -106,7 +107,7 @@ export const InterestsSection = () => {
     }
 
     return (
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-8 min-h-[90vh]">
             <div className="flex flex-col gap-1">
                 <h1 className="text-2xl font-bold tracking-wider">Interests</h1>
                 <p className="text-white/70">Select to remove</p>
@@ -122,25 +123,25 @@ export const InterestsSection = () => {
                                 }}
                                 id={`user-interest-${index}`}
                                 key={index}
-                                className={`px-4 py-2 border ${interestsToDelete.includes(interest) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+                                className={`px-4 py-2 border ${interestsToDelete.includes(interest) ? 'border border-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
                                 {interest}
                             </Button>
                         )))}
                 </div>
 
                 {interestsToDelete.length > 0 && (
-                    <Button onClick={() => {
-                        removeInterests(interestsToDelete)
-                        setInterestsToDelete([])
-                    }}
-                        className="px-4 py-2 border bg-red-500 text-white">
+                    <Button variant="destructive"
+                        onClick={() => {
+                            removeInterests(interestsToDelete)
+                            setInterestsToDelete([])
+                        }}>
                         Remove Selected
                     </Button>
                 )}
             </div>
-            <div className="flex flex-col gap-8 items-start min-[900px]:flex-row">
-                <div className="mb-4">
-                    <label htmlFor="group-select" className="block text-lg font-medium">Select Interest Group:</label>
+            <div className="flex items-center gap-4">
+                <div className="mb-4 flex flex-col gap-2">
+                    <label htmlFor="group-select" className="block text-lg text-white/70 font-medium">Select Interest Group:</label>
                     <Select
                         value={selectedGroup || "all"}
                         onValueChange={(value: string) => setSelectedGroup(value)}>
@@ -152,8 +153,7 @@ export const InterestsSection = () => {
                             {interestsData?.["interest-groups"].map((group) => (
                                 <SelectItem
                                     value={group["group-name"]}
-                                    key={group["group-name"]}
-                                >
+                                    key={group["group-name"]}>
                                     {group["group-name"]}
                                 </SelectItem>
                             ))}
@@ -163,8 +163,8 @@ export const InterestsSection = () => {
                 <p>
                     OR
                 </p>
-                <div className="mb-4">
-                    <label htmlFor="search-input" className="block text-lg font-medium">Search Interests:</label>
+                <div className="mb-4 flex flex-col gap-2">
+                    <label htmlFor="search-input" className="block text-lg text-white/70 font-medium">Search Interests:</label>
                     <Input
                         id="search-input"
                         type="text"
@@ -174,28 +174,24 @@ export const InterestsSection = () => {
                     />
                 </div>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-wrap gap-4">
                 {interestsData?.["interest-groups"]
                     .filter((group) => selectedGroup === "all" || group["group-name"] === selectedGroup)
                     .map((group, index) => (
-                        <div key={group["group-name"]} className="flex flex-col gap-2">
-                            <div className="flex flex-wrap gap-2">
-                                {group.interests
-                                    .filter((interest) => !selectedInterests.includes(interest.name))
-                                    .filter((interest) => interest.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                                    .map((interest) => (
-                                        <Button key={interest.name}
-                                            variant="outline"
-                                            id={`interest-${index}`}
-                                            className="px-4 py-2 border bg-white text-black"
-                                            onClick={() => handleInterestClick(interest.name)}>
-                                            {interest.name}
-                                        </Button>
-                                    ))}
-                            </div>
-                        </div>
+                        group.interests
+                            .filter((interest) => !selectedInterests.includes(interest.name))
+                            .filter((interest) => interest.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                            .map((interest) => (
+                                <Button key={interest.name}
+                                    variant="outline"
+                                    id={`interest-${index}`}
+                                    onClick={() => handleInterestClick(interest.name)}>
+                                    {interest.name}
+                                </Button>
+                            ))
                     ))}
-            </div>
+
+            </div >
             <div className="flex flex-col gap-8">
                 {selectedInterests.length > 0 && (
                     <div className="flex flex-col gap-4">
@@ -203,7 +199,7 @@ export const InterestsSection = () => {
                         <div className="flex flex-wrap gap-4">
                             {selectedInterests.map((interest) => (
                                 <Button key={interest}
-                                    className="px-4 py-2 border bg-blue-500 text-white"
+                                    className="px-4 py-2 bg-transparent border border-blue-500 text-white"
                                     onClick={() => handleInterestClick(interest)}>
                                     {interest}
                                 </Button>
@@ -211,19 +207,21 @@ export const InterestsSection = () => {
                         </div>
                     </div>
                 )}
-                <Button className="w-fit"
-                    onClick={() => {
-                        if (userId) {
-                            addInterests.mutateAsync({
-                                user_interests: selectedInterests,
-                                id: userId
-                            } as UserData)
-                        }
+                {selectedInterests.length > 0 && (
+                    <HoverBorderGradient className="w-fit"
+                        onClick={() => {
+                            if (userId) {
+                                addInterests.mutateAsync({
+                                    user_interests: selectedInterests,
+                                    id: userId
+                                } as UserData)
+                            }
 
-                        setSelectedInterests([])
-                    }}>
-                    Save Interests
-                </Button>
+                            setSelectedInterests([])
+                        }}>
+                        Save Interests
+                    </HoverBorderGradient>
+                )}
             </div>
         </div >
     )

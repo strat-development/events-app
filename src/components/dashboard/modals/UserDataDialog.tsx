@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { UserData } from "@/types/types";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Toaster } from "@/components/ui/toaster";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 interface Interest {
     name: string
@@ -279,7 +280,7 @@ export const UserDataModal = () => {
                     </Tabs>
 
                     {fullName && email && city && country && selectedInterests.length > 0 && userId && (
-                        <Button onClick={() => {
+                        <HoverBorderGradient onClick={() => {
                             if (!fullName || !email || !city || !country) {
                                 toast({
                                     variant: "destructive",
@@ -312,7 +313,7 @@ export const UserDataModal = () => {
 
                                 setTabValue("user-interests");
                             }
-                        }}>Create User</Button>
+                        }}>Create User</HoverBorderGradient>
                     )}
                 </DialogContent>
             </Dialog >

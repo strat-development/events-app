@@ -127,7 +127,7 @@ export const UserGroupsSection = () => {
     return (
         <div className="flex flex-col gap-4 w-full">
             <div className="flex flex-col gap-4 w-full">
-                <h2 className='text-xl tracking-wider font-semibold'>Owned Groups</h2>
+                <h2 className='text-xl tracking-wider font-semibold w-fit'>Owned Groups</h2>
                 <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
                     {memoizedOwnedGroups?.map((group) => (
                         <div key={group.id} className="border rounded-md border-white/10 min-[1200px]:w-fit">
@@ -163,7 +163,7 @@ export const UserGroupsSection = () => {
             </div>
 
             <div className="flex flex-col gap-4 w-full">
-                <h2 className='text-xl tracking-wider font-semibold'>Member Groups</h2>
+                <h2 className='text-xl tracking-wider font-semibold w-fit'>Member Groups</h2>
                 <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
                     {memoizedMemberGroups?.map((group) => (
                         <div key={group.id} className="border rounded-md border-white/10 min-[1200px]:w-fit">

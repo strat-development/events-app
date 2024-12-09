@@ -50,6 +50,7 @@ export default function GroupDataModalProvider({ children }: { children: React.R
         const { data, error } = await supabase
             .from("interests")
             .select("*")
+            .limit(5)
         if (error) {
             throw error
         }

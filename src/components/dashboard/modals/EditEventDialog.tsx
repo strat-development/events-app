@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { DatePicker } from "@/components/ui/DatePicker";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 interface EditEventDialogProps {
     eventId: string;
@@ -63,7 +64,7 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
         }
     )
 
-    
+
 
     return (
         <>
@@ -90,9 +91,9 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
                             value={eventDescription}
                             onChange={(e) => setEventDescription(e.target.value)}
                         />
-                        <Input type="date" 
-                        value={eventDate} 
-                        onChange={(e) => setEventDate(e.target.value)} />
+                        <Input type="date"
+                            value={eventDate}
+                            onChange={(e) => setEventDate(e.target.value)} />
                         <Input
                             placeholder="Event Address"
                             value={eventAddress}
@@ -106,13 +107,12 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
                     </div>
 
                     <DialogFooter>
-                        <Button variant="outline"
-                            type="submit"
+                        <HoverBorderGradient
                             onClick={() => {
                                 editEventMutation.mutateAsync(eventId)
                             }}>
                             Edit event
-                        </Button>
+                        </HoverBorderGradient>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

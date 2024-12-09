@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 import { FileUpload } from "@/components/ui/file-upload";
-import { Input } from "@/components/ui/input"
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { toast } from "@/components/ui/use-toast"
 import { supabaseAdmin } from "@/lib/admin";
 import { Database } from "@/types/supabase";
@@ -110,8 +110,8 @@ export const UpdateEventImagesAlbumDialog = () => {
                     <FileUpload onChange={setFiles} />
 
                     <DialogFooter className="flex justify-center w-full">
-                        <Button variant="outline"
-                            onClick={handleSubmit}>Update album</Button>
+                        <HoverBorderGradient
+                            onClick={handleSubmit}>Update album</HoverBorderGradient>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

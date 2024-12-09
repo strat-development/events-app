@@ -12,6 +12,7 @@ import { GroupTopicsModalStep } from "@/features/create-group-modal/GroupTopicsM
 import { GroupDescriptionModalStep } from "@/features/create-group-modal/GroupDescriptionModalStep";
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider";
 import { Modal } from "@/features/Modal";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 interface EditGroupDialogProps {
     groupId: string;
@@ -121,10 +122,10 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
                             setModalStepCount(2)
                         }}>Previous step</Button>
                         {selectedInterests.length > 0 && editorContent.length > 0 && groupCity.length > 0 && groupCountry.length > 0 && groupName.length > 0 && (
-                            <Button onClick={() => {
+                            <HoverBorderGradient onClick={() => {
                                 editGroupMutation.mutateAsync()
                                 setIsOpen(false)
-                            }}>Edit group</Button>
+                            }}>Edit group</HoverBorderGradient>
                         )}
                     </div>
 

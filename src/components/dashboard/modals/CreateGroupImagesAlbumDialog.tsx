@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { FileUpload } from "@/components/ui/file-upload";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
 import { supabaseAdmin } from "@/lib/admin";
@@ -131,7 +132,7 @@ export const CreateGroupImagesAlbumDialog = ({ groupId }: CreateGroupImagesAlbum
                     <FileUpload onChange={setFiles} />
 
                     <DialogFooter>
-                        <Button variant="outline"
+                        <HoverBorderGradient
                             onClick={() => {
                                 if (!albumName) {
                                     toast({
@@ -166,7 +167,7 @@ export const CreateGroupImagesAlbumDialog = ({ groupId }: CreateGroupImagesAlbum
                                         }
                                     });
                                 }
-                            }}>Add Images</Button>
+                            }}>Add Images</HoverBorderGradient>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

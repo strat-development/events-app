@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { FileUpload } from "@/components/ui/file-upload";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { useUserContext } from "@/providers/UserContextProvider";
@@ -129,7 +130,7 @@ export const UpdateUserImageDialog = () => {
                     <FileUpload onChange={setFiles} />
 
                     <DialogFooter>
-                        <Button onClick={() => {
+                        <HoverBorderGradient onClick={() => {
                             if (files.length > 0) {
                                 uploadFiles(files)
                                     .then((paths) => {
@@ -160,7 +161,7 @@ export const UpdateUserImageDialog = () => {
                                 });
                             }
                         }
-                        }>Update image</Button>
+                        }>Update image</HoverBorderGradient>
                     </DialogFooter>
                 </DialogContent>
             </Dialog >

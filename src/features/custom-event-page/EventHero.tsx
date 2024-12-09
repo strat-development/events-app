@@ -252,9 +252,11 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
 
                                             <UpdateEventHeroImageDialog eventId={eventId} />
                                         </div>
-                                    ) || (
-                                        <UpdateEventHeroImageDialog eventId={eventId} />
                                     )}
+
+                                {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && images?.length === 0 && (
+                                    <UpdateEventHeroImageDialog eventId={eventId} />
+                                )}
                             </div>
                         </div>
                     </div>
