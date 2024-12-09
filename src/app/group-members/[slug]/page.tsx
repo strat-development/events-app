@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { IconGhost2Filled } from "@tabler/icons-react";
 import { MapPin } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -104,8 +105,8 @@ export default function GroupMembersPage({
                     <div key={index}
                         className="flex flex-col gap-2">
                         <div className="flex gap-2 items-end">
-                            <h2 key={group.id} 
-                            className="text-2xl tracking-wider font-bold">{group.group_name}</h2>
+                            <h2 key={group.id}
+                                className="text-2xl tracking-wider font-bold">{group.group_name}</h2>
                             <p className="text-white/60">({memoizedGroupMembersData.data?.length} in total)</p>
                         </div>
                         <div className="flex gap-4">
@@ -125,25 +126,25 @@ export default function GroupMembersPage({
                     <div key={member.users?.id}
                         className="flex flex-col gap-4 border border-white/10 p-4 rounded-md max-w-[196px] w-full">
                         <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square">
-                            {memoizedProfileImages ? (
+                            {member.users?.id && memoizedProfileImages && memoizedProfileImages[member.users.id] ? (
                                 <Image
-                                    src={member.users?.id ? memoizedProfileImages[member.users.id] : ''}
+                                    src={memoizedProfileImages[member.users.id]}
                                     alt="profile picture"
                                     width={2000}
                                     height={2000}
                                     objectFit="cover"
-                                    className='rounded-full'
+                                    className='rounded-md'
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
-                                    <p className="text-center font-medium">No image available 😔</p>
+                                <div className="flex w-full h-full flex-col gap-2 items-center text-center justify-center rounded-md bg-white/5">
+                                    <IconGhost2Filled className="w-16 h-16 text-white/70" strokeWidth={1} />
+                                    <p className="text-white/50 text-sm">Profile picture not available</p>
                                 </div>
                             )}
                         </div>
                         <div className="flex flex-col gap-2">
                             <p className="text-xl font-bold tracking-wider line-clamp-1 text-center">{member.users?.full_name}</p>
-                            <Button
-                                onClick={() => router.push(`/user-profile/${member.users?.id}`)}>
+                            <Button onClick={() => router.push(`/user-profile/${member.users?.id}`)}>
                                 View Profile
                             </Button>
                         </div>

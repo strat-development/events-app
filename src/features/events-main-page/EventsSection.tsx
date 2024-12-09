@@ -167,7 +167,7 @@ export const EventsSection = () => {
                                 <hr />
                             </div>
                             <div className="flex gap-4 border border-white/10 p-4 rounded-md h-[240px]">
-                                <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square">
+                                <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square h-fit">
                                     {memoizedImageUrls[event.id] && (
                                         <Image
                                             src={memoizedImageUrls[event.id]}

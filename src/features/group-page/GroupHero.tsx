@@ -259,7 +259,9 @@ export const GroupHero = ({
                                             <UpdateGroupHeroImageDialog groupId={groupId} />
                                         </div>
                                     )) || (
-                                        <UpdateGroupHeroImageDialog groupId={groupId} />
+                                        window.location.pathname.includes("dashboard") && ownerId === userId && (
+                                            <UpdateGroupHeroImageDialog groupId={groupId} />
+                                        )
                                     )}
                             </div>
                         </div>
@@ -354,7 +356,7 @@ export const GroupHero = ({
                             </div>
                         )}
 
-                    {userId && ownerId && (
+                    {userId && (
                         <>
                             {memoizedGroupMembersData?.some((member) => member.member_id === userId) ? (
                                 <Button variant={"destructive"}

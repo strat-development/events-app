@@ -1,6 +1,6 @@
 "use state"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs"
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Database } from "@/types/supabase";
@@ -48,6 +48,7 @@ export const UserDataModal = () => {
     const [selectedGroup, setSelectedGroup] = useState<string | null>("all")
     const [searchQuery, setSearchQuery] = useState<string>("")
     const [userInterests, setUserInterests] = useState<string[]>([])
+    const [displayedInterests, setDisplayedInterests] = useState<Interest[]>([]);
 
     const addUserData = useMutation(
         async (newUserData: UserData[]) => {
@@ -145,13 +146,29 @@ export const UserDataModal = () => {
         cacheTime: 10 * 60 * 1000,
     })
 
+    const shuffleInterests = () => {
+        if (!interestsData) return;
+
+        const allInterests = interestsData["interest-groups"]
+            .filter((group) => selectedGroup === "all" || group["group-name"] === selectedGroup)
+            .flatMap((group) => group.interests)
+            .filter((interest) => !selectedInterests.includes(interest.name))
+            .filter((interest) => interest.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+        const shuffledInterests = allInterests.sort(() => 0.5 - Math.random()).slice(0, 15);
+        setDisplayedInterests(shuffledInterests);
+    };
+
+    useEffect(() => {
+        shuffleInterests();
+    }, [interestsData, selectedGroup, searchQuery]);
 
     return (
         <>
             <Dialog open={isOpen || !userRole} onOpenChange={setIsOpen}>
-                <DialogContent className="max-w-[425px] flex flex-col items-center p-8">
+                <DialogContent className="max-w-[480px] flex flex-col items-center p-8">
                     <Tabs onValueChange={tabValue => setTabValue(tabValue)} value={tabValue}
-                        className="w-[400px]">
+                        className="max-w-[480px] w-full">
                         <TabsList className="flex w-full">
                             {!userRole && (
                                 <TabsTrigger className="w-full"
@@ -194,10 +211,11 @@ export const UserDataModal = () => {
                         )}
 
                         {!userInterests && (
-                            <TabsContent value="user-interests">
+                            <TabsContent className="flex flex-col gap-4"
+                                value="user-interests">
                                 <div className="flex gap-8 items-center">
-                                    <div className="mb-4">
-                                        <label htmlFor="group-select" className="block text-lg font-medium">Select Interest Group:</label>
+                                    <div className="mb-4 flex flex-col gap-1">
+                                        <label htmlFor="group-select" className="block font-medium text-white/70">Select Group:</label>
                                         <Select
                                             value={selectedGroup || "all"}
                                             onValueChange={(value: string) => setSelectedGroup(value)}>
@@ -220,8 +238,8 @@ export const UserDataModal = () => {
                                     <p>
                                         OR
                                     </p>
-                                    <div className="mb-4">
-                                        <label htmlFor="search-input" className="block text-lg font-medium">Search Interests:</label>
+                                    <div className="mb-4 flex flex-col gap-1">
+                                        <label htmlFor="search-input" className="block font-medium text-white/70">Search Interests:</label>
                                         <Input
                                             id="search-input"
                                             type="text"
@@ -232,47 +250,45 @@ export const UserDataModal = () => {
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-4">
-                                    {interestsData?.["interest-groups"]
-                                        .filter((group) => selectedGroup === "all" || group["group-name"] === selectedGroup)
-                                        .map((group) => (
-                                            <div key={group["group-name"]} className="flex flex-col gap-2">
-                                                <div className="flex gap-2">
-                                                    {group.interests
-                                                        .filter((interest) => !selectedInterests.includes(interest.name))
-                                                        .filter((interest) => interest.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                                                        .map((interest) => (
-                                                            <Button
-                                                                key={interest.name}
-                                                                className="px-4 py-2 border bg-white text-black"
-                                                                onClick={() => handleInterestClick(interest.name)}>
-                                                                {interest.name}
-                                                            </Button>
-                                                        ))}
-                                                </div>
-                                            </div>
+                                    <div className="flex flex-wrap gap-4 max-h-[124px] overflow-y-auto">
+                                        {displayedInterests.map((interest) => (
+                                            <Button
+                                                key={interest.name}
+                                                className="px-4 py-2 border bg-white text-black"
+                                                onClick={() => handleInterestClick(interest.name)}>
+                                                {interest.name}
+                                            </Button>
                                         ))}
-                                    <div>
-                                        {selectedInterests.length > 0 && (
-                                            <div>
-                                                <h2 className="text-xl tracking-wider font-semibold">Selected Interests</h2>
-                                                <div className="flex gap-2">
-                                                    {selectedInterests.map((interest) => (
-                                                        <Button
-                                                            key={interest}
-                                                            className="px-4 py-2 border bg-blue-500 text-white"
-                                                            onClick={() => handleInterestClick(interest)}>
-                                                            {interest}
-                                                        </Button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
+
+                                    <Button variant="ghost"
+                                        className="text-blue-500 w-fit"
+                                        onClick={shuffleInterests}>
+                                        Show More Interests
+                                    </Button>
+
+                                    {selectedInterests.length > 0 && (
+                                        <>
+                                            <h2 className="text-lg font-medium text-white/70">Selected Interests</h2>
+                                            <div className="flex flex-wrap gap-2 max-h-[124px] overflow-y-auto">
+                                                {selectedInterests.map((interest) => (
+                                                    <Button
+                                                        key={interest}
+                                                        className="px-4 py-2 border bg-blue-500 text-white"
+                                                        onClick={() => handleInterestClick(interest)}>
+                                                        {interest}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
 
-                                <Button onClick={() => {
-                                    setTabValue("user-data")
-                                }}>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        setTabValue("user-data")
+                                    }}>
                                     Back
                                 </Button>
                             </TabsContent>

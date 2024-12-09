@@ -23,8 +23,10 @@ export const NavComponent = () => {
         <nav className={`flex z-[999999999] justify-between items-start px-4 py-2 backdrop-blur-lg bg-[#090a0a/20] rounded-2xl text-white/85 border border-wihte/10 max-[1200px]:m-4 my-4 transition-all duration-100 ${expanded ? 'h-[160px] flex-col backdrop-blur-2xl' : ''}`}>
             <div className="flex w-full justify-between items-center">
                 <Link href="/">
-                    <Image className="w-16 min-[480px]:w-24"
+                    <Image className="max-[480px]:hidden min-[480px]:w-24"
                         src="/Huddle-logo.svg" alt="Huddle." width={84} height={84} />
+                        <Image className="min-[480px]:hidden w-6"
+                        src="/Huddle-minimalistic-logo.svg" alt="Huddle." width={84} height={84} />
                 </Link>
                 <Link className="max-[768px]:hidden text-white/70"
                     href="/change-log">

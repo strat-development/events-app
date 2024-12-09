@@ -13,6 +13,7 @@ import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { IconGhost2Filled } from "@tabler/icons-react"
 
 interface EventInfoSectionProps {
     eventId: string
@@ -164,17 +165,17 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                                         onChange={setEventDescription}
                                     />
                                     <div className="flex gap-4">
-                                        <Button className="w-fit" 
-                                        onClick={() => {
-                                            editEventDescriptionMutation.mutate(eventDescription as string)
+                                        <Button className="w-fit"
+                                            onClick={() => {
+                                                editEventDescriptionMutation.mutate(eventDescription as string)
 
-                                            setIsSetToEdit(false)
-                                        }}>
+                                                setIsSetToEdit(false)
+                                            }}>
                                             Save changes
                                         </Button>
                                         <Button variant="ghost"
-                                        className="w-fit" 
-                                        onClick={() => setIsSetToEdit(false)}>
+                                            className="w-fit"
+                                            onClick={() => setIsSetToEdit(false)}>
                                             Cancel
                                         </Button>
                                     </div>
@@ -197,11 +198,15 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                             {memoizedEventAttendeesData.data?.slice(0, 3).map((attendee) => (
                                 <Link href={`/user-profile/${attendee.users?.id}`} key={attendee.users?.id}>
                                     <div key={attendee.users?.id}
-                                        className='flex flex-col gap-2 items-center border border-white/10 p-4 rounded-md text-center w-[144px]'>
+                                        className='flex flex-col items-center border border-white/10 p-4 rounded-md text-center w-[144px] h-full'>
                                         {attendee.users?.id && memoizedProfileImages[attendee.users.id] && (
-                                            <Image src={memoizedProfileImages[attendee.users?.id]} width={50} height={50} alt="" />
+                                            <Image className="rounded-full"
+                                                src={memoizedProfileImages[attendee.users?.id]} width={50} height={50} alt="" />
                                         ) || (
-                                                <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                                                <div className="flex h-[50px] w-[50px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
+                                                    <IconGhost2Filled className="w-6 h-6 text-white/70"
+                                                        strokeWidth={1} />
+                                                </div>
                                             )}
                                         <span className='font-medium w-full'>{attendee.users?.full_name}</span>
                                         {attendee.users?.id === eventHostId && (
