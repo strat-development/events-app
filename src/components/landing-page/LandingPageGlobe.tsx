@@ -28,12 +28,12 @@ export const LandingPageGlobe = () => {
                         className="div">
                         <h2 className="text-center absolute -top-[5%] left-1/2 transform -translate-x-1/2 tracking-wider text-2xl min-[900px]:text-4xl font-medium text-[#545454] w-fit">
                             Our goal is to connect <br />
-                            <span className="text-9xl min-[900px]:text-[256px] bg-gradient-to-br from-white to-black/20 bg-clip-text text-transparent font-bold text-glare">
+                            <span className="max-[440px]:text-8xl text-9xl min-[900px]:text-[256px] bg-gradient-to-br from-white to-black/20 bg-clip-text text-transparent font-bold text-glare">
                                 10,000
                             </span>
                         </h2>
                         <h2 className="w-full absolute text-center top-[25%] min-[900px]:top-[30%] text-2xl text-white/70 left-1/2 transform -translate-x-1/2 z-[9999]">
-                            <span className="text-4xl min-[900px]:text-[72px] font-bold uppercase">
+                            <span className="max-[440px]:text-3xl text-4xl min-[900px]:text-[64px] font-bold uppercase">
                                 users worldwide
                             </span>  <br />
                             <span className="text-white/50">

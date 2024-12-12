@@ -76,7 +76,7 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
             <div className="flex flex-col gap-4 sticky top-24">
                 <h2 className='text-2xl tracking-wider font-bold'>Group members</h2>
                 <div className="flex items-start gap-4">
-                    <div className='grid grid-cols-4'>
+                    <div className='grid gap-4 grid-cols-4'>
                         {memoizedGroupMembers?.slice(0, 12).map((member) => (
                             <Link href={`/user-profile/${member.users?.id}`} key={member.users?.id}>
                                 <Image className="rounded-full border border-white/10"

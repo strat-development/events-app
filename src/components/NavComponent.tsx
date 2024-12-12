@@ -65,7 +65,7 @@ export const NavComponent = () => {
                                 }}>
                                 Dashboard
                             </HoverBorderGradient>
-                            <Button className="bg-transparent rounded-lg"
+                            <Button className="bg-transparent rounded-lg text-white/70"
                                 variant="ghost"
                                 onClick={(
                                     async () => {

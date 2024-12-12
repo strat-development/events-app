@@ -8,9 +8,9 @@ export default async function ChangeLogPage() {
 
     return (
         <div className="flex flex-col items-center max-w-[1200px] w-full justify-self-center mt-36 min-h-screen relative gap-32">
-            <div className="flex flex-col gap-2 text-center">
-                <h1 className="text-4xl min-[768px]:text-5xl font-bold tracking-wider">Change Log</h1>
-                <p className="min-[768px]:text-lg text-white/50">Updates and improvements to ...</p>
+            <div className="flex flex-col gap-4 text-center">
+                <h1 className="text-4xl min-[768px]:text-5xl text-white/70 font-bold tracking-wider">Change Log</h1>
+                <p className="min-[768px]:text-lg text-white/50">Updates and improvements to Huddle.</p>
             </div>
 
             {changeLogData.changeLogPosts.map((post) => (
@@ -23,8 +23,8 @@ export default async function ChangeLogPage() {
                         <h2 className="text-xl font-semibold tracking-wider">{post.logTitle}</h2>
                         <Image className="rounded-md"
                             src={post.logImage?.url || ""} alt={post.logTitle || ""} width={2000} height={2000} />
-                        <div className="text-content" 
-                        dangerouslySetInnerHTML={{ __html: post.changeLogDescription?.html as any }} />
+                        <div className="text-content"
+                            dangerouslySetInnerHTML={{ __html: post.changeLogDescription?.html as any }} />
                         <div className="flex flex-col w-full">
                             <Accordion type="single" collapsible className="w-full">
                                 <AccordionItem className="border-white/10"

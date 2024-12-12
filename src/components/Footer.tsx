@@ -8,41 +8,31 @@ export const Footer = () => {
     return (
         <>
             <IonFooter>
-                <footer className="footer px-4 mt-24 flex justify-between gap-8 flex-wrap bg-base-200 text-base-content mb-4 max-w-[1200px] justify-self-center w-full">
+                <footer className="footer px-4 mt-24 flex justify-between items-start gap-8 flex-wrap bg-base-200 text-base-content mb-4 max-w-[1200px] justify-self-center w-full">
+                    <Image className="hover:opacity-50 transition duration-300"
+                        src="/Huddle-logo.svg" alt="Huddle." width={84} height={84} />
                     <nav className="flex flex-col gap-2">
-                        <h6 className="text-lg font-bold">Services</h6>
+                        <h6 className="text-lg font-bold">Project</h6>
                         <Link className="text-white/70"
-                            href="/">Branding</Link>
+                            href="/">Features</Link>
                         <Link className="text-white/70"
-                            href="/">Design</Link>
+                            href="/">About</Link>
                         <Link className="text-white/70"
-                            href="/">Marketing</Link>
-                        <Link className="text-white/70"
-                            href="/">Advertisement</Link>
+                            href="/">Changelog</Link>
                     </nav>
                     <nav className="flex flex-col gap-2">
-                        <h6 className="text-lg font-bold">Company</h6>
+                        <h6 className="text-lg font-bold">Connect</h6>
                         <Link className="text-white/70"
-                            href="/">About us</Link>
+                            href="https://www.instagram.com/debix.cr2/">Instagram</Link>
                         <ContactDialog />
                         <Link className="text-white/70"
-                            href="/">Jobs</Link>
+                            href="https://github.com/ddebixx">GitHub</Link>
                         <Link className="text-white/70"
-                            href="/">Press kit</Link>
-                    </nav>
-                    <nav className="flex flex-col gap-2">
-                        <h6 className="text-lg font-bold">Legal</h6>
-                        <Link className="text-white/70"
-                            href="/">Terms of use</Link>
-                        <Link className="text-white/70"
-                            href="/">Privacy policy</Link>
-                        <Link className="text-white/70"
-                            href="/">Cookie policy</Link>
+                            href="https://debix.vercel.app">Portfolio</Link>
                     </nav>
                 </footer>
                 <footer className="footer bg-base-200 text-base-content border-base-300 border-t flex gap-4 justify-between flex-wrap border-white/10 p-4 max-w-[1200px] justify-self-center w-full">
                     <aside className="flex flex-col gap-2">
-                        <Image src="/Huddle-logo.svg" alt="Huddle." width={84} height={84} />
                         <p className="text-white/30 text-sm">
                             strat.dev
                             <br />
@@ -56,11 +46,11 @@ export const Footer = () => {
                     <nav className="md:place-self-center md:justify-self-end">
                         <div className="grid grid-flow-col gap-4">
                             <Link className="text-white/70"
-                                href="/">
+                                href="/https://www.instagram.com/debix.cr2/">
                                 <Instagram strokeWidth={1} />
                             </Link>
                             <Link className="text-white/70"
-                                href="/">
+                                href="/https://github.com/ddebixx">
                                 <Github strokeWidth={1} />
                             </Link>
                         </div>

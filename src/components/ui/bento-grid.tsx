@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { IconBadge4k } from "@tabler/icons-react";
 import Image from "next/image";
 
 export const BentoGrid = ({
@@ -32,7 +33,7 @@ export const BentoGridItem = ({
     title?: string | React.ReactNode;
     description?: string | React.ReactNode;
     header?: React.ReactNode;
-    icon?: React.ReactNode;
+    icon?: React.ElementType
     imagePath?: string;
 }) => {
     return (
@@ -42,12 +43,12 @@ export const BentoGridItem = ({
                 className
             )}>
             {header}
-            <div  className="max-h-[296px] p-4">
+            <div className="max-h-[296px] p-4">
                 <Image objectFit="cover"
                     src={imagePath || ""} alt="" width={2000} height={2000} />
             </div>
             <div className="group-hover/bento:translate-x-2 p-4 transition duration-200 w-full backdrop-blur-md">
-                {icon}
+                {icon as any}
                 <div className="font-sans font-bold text-2xl text-white/70 mb-2 mt-2">
                     {title}
                 </div>

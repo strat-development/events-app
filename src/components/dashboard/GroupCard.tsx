@@ -152,7 +152,7 @@ export const GroupCard = () => {
             <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                 {attendingGroups && (
                     currentAttendingItems?.map((group) => (
-                        <div key={group.groups?.id} className="flex flex-col gap-2 w-[280px] h-[440px] border rounded-md border-white/10 p-4">
+                        <div key={group.groups?.id} className="flex flex-col gap-2 w-[280px] h-[384px] border rounded-md border-white/10 p-4">
                             <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
                                 {group.groups?.id && memoizedImageUrls[group.groups?.id] ? (
                                     <Image
@@ -186,7 +186,7 @@ export const GroupCard = () => {
             <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                 {!attendingGroups && (
                     currentHostItems?.map((group) => (
-                        <div key={group.id} className="flex flex-col gap-2 w-[280px] h-[440px] border rounded-md border-white/10 p-4">
+                        <div key={group.id} className="flex flex-col gap-2 w-[280px] h-[384px] border rounded-md border-white/10 p-4">
                             <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
                                 {group.id && imageUrls[group.id] ? (
                                     <Image

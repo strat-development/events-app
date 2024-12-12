@@ -4,12 +4,12 @@ import { ContactDialog } from "../ContactDialog"
 export const AboutSection = () => {
     return (
         <>
-            <div className="max-w-[1200px] w-full px-4 flex flex-col gap-8 min-[768px]:h-screen">
+            <div className="max-w-[1200px] w-full px-4 flex flex-col gap-8 max-[900px]:mb-48 min-[768px]:h-screen">
                 <div>
                     <h2 className="text-white/50">About</h2>
                     <hr className="h-[1px]" />
                 </div>
-                <div className="flex flex-col-reverse gap-16 min-[768px]:flex-row">
+                <div className="flex flex-col-reverse gap-16 min-[900px]:gap-32 min-[900px]:flex-row">
                     <div className="flex flex-col gap-8">
                         <h2 className="text-4xl text-white/70 w-[80%]">Life changes born new ideas</h2>
                         <p className="font-thin text-white/50">
@@ -24,9 +24,8 @@ export const AboutSection = () => {
                         </p>
                         <ContactDialog />
                     </div>
-                    <Image className="rounded-md border border-white/10 shadow-xl shadow-white/5 min-[900px]:w-[40%]"
+                    <Image className="rounded-md border border-white/10 shadow-xl shadow-white/5 min-[900px]:w-[45%]"
                         src="/about-image.png" alt="About section image" width={2000} height={2000} />
-
                 </div>
             </div>
         </>

@@ -188,7 +188,7 @@ export const EventsSection = () => {
                                         <p className="text-lg text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
                                         <p className="text-white/60">{event.event_address}</p>
                                         <div className="flex gap-2 mt-1">
-                                            <Ticket className="h-6 w-6" />
+                                            <Ticket className="text-white/70 h-6 w-6" />
                                             <p className="font-bold tracking-wide text-white/70">{event.ticket_price}</p>
                                         </div>
                                     </div>

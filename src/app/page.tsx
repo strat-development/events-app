@@ -11,7 +11,6 @@ import "../styles/landing-page.css"
 import Image from "next/image";
 import { AboutSection } from "@/components/landing-page/AboutSection";
 
-
 export default function Home() {
   const session = useSessionContext()
   const router = useRouter()
@@ -27,7 +26,7 @@ export default function Home() {
         <AuroraBackground className="overflow-hidden">
           <div className="relative max-w-[1200px] w-full mx-auto">
             <div className="flex flex-col p-4 gap-4 items-start max-w-[1200px] w-full z-[9999] max-[900px]:mb-36">
-              <h1 className="text-5xl min-[900px]:text-7xl font-bold text-center tracking-widest text-white  z-[9999]">
+              <h1 className="text-5xl min-[900px]:text-7xl font-bold text-center tracking-widest text-white">
                 <FlipWords words={words} />
               </h1>
               <p className="text-base min-[900px]:text-xl text-white/50 tracking-wider w-[70%] min-[900px]:w-[35%]  z-[9999]">

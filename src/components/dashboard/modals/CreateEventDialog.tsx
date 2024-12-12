@@ -21,6 +21,7 @@ export const CreateEventDialog = () => {
     const [eventTicketPrice, setEventTicketPrice] = useState("")
     const [selectedGroup, setSelectedGroup] = useState("")
     const [groupTopics, setGroupTopics] = useState([]);
+    const [spotsLimit, setSpotsLimit] = useState(0)
 
     const supabase = createClientComponentClient<Database>()
     const queryClient = useQueryClient()
@@ -136,10 +137,10 @@ export const CreateEventDialog = () => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button className="bg-transparent" 
-                    onClick={() => {
-                        fetchGroups.refetch()
-                    }}
+                    <Button className="bg-transparent"
+                        onClick={() => {
+                            fetchGroups.refetch()
+                        }}
                         variant="outline">Create event</Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
@@ -195,7 +196,11 @@ export const CreateEventDialog = () => {
                             value={eventTicketPrice}
                             onChange={(e) => setEventTicketPrice(e.target.value)}
                         />
-
+                        <Input
+                            placeholder="Spots Limit"
+                            value={spotsLimit}
+                            onChange={(e) => setSpotsLimit(Number(e.target.value))}
+                        />
                     </div>
 
                     <DialogFooter>
@@ -208,7 +213,8 @@ export const CreateEventDialog = () => {
                                 created_by: userId,
                                 event_group: selectedGroup,
                                 event_topics: groupTopics,
-                                ticket_price: eventTicketPrice
+                                ticket_price: eventTicketPrice,
+                                attendees_limit: spotsLimit
                             } as unknown as EventData)
 
                             queryClient.invalidateQueries(['events'])

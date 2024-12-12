@@ -266,27 +266,27 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
 
             {window.location.pathname.includes("dashboard") && (
                 <div className="flex gap-4">
-                    <Link className="tracking-wider text-lg active:underline"
+                    <Link className="tracking-wider text-white/70 active:underline"
                         href={`/dashboard/event-page/${eventId}`}>
                         About
                     </Link>
-                    <Link className="tracking-wider text-lg active:underline"
+                    <Link className="tracking-wider text-white/70 active:underline"
                         href={`/dashboard/event-photos/${eventId}`}>
                         Photos
                     </Link>
                 </div>
             ) || (
                     <div className="flex gap-4">
-                        <Link className="tracking-wider text-lg active:underline"
+                        <Link className="tracking-wider text-white/70 active:underline"
                             href={`/event-page/${eventId}`}>
                             About
                         </Link>
-                        <Link className="tracking-wider text-lg active:underline"
+                        <Link className="tracking-wider text-white/70 active:underline"
                             href={`/event-photos/${eventId}`}>
                             Photos
                         </Link>
                     </div>
                 )}
-        </div >
+        </div>
     )
 }

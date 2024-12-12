@@ -266,7 +266,7 @@ export const GroupHero = ({
                             </div>
                         </div>
 
-                        <div className="flex flex-col">
+                        <div className="flex flex-col gap-2">
                             <div className="flex gap-4">
                                 <div className="flex gap-4 mb-4">
                                     <h1 className="text-2xl font-bold tracking-wider">{group.group_name}</h1>
@@ -290,40 +290,37 @@ export const GroupHero = ({
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-4">
-                                <div className="flex gap-4">
-                                    <div className="flex gap-2">
-                                        <div className="flex items-center gap-2">
-                                            <MapPin size={24}
-                                                strokeWidth={1} />
-                                            <p className="text-lg text-white/70">{group.group_city}, {group.group_country}</p>
+                            <div className="flex gap-4">
+                                <div className="flex gap-2">
+                                    <div className="flex items-center gap-2">
+                                        <MapPin size={24}
+                                            strokeWidth={1} />
+                                        <p className="text-lg text-white/70">{group.group_city}, {group.group_country}</p>
+                                    </div>
+                                    {window.location.pathname.includes("/dashboard") && userId === ownerId && !groupCityToEdit && <Button onClick={() => setGroupCityToEdit(true)}>Edit</Button>}
+                                </div>
+                                <div>
+                                    {window.location.pathname.includes("/dashboard") && userId === ownerId && groupCityToEdit && (
+                                        <div className="flex gap-4">
+                                            <Input placeholder="New group city"
+
+                                                value={newGroupCity}
+                                                onChange={(e) => setNewGroupCity(e.target.value)}
+                                            />
+                                            <Input placeholder="New group country"
+                                                value={newGroupCountry}
+                                                onChange={(e) => setNewGroupCountry(e.target.value)}
+                                            />
+                                            <Button onClick={() => setGroupCityToEdit(false)}>Cancel</Button>
+                                            <Button onClick={() => {
+                                                editGroupLocationMutation.mutateAsync()
+
+                                                setGroupCityToEdit(false)
+                                            }}>Save</Button>
                                         </div>
-                                        {window.location.pathname.includes("/dashboard") && userId === ownerId && !groupCityToEdit && <Button onClick={() => setGroupCityToEdit(true)}>Edit</Button>}
-                                    </div>
-                                    <div>
-                                        {window.location.pathname.includes("/dashboard") && userId === ownerId && groupCityToEdit && (
-                                            <div className="flex gap-4">
-                                                <Input placeholder="New group city"
-
-                                                    value={newGroupCity}
-                                                    onChange={(e) => setNewGroupCity(e.target.value)}
-                                                />
-                                                <Input placeholder="New group country"
-                                                    value={newGroupCountry}
-                                                    onChange={(e) => setNewGroupCountry(e.target.value)}
-                                                />
-                                                <Button onClick={() => setGroupCityToEdit(false)}>Cancel</Button>
-                                                <Button onClick={() => {
-                                                    editGroupLocationMutation.mutateAsync()
-
-                                                    setGroupCityToEdit(false)
-                                                }}>Save</Button>
-                                            </div>
-                                        )}
-                                    </div>
+                                    )}
                                 </div>
                             </div>
-
 
                             <div className="flex gap-2 items-center">
                                 <Users size={24}
@@ -338,19 +335,19 @@ export const GroupHero = ({
                 <div className="py-4 sticky top-24 flex justify-between max-w-[1200px] w-full justify-self-center">
                     {window.location.pathname.includes("dashboard") && (
                         <div className="flex gap-8">
-                            <Link className="text-lg" href={`/dashboard/group-page/${groupId}`}>
+                            <Link className="tracking-wider text-white/70 active:underline" href={`/dashboard/group-page/${groupId}`}>
                                 About
                             </Link>
-                            <Link className="text-lg" href={`/dashboard/group-photos/${groupId}`}>
+                            <Link className="tracking-wider text-white/70 active:underline" href={`/dashboard/group-photos/${groupId}`}>
                                 Photos
                             </Link>
                         </div>
                     ) || (
                             <div className="flex gap-4">
-                                <Link className="text-lg" href={`/group-page/${groupId}`}>
+                                <Link className="tracking-wider text-white/70 active:underline" href={`/group-page/${groupId}`}>
                                     About
                                 </Link>
-                                <Link className="text-lg" href={`/group-photos/${groupId}`}>
+                                <Link className="tracking-wider text-white/70 active:underline" href={`/group-photos/${groupId}`}>
                                     Photos
                                 </Link>
                             </div>

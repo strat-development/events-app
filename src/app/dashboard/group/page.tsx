@@ -9,7 +9,7 @@ export default function YourGroupsPage() {
 
     return (
         <>
-            <div className="flex justify-between items-start max-w-[1200px] w-full justify-self-center">
+            <div className="flex justify-between items-start mt-24 max-w-[1200px] w-full justify-self-center">
                 <Navbar />
                 {userId.length > 0 && (
                     <div className="justify-self-center overflow-x-hidden w-full">

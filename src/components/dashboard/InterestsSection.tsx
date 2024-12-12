@@ -2,7 +2,7 @@
 
 import { Database } from "@/types/supabase"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
@@ -15,6 +15,25 @@ interface UserData {
     user_interests: string[]
     id: string
 }
+
+interface Interest {
+    name: string
+}
+
+interface InterestGroup {
+    "group-name": string
+    interests: Interest[]
+}
+
+interface InterestData {
+    "interest-groups": InterestGroup[]
+}
+
+interface UserInterestsData {
+    user_interests: string[]
+    id: string
+}
+
 
 export const InterestsSection = () => {
     const supabase = createClientComponentClient<Database>()
@@ -29,6 +48,7 @@ export const InterestsSection = () => {
         setSelectedInterests,
         setSelectedGroup
     } = useGroupDataContext()
+    const [displayedInterests, setDisplayedInterests] = useState<Interest[]>([]);
 
     useQuery("userInterests", async () => {
         if (!userId) return
@@ -64,6 +84,23 @@ export const InterestsSection = () => {
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
     };
+
+    const shuffleInterests = () => {
+        if (!interestsData) return;
+
+        const allInterests = interestsData["interest-groups"]
+            .filter((group) => selectedGroup === "all" || group["group-name"] === selectedGroup)
+            .flatMap((group) => group.interests)
+            .filter((interest) => !selectedInterests.includes(interest.name))
+            .filter((interest) => interest.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+        const shuffledInterests = allInterests.sort(() => 0.5 - Math.random()).slice(0, 20);
+        setDisplayedInterests(shuffledInterests);
+    };
+
+    useEffect(() => {
+        shuffleInterests();
+    }, [interestsData, selectedGroup, searchQuery]);
 
     const addInterests = useMutation(async (userData: UserData) => {
         const { data, error } = await supabase
@@ -175,23 +212,22 @@ export const InterestsSection = () => {
                 </div>
             </div>
             <div className="flex flex-wrap gap-4">
-                {interestsData?.["interest-groups"]
-                    .filter((group) => selectedGroup === "all" || group["group-name"] === selectedGroup)
-                    .map((group, index) => (
-                        group.interests
-                            .filter((interest) => !selectedInterests.includes(interest.name))
-                            .filter((interest) => interest.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                            .map((interest) => (
-                                <Button key={interest.name}
-                                    variant="outline"
-                                    id={`interest-${index}`}
-                                    onClick={() => handleInterestClick(interest.name)}>
-                                    {interest.name}
-                                </Button>
-                            ))
-                    ))}
+                {displayedInterests.map((interest) => (
+                    <Button key={interest.name}
+                        variant="outline"
+                        onClick={() => handleInterestClick(interest.name)}>
+                        {interest.name}
+                    </Button>
+                ))}
+            </div>
 
-            </div >
+            <Button
+                variant="ghost"
+                className="text-blue-500 w-fit"
+                onClick={shuffleInterests}>
+                Show More Interests
+            </Button>
+
             <div className="flex flex-col gap-8">
                 {selectedInterests.length > 0 && (
                     <div className="flex flex-col gap-4">
