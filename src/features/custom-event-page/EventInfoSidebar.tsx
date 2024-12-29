@@ -1,3 +1,4 @@
+import { EventReportDialog } from "@/components/EventReportDialog"
 import { Database } from "@/types/supabase"
 import { EventData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
@@ -128,6 +129,8 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
                     </div>
                 </div>
             ))}
+
+            <EventReportDialog eventId={eventId} />
 
         </div>
     )

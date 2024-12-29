@@ -24,7 +24,7 @@ export const AboutSection = () => {
                         </p>
                         <ContactDialog />
                     </div>
-                    <Image className="rounded-md border border-white/10 shadow-xl shadow-white/5 min-[900px]:w-[45%]"
+                    <Image className="rounded-md border border-white/10 shadow-xl shadow-white/5 min-[900px]:w-[40%]"
                         src="/about-image.png" alt="About section image" width={2000} height={2000} />
                 </div>
             </div>

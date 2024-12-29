@@ -60,9 +60,12 @@ export const AuthModal = () => {
                         theme: ThemeSupa,
                         variables: {
                             default: {
-
-                            }
-                        }
+                                colors: {
+                                    brand: 'hsl(255 60.0% 53.0%)',
+                                    brandAccent: 'hsl(255 54.8% 45.1%)',
+                                },
+                            },
+                        },
                     }}
                 />
             </Modal>

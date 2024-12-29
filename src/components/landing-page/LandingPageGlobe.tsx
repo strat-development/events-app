@@ -26,7 +26,7 @@ export const LandingPageGlobe = () => {
                             duration: 1,
                         }}
                         className="div">
-                        <h2 className="text-center absolute -top-[5%] left-1/2 transform -translate-x-1/2 tracking-wider text-2xl min-[900px]:text-4xl font-medium text-[#545454] w-fit">
+                        <h2 className="text-center absolute -top-[7.5%] left-1/2 transform -translate-x-1/2 tracking-wider text-2xl min-[900px]:text-4xl font-medium text-[#545454] w-fit">
                             Our goal is to connect <br />
                             <span className="max-[440px]:text-8xl text-9xl min-[900px]:text-[256px] bg-gradient-to-br from-white to-black/20 bg-clip-text text-transparent font-bold text-glare">
                                 10,000

@@ -25,11 +25,11 @@ export default function Home() {
       <div className="w-full">
         <AuroraBackground className="overflow-hidden">
           <div className="relative max-w-[1200px] w-full mx-auto">
-            <div className="flex flex-col p-4 gap-4 items-start max-w-[1200px] w-full z-[9999] max-[900px]:mb-36">
+            <div className="flex flex-col gap-4 items-start max-w-[1200px] px-4 w-full max-[900px]:z-[9999] max-[900px]:mb-36">
               <h1 className="text-5xl min-[900px]:text-7xl font-bold text-center tracking-widest text-white">
                 <FlipWords words={words} />
               </h1>
-              <p className="text-base min-[900px]:text-xl text-white/50 tracking-wider w-[70%] min-[900px]:w-[35%]  z-[9999]">
+              <p className="text-base min-[900px]:text-xl z-[999] text-white/50 tracking-wider w-[70%] min-[900px]:w-[35%]">
                 We are all about networking, improvement and inspiration.
               </p>
             </div>

@@ -16,6 +16,7 @@ import { Database } from "@/types/supabase"
 import { format, parseISO } from "date-fns"
 import { UpdateEventHeroImageDialog } from "@/components/dashboard/modals/UpdateEventHeroImageDialog"
 import { DeleteEventPictureDialog } from "@/components/dashboard/modals/DeleteEventPictureDialog"
+import { EventReportDialog } from "@/components/EventReportDialog"
 
 interface EventHeroProps {
     eventId: string
@@ -196,6 +197,9 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                                 <div className="flex flex-col gap-1 min-[900px]:hidden">
                                     <p className="text-lg text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
                                     <p className="text-white/60">{event.event_address}</p>
+                                </div>
+                                <div className="min-[900px]:hidden">
+                                    <EventReportDialog eventId={eventId} />
                                 </div>
                             </div>
                             {window.location.pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && eventNameToEdit && (

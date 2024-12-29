@@ -13,8 +13,9 @@ export default async function ChangeLogPage() {
                 <p className="min-[768px]:text-lg text-white/50">Updates and improvements to Huddle.</p>
             </div>
 
-            {changeLogData.changeLogPosts.map((post) => (
-                <div className="flex flex-col min-[768px]:flex-row min-[768px]:justify-center relative gap-8 border-t border-white/10 pt-4">
+            {changeLogData.changeLogPosts.map((post, index) => (
+                <div key={index}
+                className="flex flex-col min-[768px]:flex-row min-[768px]:justify-center relative gap-8 border-t border-white/10 pt-4">
                     <div className="justify-self-start">
                         <p className="sticky justify-self-start top-24 text-white/50 text-sm">{post.logCreatedAt}</p>
                     </div>

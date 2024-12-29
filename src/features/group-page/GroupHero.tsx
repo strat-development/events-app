@@ -2,11 +2,11 @@
 
 import { DeleteGroupPictureDialog } from "@/components/dashboard/modals/DeleteGroupImageDialog"
 import { UpdateGroupHeroImageDialog } from "@/components/dashboard/modals/UpdateGroupHeroImageDialog"
+import { GroupReportDialog } from "@/components/GroupReportDialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
-import { supabaseAdmin } from "@/lib/admin"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
@@ -287,6 +287,9 @@ export const GroupHero = ({
                                             }}>Save</Button>
                                         </div>
                                     )}
+                                </div>
+                                <div className="min-[900px]:hidden">
+                                    <GroupReportDialog groupId={groupId} />
                                 </div>
                             </div>
 

@@ -71,6 +71,10 @@
     background-blend-mode: overlay;
     background-size: cover;
   }
+
+  ::selection {
+    @apply bg-primary-foreground text-primary;
+  }
 }
 
 .custom-body .no-padding {

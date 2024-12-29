@@ -1,3 +1,4 @@
+import { GroupReportDialog } from "@/components/GroupReportDialog"
 import { Button } from "@/components/ui/button"
 import { Database } from "@/types/supabase"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
@@ -85,13 +86,13 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
                         ))}
                     </div>
                     {memoizedGroupMembers && memoizedGroupMembers?.length > 3 && (
-                        <Link className="text-white/70" 
-                        href={`/group-members/${groupId}`}>
+                        <Link className="text-white/70"
+                            href={`/group-members/${groupId}`}>
                             More
                         </Link>
                     )}
                 </div>
-
+                <GroupReportDialog groupId={groupId} />
             </div>
         </>
     )
