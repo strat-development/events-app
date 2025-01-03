@@ -17,6 +17,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { ShareDialog } from "../qr-code-generator/ShareDialog"
 
 interface GroupHeroProps {
     groupId: string
@@ -288,9 +289,6 @@ export const GroupHero = ({
                                         </div>
                                     )}
                                 </div>
-                                <div className="min-[900px]:hidden">
-                                    <GroupReportDialog groupId={groupId} />
-                                </div>
                             </div>
 
                             <div className="flex gap-4">
@@ -330,7 +328,8 @@ export const GroupHero = ({
                                     strokeWidth={1} />
                                 <p className="text-white/60 font-medium tracking-wide">{memoizedGroupMembersData?.length || 0} {memoizedGroupMembersData?.length === 1 ? "member" : "members"}</p>
                             </div>
-
+                                    
+                            <GroupReportDialog groupId={groupId} />
                         </div>
                     </div>
                 ))}
@@ -357,14 +356,15 @@ export const GroupHero = ({
                         )}
 
                     {userId && (
-                        <>
+                        <div className="flex gap-4">
+                            <ShareDialog />
                             {memoizedGroupMembersData?.some((member) => member.member_id === userId) ? (
                                 <Button variant={"destructive"}
                                     onClick={() => leaveGroupMutation.mutateAsync()}>Leave group</Button>
                             ) : (
                                 <Button onClick={() => joinGroupMutation.mutateAsync()}>Join group</Button>
                             )}
-                        </>
+                        </div>
                     )}
                 </div>
             </div >

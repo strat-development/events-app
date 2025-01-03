@@ -1,10 +1,7 @@
-import { GroupReportDialog } from "@/components/GroupReportDialog"
-import { Button } from "@/components/ui/button"
 import { Database } from "@/types/supabase"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { useQuery } from "react-query"
 
@@ -16,7 +13,6 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
     const supabase = createClientComponentClient<Database>()
     const [membersId, setMembersId] = useState<string[]>()
     const [profileImageUrls, setProfileImageUrls] = useState<{ publicUrl: string }[]>([]);
-    const router = useRouter()
 
     const groupMembers = useQuery(
         ['group-members-data'],
@@ -92,7 +88,6 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
                         </Link>
                     )}
                 </div>
-                <GroupReportDialog groupId={groupId} />
             </div>
         </>
     )

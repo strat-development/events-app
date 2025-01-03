@@ -11,6 +11,7 @@ import { useMemo, useState } from "react"
 import { EventData } from "@/types/types"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { format, parseISO } from "date-fns";
+import { ShareDialog } from "@/features/qr-code-generator/ShareDialog"
 
 interface EventNavbarProps {
     eventId: string
@@ -150,17 +151,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                         <p className="text-sm font-bold tracking-wide text-white/70">{event.ticket_price}</p>
                                     </div>
                                 </div>
-                                <Button variant="outline"
-                                    className="h-fit"
-                                    onClick={() => {
-                                        copyEventLink()
-                                    }}>
-                                    <div className="flex gap-1 items-center">
-                                        <Flag strokeWidth={1}
-                                            size={16} />
-                                        <p>Share</p>
-                                    </div>
-                                </Button>
+                                <ShareDialog />
                                 {attendeeData.length > 0 ? (
                                     <Button className="h-fit"
                                         onClick={() => {

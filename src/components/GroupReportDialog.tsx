@@ -71,7 +71,7 @@ export const GroupReportDialog = ({ expanded, groupId }: GroupReportProps) => {
                     if (expanded) expanded(false);
                 }}>
                 <DialogTrigger asChild>
-                    <div className="flex items-center gap-2 cursor-pointer">
+                    <div className="flex items-center mt-2 gap-2 cursor-pointer">
                         <IconExclamationCircle size={20} className="text-white/70" />
                         <p className="cursor-pointer text-white/70"
                             onClick={() => setIsOpen(true)}>
