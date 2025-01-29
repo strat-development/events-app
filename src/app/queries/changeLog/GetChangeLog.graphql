@@ -1,0 +1,18 @@
+query GetChangeLog {
+  changeLogPosts {
+    logCreatedAt
+    logTitle
+    changeLogDescription {
+      html
+    }
+    changeLogImprovement {
+      html
+    }
+    changeLogFix {
+      html
+    }
+    logImage {
+      url
+    }
+  }
+}
