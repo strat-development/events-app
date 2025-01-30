@@ -25,7 +25,7 @@ export default async function ChangeLogPage() {
                         <Image className="rounded-md"
                             src={post.logImage?.url || ""} alt={post.logTitle || ""} width={2000} height={2000} />
                         <div className="text-content"
-                            dangerouslySetInnerHTML={{ __html: post.changeLogDescription?.html as any }} />
+                            dangerouslySetInnerHTML={{ __html: post.changeLogDescription?.html || "" }} />
                         <div className="flex flex-col w-full">
                             <Accordion type="single" collapsible className="w-full">
                                 <AccordionItem className="border-white/10"
@@ -33,7 +33,7 @@ export default async function ChangeLogPage() {
                                     <AccordionTrigger>Improvements</AccordionTrigger>
                                     <AccordionContent>
                                         <div className="text-content"
-                                            dangerouslySetInnerHTML={{ __html: post.changeLogImprovement?.html as any }} />
+                                            dangerouslySetInnerHTML={{ __html: post.changeLogImprovement?.html || "" }} />
                                     </AccordionContent>
                                 </AccordionItem>
                                 <AccordionItem className="border-white/10"
@@ -41,7 +41,7 @@ export default async function ChangeLogPage() {
                                     <AccordionTrigger>Fixes</AccordionTrigger>
                                     <AccordionContent>
                                         <div className="text-content"
-                                            dangerouslySetInnerHTML={{ __html: post.changeLogFix?.html as any }} />
+                                            dangerouslySetInnerHTML={{ __html: post.changeLogFix?.html || "" }} />
                                     </AccordionContent>
                                 </AccordionItem>
                             </Accordion>

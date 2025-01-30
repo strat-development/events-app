@@ -55,7 +55,7 @@ const actions: Action[] = [
         title: 'Payments',
         href: '#',
         icon: DollarSign,
-        description: 'There are no payments so just enjoy the project, have fun and share positive expeiernces'
+        description: 'There are no payments so just enjoy the project, have fun and share positive experiences'
     },
     {
         title: 'Community',

@@ -9,6 +9,10 @@
     letter-spacing: .05em;
   }
 
-  .text-content ol {
+  .text-content ul {
     list-style-type: disc;
+    padding-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
