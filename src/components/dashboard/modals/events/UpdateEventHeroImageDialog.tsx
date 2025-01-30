@@ -35,7 +35,16 @@ export const UpdateEventHeroImageDialog = ({ eventId }: UpdateEventHeroImageDial
             }));
 
             return results;
-        },
+        }, {
+        onSuccess: () => {
+            toast({
+                title: "Success",
+                description: "Image uploaded successfully",
+            });
+
+            queryClient.invalidateQueries('event-pictures');
+        }
+    }
     );
 
     const updateEventPicture = useMutation(

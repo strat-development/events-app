@@ -6,7 +6,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Database } from "@/types/supabase"
 import { Toaster } from "./ui/toaster"
 import { toast } from "./ui/use-toast"
-import { useMutation, useQuery } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useMemo, useState } from "react"
 import { EventData } from "@/types/types"
 import { useUserContext } from "@/providers/UserContextProvider"
@@ -21,6 +21,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
     const supabase = createClientComponentClient<Database>()
     const [eventData, setEventData] = useState<EventData[]>()
     const [attendeeData, setAttendeeData] = useState<string[]>([])
+    const queryClient = useQueryClient()
     const { userId } = useUserContext()
 
     useQuery(['event-navbar-data'], async () => {
@@ -59,6 +60,10 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                 title: "You have successfully registered for this event",
                 description: "You can now attend this event",
             })
+        }
+    }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('attendee')
         }
     })
 
@@ -119,6 +124,10 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                 title: "You have successfully unregistered for this event",
                 description: "You can no longer attend this event",
             })
+        }
+    }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('attendee')
         }
     })
 

@@ -2,7 +2,7 @@
 
 
 import React, { useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,6 +16,7 @@ interface DeleteEventDialogProps {
 
 export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
     const supabase = createClientComponentClient<Database>()
+    const queryClient = useQueryClient()
     const [isOpen, setIsOpen] = useState(false);
 
     const deleteEventMutation = useMutation(
@@ -32,6 +33,7 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
         },
         {
             onSuccess: () => {
+                queryClient.invalidateQueries("events")
                 toast({
                     variant: "default",
                     title: "Success",

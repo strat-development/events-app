@@ -2,7 +2,7 @@
 
 
 import React from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,6 +16,7 @@ interface DeleteGroupDialogProps {
 
 export const DeleteGroupDialog = ({ groupId }: DeleteGroupDialogProps) => {
     const supabase = createClientComponentClient<Database>()
+    const queryClient = useQueryClient()
     const [isOpen, setIsOpen] = React.useState(false);
 
     const deleteGroupMutation = useMutation(
@@ -37,6 +38,8 @@ export const DeleteGroupDialog = ({ groupId }: DeleteGroupDialogProps) => {
                     title: "Success",
                     description: "Group deleted successfully",
                 })
+
+                queryClient.invalidateQueries("groups")
 
                 setIsOpen(false)
             },

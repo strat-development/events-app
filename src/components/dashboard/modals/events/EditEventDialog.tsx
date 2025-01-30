@@ -2,7 +2,7 @@
 
 
 import React, { useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { Toaster } from "@/components/ui/toaster";
@@ -19,6 +19,7 @@ interface EditEventDialogProps {
 
 export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
     const supabase = createClientComponentClient<Database>()
+    const queryClient = useQueryClient()
     const [isOpen, setIsOpen] = useState(false);
     const [eventTitle, setEventTitle] = useState("")
     const [eventDescription, setEventDescription] = useState("")
@@ -51,6 +52,8 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
                     title: "Success",
                     description: "Event edited successfully",
                 })
+                
+                queryClient.invalidateQueries("events")
 
                 setIsOpen(false)
             },

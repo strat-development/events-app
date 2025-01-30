@@ -25,15 +25,6 @@ interface InterestGroup {
     interests: Interest[]
 }
 
-interface InterestData {
-    "interest-groups": InterestGroup[]
-}
-
-interface UserInterestsData {
-    user_interests: string[]
-    id: string
-}
-
 
 export const InterestsSection = () => {
     const supabase = createClientComponentClient<Database>()

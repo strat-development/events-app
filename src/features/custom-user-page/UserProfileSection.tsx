@@ -3,7 +3,7 @@
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Toaster } from "../../components/ui/toaster";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
@@ -28,6 +28,7 @@ interface UserProfileSectionProps {
 
 export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps) => {
     const supabase = createClientComponentClient<Database>();
+    const queryClient = useQueryClient();
     const pathname = usePathname();
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
     const [userBio, setUserBio] = useState<string>();
@@ -105,6 +106,15 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
             }
         },
         {
+            onSuccess: () => {
+                toast({
+                    title: "Success",
+                    description: "Bio updated successfully"
+                });
+
+                queryClient.invalidateQueries(['users']);
+            },
+
             onError: () => {
                 toast({
                     title: "Error",

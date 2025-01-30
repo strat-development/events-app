@@ -34,7 +34,7 @@ export const NavComponent = () => {
                         Change log
                     </Link>
                     <Link className="max-[768px]:hidden text-white/70"
-                        href="/About">
+                        href="/about">
                         About
                     </Link>
                 </div>

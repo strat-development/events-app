@@ -90,8 +90,15 @@ export const CreateGroupImagesAlbumDialog = ({ groupId }: CreateGroupImagesAlbum
             }
 
             return data;
-        },
-    );
+        }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries(['group-picture-albums']);
+            toast({
+                title: "Success",
+                description: "Image uploaded successfully",
+            });
+        }
+    });
 
     const uploadFiles = async (files: File[], albumId: string) => {
         const uploadPromises = files.map((file) => {

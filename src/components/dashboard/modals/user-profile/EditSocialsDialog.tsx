@@ -40,6 +40,8 @@ export const EditSocialsDialog = () => {
                     title: 'Socials updated',
                     description: 'Your socials have been updated successfully'
                 })
+
+                queryClient.invalidateQueries('users');
             },
             onError: () => {
                 toast({
