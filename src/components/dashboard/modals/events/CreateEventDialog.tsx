@@ -13,6 +13,11 @@ import { useCallback, useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 
 export const CreateEventDialog = () => {
+    const supabase = createClientComponentClient<Database>()
+    const queryClient = useQueryClient()
+    const { userId } = useUserContext()
+    const [fetchedGroupsData, setFetchedGroupsData] = useState<GroupData[]>([])
+
     const [isOpen, setIsOpen] = useState(false);
     const [eventTitle, setEventTitle] = useState("")
     const [eventDescription, setEventDescription] = useState("")
@@ -22,11 +27,6 @@ export const CreateEventDialog = () => {
     const [selectedGroup, setSelectedGroup] = useState("")
     const [groupTopics, setGroupTopics] = useState([]);
     const [spotsLimit, setSpotsLimit] = useState(0)
-
-    const supabase = createClientComponentClient<Database>()
-    const queryClient = useQueryClient()
-    const { userId } = useUserContext()
-    const [fetchedGroupsData, setFetchedGroupsData] = useState<GroupData[]>([])
 
     const clearStates = useCallback(() => {
         setEventTitle("")
@@ -165,7 +165,7 @@ export const CreateEventDialog = () => {
                             <SelectTrigger>
                                 <SelectValue placeholder="Select event group" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="block bg-red w-full">
                                 {fetchedGroupsData?.map((group) => (
                                     <SelectItem
                                         value={group.id}
