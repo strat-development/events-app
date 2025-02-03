@@ -1,12 +1,3 @@
-// import {
-// AcademicCapIcon,
-// BanknotesIcon,
-// CheckBadgeIcon,
-// ClockIcon,
-// ReceiptRefundIcon,
-// UsersIcon,
-//   } from '@heroicons/react/24/outline'
-
 import {
     ShieldCheck,
     MessageSquareWarning,
@@ -15,9 +6,6 @@ import {
     Smile,
     DollarSign
 } from "lucide-react"
-
-
-
 
 interface Action {
     title: string
@@ -71,7 +59,7 @@ function classNames(...classes: (string | boolean)[]): string {
 
 export default function Example() {
     return (
-        <div className="max-w-[1200px] justify-self-center divide-y divide-gray-200 mt-24 overflow-hidden rounded-lg shadow-sm sm:grid sm:grid-cols-2 sm:gap-px sm:divide-y-0">
+        <div className="max-w-[1200px] justify-self-center mt-24 overflow-hidden rounded-lg shadow-sm sm:grid sm:grid-cols-2 sm:gap-px">
             {actions.map((action) => (
                 <div
                     key={action.title}
