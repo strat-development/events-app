@@ -18,13 +18,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-
   const queryClient = new QueryClient();
   const pathname = usePathname();
   const isHomePage = pathname === "/";
   
-
   return (
     <html lang="en">
       <head>

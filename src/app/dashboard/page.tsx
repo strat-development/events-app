@@ -21,7 +21,7 @@ export default function DashboardPage() {
             <Navbar />
             {userId.length > 0 && (
                 <div className="justify-self-center overflow-x-hidden w-full pl-4 min-[900px]:pl-16">
-                    <CustomUserPage userIdFromUrl={userId} />
+                    <CustomUserPage userId={userId} />
                 </div>
             )}
         </div>

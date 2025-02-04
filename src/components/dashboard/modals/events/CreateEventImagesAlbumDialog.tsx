@@ -129,7 +129,34 @@ export const CreateEventImagesAlbumDialog = ({ eventId }: CreateEventImagesAlbum
                         onChange={(e) => setAlbumName(e.target.value)}
                     />
 
-                    <FileUpload onChange={setFiles} />
+                    <FileUpload
+                        onChange={(selectedFiles) => {
+                            const validFiles = selectedFiles.filter((file) => {
+                                const isValidSize = file.size <= 2 * 1024 * 1024;
+                                const isValidType = file.type.startsWith("image/");
+
+                                if (!isValidSize) {
+                                    toast({
+                                        variant: "destructive",
+                                        title: "File Too Large",
+                                        description: `${file.name} exceeds the 2MB size limit.`,
+                                    });
+                                }
+
+                                if (!isValidType) {
+                                    toast({
+                                        variant: "destructive",
+                                        title: "Invalid File Type",
+                                        description: `${file.name} is not an image.`,
+                                    });
+                                }
+
+                                return isValidSize && isValidType;
+                            });
+
+                            setFiles(validFiles);
+                        }}
+                    />
 
                     <DialogFooter>
                         <HoverBorderGradient

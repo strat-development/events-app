@@ -24,7 +24,7 @@ export default function UserProfilePage({
 
     return (
         <div className="mt-24 max-w-[1200px] w-full justify-self-center">
-            <CustomUserPage userIdFromUrl={profileUserId} />
+            <CustomUserPage userId={profileUserId} />
         </div>
     )
 }

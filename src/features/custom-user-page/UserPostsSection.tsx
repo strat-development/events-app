@@ -19,10 +19,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export const UserPostsSection = () => {
+interface UserPostsSectionProps {
+    userId: string;
+}
+
+export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
     const supabase = createClientComponentClient<Database>();
     const [posts, setPosts] = useState<PostsData[]>([]);
-    const { userId } = useUserContext();
     const [profileImageUrls, setProfileImageUrls] = useState<{ publicUrl: string }[]>([]);
     const [commentId, setCommentId] = useState<string[]>([]);
     const pathname = usePathname();

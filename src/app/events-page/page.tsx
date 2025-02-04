@@ -26,6 +26,7 @@ export default function EventsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     useEffect(() => {
         if (!loading && !userId) {
@@ -34,7 +35,6 @@ export default function EventsPage() {
     }, [loading, userId, router]);
 
     useEffect(() => {
-        const searchParams = useSearchParams();
         const searchParam = searchParams.get('search');
         const cityParam = searchParams.get('city');
 
@@ -84,7 +84,7 @@ export default function EventsPage() {
                 setEvents(data);
             },
             cacheTime: 10 * 60 * 1000,
-        },
+        }
     );
 
     const imageQuery = useQuery(
@@ -189,13 +189,8 @@ export default function EventsPage() {
                             color: 'white',
                             backgroundColor: 'rgba(255, 255, 255, 0)',
                             '&:hover': {
-                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                backgroundColor: 'rgba(255, 255, 255, 0.2)',
                             },
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                        },
-                        '& .Mui-selected': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
-                            color: 'white',
                         },
                     }}
                 />

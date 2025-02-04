@@ -11,8 +11,13 @@ import { EventData, GroupData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useCallback, useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import "../../../../styles/input.css"
 
-export const CreateEventDialog = () => {
+interface CreateEventDialogProps {
+    ownerId: string
+}
+
+export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
     const supabase = createClientComponentClient<Database>()
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
@@ -26,7 +31,7 @@ export const CreateEventDialog = () => {
     const [eventTicketPrice, setEventTicketPrice] = useState("")
     const [selectedGroup, setSelectedGroup] = useState("")
     const [groupTopics, setGroupTopics] = useState([]);
-    const [spotsLimit, setSpotsLimit] = useState(0)
+    const [spotsLimit, setSpotsLimit] = useState("")
 
     const clearStates = useCallback(() => {
         setEventTitle("")
@@ -135,13 +140,24 @@ export const CreateEventDialog = () => {
 
     return (
         <>
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <Dialog open={isOpen} onOpenChange={(open) => {
+                if (open && ownerId !== userId) {
+                    toast({
+                        variant: "destructive",
+                        title: "Create group",
+                        description: "You have to be the owner of the group to create an event"
+                    });
+                    return;
+                }
+
+                setIsOpen(open);
+            }}>
                 <DialogTrigger asChild>
                     <Button className="bg-transparent"
-                        onClick={() => {
-                            fetchGroups.refetch()
-                        }}
-                        variant="outline">Create event</Button>
+                        onClick={() => fetchGroups.refetch()}
+                        variant="outline">
+                        Create event
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>
@@ -182,29 +198,42 @@ export const CreateEventDialog = () => {
                             value={eventDescription}
                             onChange={(e) => setEventDescription(e.target.value)}
                         />
-                        <Input
-                            type="datetime-local"
+                        <Input type="datetime-local"
                             value={eventDate}
-                            onChange={(e) => setEventDate(e.target.value)} />
+                            min={new Date().toISOString().slice(0, 16)}
+                            onChange={(e) => setEventDate(e.target.value)}
+                        />
                         <Input
                             placeholder="Event Address"
                             value={eventAddress}
                             onChange={(e) => setEventAddress(e.target.value)}
                         />
                         <Input
-                            placeholder="Ticket Price"
+                            placeholder="Ticket Price (leave empty for free)"
                             value={eventTicketPrice}
                             onChange={(e) => setEventTicketPrice(e.target.value)}
                         />
                         <Input
-                            placeholder="Spots Limit"
+                            placeholder="Spots Limit (leave empty for no limit)"
                             value={spotsLimit}
-                            onChange={(e) => setSpotsLimit(Number(e.target.value))}
+                            onChange={(e) => setSpotsLimit(e.target.value)}
                         />
                     </div>
 
                     <DialogFooter>
                         <HoverBorderGradient onClick={() => {
+                            const now = new Date();
+                            const selectedDate = new Date(eventDate);
+
+                            if (selectedDate < now) {
+                                toast({
+                                    variant: "destructive",
+                                    title: "Invalid Date & Time",
+                                    description: "You cannot create event in the past",
+                                });
+                                return;
+                            }
+
                             createEvent.mutate({
                                 event_title: eventTitle,
                                 event_description: eventDescription,
@@ -213,8 +242,8 @@ export const CreateEventDialog = () => {
                                 created_by: userId,
                                 event_group: selectedGroup,
                                 event_topics: groupTopics,
-                                ticket_price: eventTicketPrice,
-                                attendees_limit: spotsLimit
+                                ticket_price: eventTicketPrice.trim() === "" ? "FREE" : eventTicketPrice,
+                                attendees_limit: spotsLimit.trim() === "" ? "No limit" : spotsLimit
                             } as unknown as EventData)
 
                             queryClient.invalidateQueries(['events'])

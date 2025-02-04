@@ -154,7 +154,34 @@ export const UpdateEventHeroImageDialog = ({ eventId }: UpdateEventHeroImageDial
                         className="w-fit">Update image</Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
-                    <FileUpload onChange={setFiles} />
+                    <FileUpload
+                        onChange={(selectedFiles) => {
+                            const validFiles = selectedFiles.slice(0, 1).filter((file) => {
+                                const isValidSize = file.size <= 2 * 1024 * 1024;
+                                const isValidType = file.type.startsWith("image/");
+
+                                if (!isValidSize) {
+                                    toast({
+                                        variant: "destructive",
+                                        title: "File Too Large",
+                                        description: `${file.name} exceeds the 2MB size limit.`,
+                                    });
+                                }
+
+                                if (!isValidType) {
+                                    toast({
+                                        variant: "destructive",
+                                        title: "Invalid File Type",
+                                        description: `${file.name} is not an image.`,
+                                    });
+                                }
+
+                                return isValidSize && isValidType;
+                            });
+
+                            setFiles(validFiles);
+                        }}
+                    />
 
                     <DialogFooter>
                         {(images?.length ?? 0) === 0 ? (

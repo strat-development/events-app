@@ -5,21 +5,21 @@ import { UserGroupsSection } from "./UserGroupsSection";
 import { UserPostsSection } from "./UserPostsSection";
 
 interface CustomUserPageProps {
-    userIdFromUrl: string;
+    userId: string;
 }
 
-export const CustomUserPage = ({ userIdFromUrl }: CustomUserPageProps) => {
-    const { userRole, userId } = useUserContext();
+export const CustomUserPage = ({ userId }: CustomUserPageProps) => {
+    const { userRole } = useUserContext();
 
     return (
         <div className="flex flex-row flex-wrap gap-8 justify-center w-full min-[768px]:justify-between">
             <UserProfileSection userRole={userRole}
-                userId={userId || userIdFromUrl} />
+                userId={userId} />
             <div className="flex flex-col gap-8 w-full min-[900px]:max-w-[600px]">
-                <UserInterestsSection userId={userId || userIdFromUrl} />
+                <UserInterestsSection userId={userId} />
                 <div className="flex flex-col gap-16">
-                    <UserGroupsSection />
-                    <UserPostsSection />
+                    <UserGroupsSection userId={userId} />
+                    <UserPostsSection userId={userId} />
                 </div>
             </div>
         </div>

@@ -1,20 +1,19 @@
-import { Button } from "@/components/ui/button";
-import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
-export const UserGroupsSection = () => {
+interface UserGroupsSectionProps {
+    userId: string;
+}
+
+export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
     const supabase = createClientComponentClient<Database>();
-    const { userId } = useUserContext();
     const [ownedGroups, setOwnedGroups] = useState<any[]>([]);
     const [memberGroups, setMemberGroups] = useState<any[]>([]);
     const [imageUrls, setImageUrls] = useState<{ [groupId: string]: string }>({});
-    const router = useRouter();
 
     const fetchOwnedGroups = useQuery(
         'ownedGroups',

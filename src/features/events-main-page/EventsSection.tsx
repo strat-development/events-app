@@ -151,10 +151,10 @@ export const EventsSection = () => {
             <div className="flex flex-col gap-16 items-center w-full min-[1200px]:flex-row min-[1200px]:items-start">
                 <div className="flex flex-col gap-8 min-[1200px]:w-fit min-[1200px]:sticky min-[1200px]:top-24">
                     <Calendar className="z-[2] hidden border border-white/10 w-full min-[1200px]:flex min-[1200px]:items-center min-[1200px]:justify-center rounded-md"
-                        onDayClick={handleDateChange} />
+                        onDayClick={handleDateChange} 
+                         />
                     <div className="fixed bg-white p-2 rounded-full bottom-[10%] right-[5%] min-[1200px]:hidden">
-                        <CalendarDialog
-                            onDayClick={handleDateChange} />
+                        <CalendarDialog onDayClick={handleDateChange} />
                     </div>
                     <UserGroupsSection />
                 </div>

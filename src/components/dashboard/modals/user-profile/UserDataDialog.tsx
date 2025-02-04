@@ -36,7 +36,6 @@ interface UserInterestsData {
 
 export const UserDataModal = () => {
     const supabase = createClientComponentClient<Database>();
-    const [isOpen, setIsOpen] = useState(false);
     const queryClient = useQueryClient();
     const { userRole, userId } = useUserContext();
     const [fullName, setFullName] = useState("");
@@ -50,7 +49,6 @@ export const UserDataModal = () => {
     const [searchQuery, setSearchQuery] = useState<string>("")
     const [userInterests, setUserInterests] = useState<string[]>([])
     const [displayedInterests, setDisplayedInterests] = useState<Interest[]>([]);
-    const router = useRouter();
 
     const addUserData = useMutation(
         async (newUserData: UserData[]) => {
@@ -167,7 +165,7 @@ export const UserDataModal = () => {
 
     return (
         <>
-            <Dialog open={isOpen || !userRole} onOpenChange={setIsOpen}>
+            <Dialog open={!userInterests && !userRole}>
                 <DialogContent className="max-w-[480px] flex flex-col items-center p-8">
                     <Tabs onValueChange={tabValue => setTabValue(tabValue)} value={tabValue}
                         className="max-w-[480px] w-full">
@@ -323,7 +321,8 @@ export const UserDataModal = () => {
                                             id: userId
                                         } as UserInterestsData, {
                                             onSuccess: () => {
-                                                router.refresh();
+                                                queryClient.invalidateQueries("userInterests");
+                                                queryClient.invalidateQueries("users");
                                             }
                                         })
                                     }

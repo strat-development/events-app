@@ -53,7 +53,7 @@ export const InterestsSection = () => {
         }
 
         if (data && data.length > 0) {
-            setUserInterests(data[0].user_interests as string[])
+            setUserInterests(data[0].user_interests as unknown as string[])
         }
 
         return data
@@ -93,23 +93,34 @@ export const InterestsSection = () => {
         shuffleInterests();
     }, [interestsData, selectedGroup, searchQuery]);
 
-    const addInterests = useMutation(async (userData: UserData) => {
-        const { data, error } = await supabase
+    const addInterests = useMutation(async () => {
+        if (!userId) return;
+
+        const { data, error: fetchError } = await supabase
             .from("users")
-            .upsert(userData)
+            .select("user_interests")
             .eq("id", userId)
+            .single();
 
-        if (error) {
-            throw error
+        if (fetchError) throw fetchError;
+
+        const existingInterests: string[] = data?.user_interests as string[] || [];
+
+        const updatedInterests = Array.from(new Set([...existingInterests, ...selectedInterests]));
+
+        const { error: updateError } = await supabase
+            .from("users")
+            .update({ user_interests: updatedInterests })
+            .eq("id", userId);
+
+        if (updateError) throw updateError;
+
+        return updatedInterests;
+    }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries("userInterests");
         }
-
-        return data
-    },
-        {
-            onSuccess: () => {
-                queryClient.invalidateQueries("userInterests")
-            }
-        })
+    });
 
     const handleInterestToRemoveClick = (interestName: string) => {
         setInterestsToDelete((prevSelected) =>
@@ -238,10 +249,7 @@ export const InterestsSection = () => {
                     <HoverBorderGradient className="w-fit"
                         onClick={() => {
                             if (userId) {
-                                addInterests.mutateAsync({
-                                    user_interests: selectedInterests,
-                                    id: userId
-                                } as UserData)
+                                addInterests.mutateAsync()
                             }
 
                             setSelectedInterests([])

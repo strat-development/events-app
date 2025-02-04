@@ -124,10 +124,37 @@ export const UpdateUserImageDialog = () => {
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
                     <Button variant="outline"
-                    className="w-fit">Update image</Button>
+                        className="w-fit">Update image</Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
-                    <FileUpload onChange={setFiles} />
+                    <FileUpload
+                        onChange={(selectedFiles) => {
+                            const validFiles = selectedFiles.slice(0, 1).filter((file) => {
+                                const isValidSize = file.size <= 2 * 1024 * 1024;
+                                const isValidType = file.type.startsWith("image/");
+
+                                if (!isValidSize) {
+                                    toast({
+                                        variant: "destructive",
+                                        title: "File Too Large",
+                                        description: `${file.name} exceeds the 2MB size limit.`,
+                                    });
+                                }
+
+                                if (!isValidType) {
+                                    toast({
+                                        variant: "destructive",
+                                        title: "Invalid File Type",
+                                        description: `${file.name} is not an image.`,
+                                    });
+                                }
+
+                                return isValidSize && isValidType;
+                            });
+
+                            setFiles(validFiles);
+                        }}
+                    />
 
                     <DialogFooter>
                         <HoverBorderGradient onClick={() => {
@@ -149,6 +176,7 @@ export const UpdateUserImageDialog = () => {
                                                 toast({
                                                     title: "Error",
                                                     description: "Error updating image",
+                                                    variant: "destructive",
                                                 });
                                             }
                                         }
@@ -157,7 +185,8 @@ export const UpdateUserImageDialog = () => {
                             } else {
                                 toast({
                                     title: "Error",
-                                    description: "Error uploading image",
+                                    description: "No image selected",
+                                    variant: "destructive",
                                 });
                             }
                         }

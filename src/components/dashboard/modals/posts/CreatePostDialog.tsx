@@ -146,8 +146,8 @@ export const CreatePostDialog = () => {
                     <div className="flex flex-col gap-4">
                         {modalStepCount === 1 && (
                             <div className="flex flex-col gap-4 items-center justify-center">
-                                <Input onChange={(e) => setTitle(e.target.value)} 
-                                placeholder="Title" />
+                                <Input onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="Title" />
                                 <TextEditor
                                     {...{
                                         editorContent: editorContent,
@@ -165,8 +165,34 @@ export const CreatePostDialog = () => {
                             <div className="flex flex-col gap-4 items-center justify-center">
                                 <FileUpload
                                     className="max-h-[350px] overflow-y-auto overflow-x-hidden"
-                                    onChange={setFiles}
+                                    onChange={(selectedFiles) => {
+                                        const validFiles = selectedFiles.filter((file) => {
+                                            const isValidSize = file.size <= 2 * 1024 * 1024;
+                                            const isValidType = file.type.startsWith("image/");
+
+                                            if (!isValidSize) {
+                                                toast({
+                                                    variant: "destructive",
+                                                    title: "File Too Large",
+                                                    description: `${file.name} exceeds the 2MB size limit.`,
+                                                });
+                                            }
+
+                                            if (!isValidType) {
+                                                toast({
+                                                    variant: "destructive",
+                                                    title: "Invalid File Type",
+                                                    description: `${file.name} is not an image.`,
+                                                });
+                                            }
+
+                                            return isValidSize && isValidType;
+                                        });
+
+                                        setFiles(validFiles);
+                                    }}
                                 />
+
                                 <Button className="w-full" onClick={() => setModalStepCount(1)}>
                                     Previous step
                                 </Button>
@@ -174,13 +200,13 @@ export const CreatePostDialog = () => {
                         )}
                     </div>
 
-                        <DialogFooter>
-                            {editorContent.length > 0 && (
-                                <HoverBorderGradient onClick={() => createPost.mutate()}>
-                                    Create Post
-                                </HoverBorderGradient>
-                            )}
-                        </DialogFooter>
+                    <DialogFooter>
+                        {editorContent.length > 0 && (
+                            <HoverBorderGradient onClick={() => createPost.mutate()}>
+                                Create Post
+                            </HoverBorderGradient>
+                        )}
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 

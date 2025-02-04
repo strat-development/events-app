@@ -19,7 +19,7 @@ type UserContextType = {
     loading: boolean;
 };
 
-export const UserContext = createContext<UserContextType | null>(null);
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export default function UserContextProvider({ children }: { children: React.ReactNode }) {
     const [userRole, setUserRole] = useState<string>("");
@@ -29,9 +29,7 @@ export default function UserContextProvider({ children }: { children: React.Reac
     const [userInterests, setUserInterests] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
-    const {
-        supabaseClient: supabase
-    } = useSessionContext();
+    const { supabaseClient: supabase } = useSessionContext();
     const user = useSupaUser();
     const clearUserRole = () => setUserRole("");
 

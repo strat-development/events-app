@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export const EventsSection = () => {
-    const { eventCreatorId } = useGroupOwnerContext()
+    const { eventCreatorId, ownerId } = useGroupOwnerContext()
     const { userId, loading } = useUserContext();
     const router = useRouter();
 
@@ -21,7 +21,7 @@ export const EventsSection = () => {
 
     return (
         <div className="flex flex-col gap-4 min-h-[80vh]">
-            <CreateEventDialog />
+            <CreateEventDialog ownerId={ownerId} />
 
             {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
                 <EventCard />
