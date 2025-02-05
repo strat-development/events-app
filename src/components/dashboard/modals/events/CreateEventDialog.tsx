@@ -232,6 +232,20 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                                     description: "You cannot create event in the past",
                                 });
                                 return;
+                            } else if (selectedGroup === "") {
+                                toast({
+                                    variant: "destructive",
+                                    title: "Invalid Group",
+                                    description: "Please select a group",
+                                });
+                                return;
+                            } else if (eventTitle.trim() === "" || eventDescription.trim() === "" || eventAddress.trim() === "") {
+                                toast({
+                                    variant: "destructive",
+                                    title: "Invalid Fields",
+                                    description: "Please fill all the fields",
+                                });
+                                return;
                             }
 
                             createEvent.mutate({

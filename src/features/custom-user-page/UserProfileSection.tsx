@@ -146,7 +146,7 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
     return (
         <>
             {userId && (
-                <div className="flex flex-col gap-4 max-w-[400px] w-full">
+                <div className="flex flex-col gap-4 min-[768px]:max-w-[480px] w-full">
                     {memoizedUserData.data?.map((user) => (
                         <div className="flex flex-col gap-4 w-full"
                             key={user.id}>

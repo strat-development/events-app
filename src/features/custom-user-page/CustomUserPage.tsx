@@ -12,7 +12,7 @@ export const CustomUserPage = ({ userId }: CustomUserPageProps) => {
     const { userRole } = useUserContext();
 
     return (
-        <div className="flex flex-row flex-wrap gap-8 justify-center w-full min-[768px]:justify-between">
+        <div className="flex max-[768px]:flex-col gap-8 justify-center w-full min-[768px]:justify-between">
             <UserProfileSection userRole={userRole}
                 userId={userId} />
             <div className="flex flex-col gap-8 w-full min-[900px]:max-w-[600px]">

@@ -56,7 +56,8 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
         async () => {
             const { data, error } = await supabase
                 .from('post-comments')
-                .select('*');
+                .select('*')
+                .eq('post_id', posts.map((post) => post.id));
 
             if (error) {
                 console.error('Error fetching comments:', error);
@@ -69,6 +70,7 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
         },
         {
             cacheTime: 10 * 60 * 1000,
+            enabled: fetchPostData.isSuccess,
         }
     );
 
@@ -145,10 +147,10 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
                             <div className="flex flex-col gap-2">
                                 <div className="text-white/70"
                                     dangerouslySetInnerHTML={{ __html: post.post_content as string }}></div>
-                                <p className="text-white/50 text-sm">{format(parseISO(post.created_at as string), 'yyyy-MM-dd')}</p>
+                                <p className="text-white/50 text-sm justify-self-end">{format(parseISO(post.created_at as string), 'yyyy-MM-dd')}</p>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-4 mt-8">
                             {data?.filter((comment) => comment.post_id === post.id).map((comment) => (
                                 <div key={comment.id} 
                                 className="flex justify-between items-start gap-8">
@@ -161,9 +163,7 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
                                             </Link>
                                             <div className="flex flex-col gap-1">
                                                 <div className="flex gap-2 items-center">
-                                                    <h3>{commentedUser.data?.map((user) =>
-                                                        user.users ? user.users.full_name : []
-                                                    )}</h3>
+                                                    <p className="text-white">{commentedUser.data?.find((user) => user.users?.id)?.users?.full_name}</p>
                                                     <p className="text-white/50 text-xs">{format(parseISO(comment.created_at as string), 'yyyy-MM-dd')}</p>
                                                 </div>
                                                 <p className="text-white/70">{comment.comment_content}</p>

@@ -126,7 +126,9 @@ export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
     return (
         <div className="flex flex-col gap-4 w-full">
             <div className="flex flex-col gap-4 w-full">
-                <h2 className='text-xl tracking-wider font-semibold w-fit'>Owned Groups</h2>
+                {memoizedOwnedGroups.length > 0 && (
+                    <h2 className='text-xl tracking-wider font-semibold w-fit'>Owned Groups</h2>
+                )}
                 <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
                     {memoizedOwnedGroups?.map((group) => (
                         <Link key={group.id} href={`/group-page/${group.id}`}>
@@ -159,7 +161,9 @@ export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
             </div>
 
             <div className="flex flex-col gap-4 w-full">
-                <h2 className='text-xl tracking-wider font-semibold w-fit'>Member Groups</h2>
+                {memoizedMemberGroups.length > 0 && (
+                    <h2 className='text-xl tracking-wider font-semibold w-fit'>Member Groups</h2>
+                )}
                 <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
                     {memoizedMemberGroups?.map((group) => (
                         <Link key={group.id} href={`/group-page/${group.id}`}>

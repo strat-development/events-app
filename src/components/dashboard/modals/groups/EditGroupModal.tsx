@@ -31,7 +31,9 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
         groupCountry,
         setGroupCountry,
         editorContent,
-        selectedInterests
+        setEditorContent,
+        selectedInterests,
+        setSelectedInterests
     } = useGroupDataContext()
 
     const formattedInterests = { interests: selectedInterests.map((interest) => ({ name: interest })) };
@@ -60,6 +62,13 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
                     description: "Group edited successfully",
                 });
 
+                setIsOpen(false);
+                setModalStepCount(1);
+                setGroupName("");
+                setGroupCity("");
+                setGroupCountry("");
+                setEditorContent("");
+                setSelectedInterests([]);
             },
 
             onError: () => {

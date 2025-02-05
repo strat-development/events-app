@@ -31,7 +31,9 @@ export const CreateGroupDialog = () => {
         groupCountry,
         setGroupCountry,
         editorContent,
-        selectedInterests
+        setEditorContent,
+        selectedInterests,
+        setSelectedInterests
     } = useGroupDataContext()
     const { userId } = useUserContext()
     
@@ -64,6 +66,12 @@ export const CreateGroupDialog = () => {
                 });
 
                 setIsOpen(false);
+                setModalStepCount(1);
+                setGroupName("");
+                setGroupCity("");
+                setGroupCountry("");
+                setEditorContent("");
+                setSelectedInterests([]);
             },
 
             onError: () => {
