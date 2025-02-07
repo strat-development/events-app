@@ -36,7 +36,7 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
     const socialMediaIcons: Record<SocialMediaTypes, JSX.Element> = {
         Facebook: <Facebook className="text-white/70" size={24} />,
         Instagram: <Instagram className="text-white/70" size={24} />,
-        Twitter: <Twitter className="text-white/70" size={24} />,
+        X: <Twitter className="text-white/70" size={24} />,
     };
 
     const { data: images, isLoading } = useQuery(
@@ -59,14 +59,16 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
 
     useEffect(() => {
         if (images) {
-            Promise.all(images.map(async (image) => {
-                const { data: publicURL } = await supabase.storage
-                    .from('profile-pictures')
-                    .getPublicUrl(image.image_url)
-
-                return { publicUrl: publicURL.publicUrl };
-
-            }))
+            Promise.all(
+                images
+                    .filter(image => image.image_url.trim() !== "")
+                    .map(async (image) => {
+                        const { data: publicURL } = await supabase.storage
+                            .from('profile-pictures')
+                            .getPublicUrl(image.image_url);
+                        return { publicUrl: publicURL.publicUrl };
+                    })
+            )
                 .then((publicUrls) => setImageUrls(publicUrls))
                 .catch(console.error);
         }
@@ -151,26 +153,30 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                         <div className="flex flex-col gap-4 w-full"
                             key={user.id}>
                             <div className="flex flex-col relative items-center aspect-square gap-4 w-full border border-white/10 rounded-md">
-                                {imageUrls && imageUrls.map((image, index) => (
-                                    <Image
-                                        key={index}
-                                        src={image.publicUrl}
-                                        alt="Profile picture"
-                                        width={2000}
-                                        height={2000}
-                                        className="rounded-md"
-                                    />
-                                )) || (
-                                        <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-md bg-white/5">
-                                            <IconGhost2Filled className="w-24 h-24 text-white/70"
-                                                strokeWidth={1} />
-                                            <p className="text-white/50 text-lg">No profile picture</p>
-                                        </div>
-                                    )}
+                                {imageUrls.length > 0 && imageUrls.some(image => image.publicUrl) ? (
+                                    imageUrls.map((image, index) =>
+                                        image.publicUrl ? (
+                                            <Image
+                                                key={index}
+                                                src={image.publicUrl}
+                                                alt="Profile picture"
+                                                width={2000}
+                                                height={2000}
+                                                className="rounded-md"
+                                            />
+                                        ) : null
+                                    )
+                                ) : (
+                                    <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-md bg-white/5">
+                                        <IconGhost2Filled className="w-24 h-24 text-white/70" strokeWidth={1} />
+                                        <p className="text-white/50 text-lg">No profile picture</p>
+                                    </div>
+                                )}
 
-                                {pathname === "/dashboard" && (
+                                {pathname === "/dashboard" && imageUrls.length > 0 && imageUrls.some(image => image.publicUrl) && (
                                     <DeleteUserProfileImageDialog />
                                 )}
+
                                 <div className="flex flex-col gap-4 absolute bottom-0 w-full pl-2 pb-2">
                                     <div className="absolute inset-0 bg-black/30 blur-sm"></div>
                                     <div className="relative flex flex-col gap-1">

@@ -151,8 +151,8 @@ export const EventsSection = () => {
             <div className="flex flex-col gap-16 items-center w-full min-[1200px]:flex-row min-[1200px]:items-start">
                 <div className="flex flex-col gap-8 min-[1200px]:w-fit min-[1200px]:sticky min-[1200px]:top-24">
                     <Calendar className="z-[2] hidden border border-white/10 w-full min-[1200px]:flex min-[1200px]:items-center min-[1200px]:justify-center rounded-md"
-                        onDayClick={handleDateChange} 
-                         />
+                        onDayClick={handleDateChange}
+                    />
                     <div className="fixed bg-white p-2 rounded-full bottom-[10%] right-[5%] min-[1200px]:hidden">
                         <CalendarDialog onDayClick={handleDateChange} />
                     </div>
@@ -189,7 +189,11 @@ export const EventsSection = () => {
                                         <p className="text-white/60">{event.event_address}</p>
                                         <div className="flex gap-2 mt-1">
                                             <Ticket className="text-white/70 h-6 w-6" />
-                                            <p className="font-bold tracking-wide text-white/70">{event.ticket_price}</p>
+                                            {event?.ticket_price === 0 && (
+                                                <p className="text-sm text-white/60">{event.ticket_price !== null ? "FREE" : "FREE"}</p>
+                                            ) || (
+                                                    <p className="text-sm text-white/60">{event?.ticket_price}$</p>
+                                                )}
                                         </div>
                                     </div>
                                     <Button className="rounded-md mt-2 w-fit"

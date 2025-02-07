@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 import { FileUpload } from "@/components/ui/file-upload";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Input } from "@/components/ui/input"
@@ -131,30 +131,7 @@ export const CreateEventImagesAlbumDialog = ({ eventId }: CreateEventImagesAlbum
 
                     <FileUpload
                         onChange={(selectedFiles) => {
-                            const validFiles = selectedFiles.filter((file) => {
-                                const isValidSize = file.size <= 2 * 1024 * 1024;
-                                const isValidType = file.type.startsWith("image/");
-
-                                if (!isValidSize) {
-                                    toast({
-                                        variant: "destructive",
-                                        title: "File Too Large",
-                                        description: `${file.name} exceeds the 2MB size limit.`,
-                                    });
-                                }
-
-                                if (!isValidType) {
-                                    toast({
-                                        variant: "destructive",
-                                        title: "Invalid File Type",
-                                        description: `${file.name} is not an image.`,
-                                    });
-                                }
-
-                                return isValidSize && isValidType;
-                            });
-
-                            setFiles(validFiles);
+                            setFiles(selectedFiles);
                         }}
                     />
 

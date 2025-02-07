@@ -10,19 +10,67 @@ import { Database } from "@/types/supabase";
 import { SocialMediaTypes } from "@/types/types";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Facebook, Instagram, Twitter } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 
 export const EditSocialsDialog = () => {
     const [isOpen, setIsOpen] = useState(false);
     const supabase = createClientComponentClient<Database>();
     const { userId } = useUserContext();
-    const [socials, setSocials] = useState<Record<string, Record<string, string>>>({})
     const queryClient = useQueryClient();
+
+    const [socials, setSocials] = useState<Record<string, { link: string }>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
+
     const socialMediaIcons: Record<SocialMediaTypes, JSX.Element> = {
         Facebook: <Facebook />,
         Instagram: <Instagram />,
-        Twitter: <Twitter />,
+        X: <Twitter />,
+    };
+
+    const validSocialDomains: Record<SocialMediaTypes, RegExp> = {
+        Facebook: /^(https?:\/\/)?(www\.)?facebook\.com\/[\w.-]+\/?$/,
+        Instagram: /^(https?:\/\/)?(www\.)?instagram\.com\/[\w.-]+\/?$/,
+        X: /^(https?:\/\/)?(www\.)?(x\.com|twitter\.com)\/[\w.-]+\/?$/
+    };
+
+    const isValidSocialUrl = (url: string, social: SocialMediaTypes) => {
+        try {
+            const parsedUrl = new URL(url);
+            return validSocialDomains[social].test(parsedUrl.href);
+        } catch (_) {
+            return false;
+        }
+    };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const newErrors: Record<string, boolean> = {};
+
+            Object.entries(socials).forEach(([social, { link }]) => {
+                if (link && !isValidSocialUrl(link, social as SocialMediaTypes)) {
+                    newErrors[social] = true;
+                }
+            });
+
+            setErrors(newErrors);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [socials]);
+
+    const handleSocialChange = (social: string, event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+
+        setSocials(prev => ({
+            ...prev,
+            [social]: { link: value }
+        }));
+
+        setErrors(prev => ({
+            ...prev,
+            [social]: false
+        }));
     };
 
     const editSocialsMutation = useMutation(
@@ -39,7 +87,7 @@ export const EditSocialsDialog = () => {
                 toast({
                     title: 'Socials updated',
                     description: 'Your socials have been updated successfully'
-                })
+                });
 
                 queryClient.invalidateQueries('users');
             },
@@ -48,64 +96,70 @@ export const EditSocialsDialog = () => {
                     title: 'Error',
                     description: 'There was an error updating your socials',
                     variant: 'destructive'
-                })
+                });
             }
         }
     );
 
-    const handleSocialChange = (social: string, socialsType: string, event: React.ChangeEvent<HTMLInputElement>) => {
-        setSocials(prevState => ({
-            ...prevState,
-            [social]: {
-                ...(prevState[social] || {}),
-                [socialsType]: event.target.value,
-            },
-        }));
-    };
-
     return (
-        <>
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger asChild>
-                    <Button className="w-fit">Edit socials</Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Edit socials</DialogTitle>
-                        <DialogDescription className="text-white/70">
-                            Are you sure you want to delete your socials? If not please close this dialog.
-                        </DialogDescription>
-                    </DialogHeader>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button className="w-fit">Edit socials</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Edit socials</DialogTitle>
+                    <DialogDescription className="text-white/70">
+                        Are you sure you want to delete your socials? If not please close this dialog.
+                    </DialogDescription>
+                </DialogHeader>
 
-                    <div className="flex flex-col gap-4">
-                        {Object.keys(socialMediaIcons).map((social) => {
-                            const Icon = socialMediaIcons[social as SocialMediaTypes];
+                {Object.keys(socialMediaIcons).map((social) => {
+                    const Icon = socialMediaIcons[social as SocialMediaTypes];
 
-                            return (
-                                <div className="flex items-center gap-4 cursor-pointer" key={social}>
-                                    <label className="text-2xl" htmlFor={social}>{Icon}</label>
-                                    <Input id={social}
+                    return (
+                        <div className="flex flex-col gap-2" key={social}>
+                            <div className="flex items-center gap-4">
+                                <label className="text-2xl" htmlFor={social}>{Icon}</label>
+                                <div className="flex flex-col gap-1 w-full">
+                                    <Input
+                                        id={social}
                                         type="text"
-                                        onChange={(e) => handleSocialChange(social, 'link', e)}
+                                        value={socials[social]?.link || ""}
+                                        onChange={(e) => handleSocialChange(social, e)}
                                         placeholder={`${social} link...`}
+                                        className={errors[social] ? "border-red-500" : ""}
                                     />
+                                    {errors[social] && (
+                                        <p className="text-red-500 text-sm">
+                                            Invalid {social} URL. Please enter a valid link.
+                                        </p>
+                                    )}
                                 </div>
-                            );
-                        })}
-                    </div>
+                            </div>
+                        </div>
+                    );
+                })}
 
-                    <DialogFooter>
-                        <HoverBorderGradient
-                            onClick={() => {
-                                editSocialsMutation.mutate();
-                                queryClient.invalidateQueries('users');
-                                setIsOpen(false);
-                            }}>
-                            Update socials
-                        </HoverBorderGradient>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        </>
-    )
-}
+                <DialogFooter>
+                    <HoverBorderGradient
+                        onClick={() => {
+                            if (Object.values(errors).some(error => error)) {
+                                toast({
+                                    title: "Invalid URLs",
+                                    description: "Please enter correct Facebook, Instagram, and X links.",
+                                    variant: "destructive",
+                                });
+                                return;
+                            }
+
+                            editSocialsMutation.mutate();
+                            setIsOpen(false);
+                        }}>
+                        Update socials
+                    </HoverBorderGradient>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};

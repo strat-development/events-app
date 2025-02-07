@@ -15,15 +15,6 @@ interface InterestGroup {
     interests: Interest[]
 }
 
-interface InterestData {
-    "interest-groups": InterestGroup[]
-}
-
-interface UserInterestsData {
-    user_interests: string[]
-    id: string
-}
-
 export const GroupTopicsModalStep = () => {
     const [searchQuery, setSearchQuery] = useState<string>("")
     const { interestsData, selectedGroup, selectedInterests, setSelectedInterests, setSelectedGroup } = useGroupDataContext()

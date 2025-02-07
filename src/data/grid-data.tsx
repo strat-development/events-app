@@ -39,8 +39,8 @@ export const items = [
     imagePath: "/Automatic-search.png"
   },
   {
-    title: "Groups and events statistics",
-    description: "Track monthly statistics for your groups and events",
+    title: "Events statistics",
+    description: "Track monthly statistics for your events",
     header: null,
     icon: <ChartArea className="h-6 w-6 text-neutral-500" />,
     imagePath: "/BarLineChart.png"

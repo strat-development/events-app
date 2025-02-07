@@ -166,30 +166,7 @@ export const CreatePostDialog = () => {
                                 <FileUpload
                                     className="max-h-[350px] overflow-y-auto overflow-x-hidden"
                                     onChange={(selectedFiles) => {
-                                        const validFiles = selectedFiles.filter((file) => {
-                                            const isValidSize = file.size <= 2 * 1024 * 1024;
-                                            const isValidType = file.type.startsWith("image/");
-
-                                            if (!isValidSize) {
-                                                toast({
-                                                    variant: "destructive",
-                                                    title: "File Too Large",
-                                                    description: `${file.name} exceeds the 2MB size limit.`,
-                                                });
-                                            }
-
-                                            if (!isValidType) {
-                                                toast({
-                                                    variant: "destructive",
-                                                    title: "Invalid File Type",
-                                                    description: `${file.name} is not an image.`,
-                                                });
-                                            }
-
-                                            return isValidSize && isValidType;
-                                        });
-
-                                        setFiles(validFiles);
+                                        setFiles(selectedFiles);
                                     }}
                                 />
 

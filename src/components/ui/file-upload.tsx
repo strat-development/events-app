@@ -3,6 +3,7 @@ import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { IconUpload } from "@tabler/icons-react";
 import { useDropzone } from "react-dropzone";
+import { toast } from "./use-toast";
 
 const mainVariant = {
     initial: {
@@ -36,9 +37,32 @@ export const FileUpload = ({
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (newFiles: File[]) => {
-        const updatedFiles = [...files, ...newFiles];
-        setFiles(updatedFiles);
-        onChange && onChange(updatedFiles);
+        const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+        const validFiles = newFiles.filter((file) => {
+            const isValidSize = file.size <= 2 * 1024 * 1024; // 2MB limit
+            const isValidType = allowedTypes.includes(file.type);
+    
+            if (!isValidSize) {
+                toast({
+                    variant: "destructive",
+                    title: "File Too Large",
+                    description: `${file.name} exceeds the 2MB size limit.`,
+                });
+            }
+    
+            if (!isValidType) {
+                toast({
+                    variant: "destructive",
+                    title: "Invalid File Type",
+                    description: `${file.name} is not a JPG, JPEG, or PNG image.`,
+                });
+            }
+    
+            return isValidSize && isValidType;
+        });
+    
+        setFiles(validFiles);
+        onChange && onChange(validFiles);
     };
 
     const handleClick = () => {

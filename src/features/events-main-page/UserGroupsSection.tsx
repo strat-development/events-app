@@ -13,7 +13,6 @@ export const UserGroupsSection = () => {
     const { userId } = useUserContext();
     const [groupId, setGroupId] = useState<string[]>([]);
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
-    const router = useRouter();
 
     const fetchGroupId = useQuery(
         'groupIds',
@@ -113,7 +112,7 @@ export const UserGroupsSection = () => {
                                             width={2000}
                                             height={2000}
                                             objectFit="cover"
-                                            className="rounded-md"
+                                            className="rounded-md aspect-video w-full h-full"
                                         />
                                     ))
                                 ) || (

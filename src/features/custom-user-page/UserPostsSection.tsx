@@ -2,7 +2,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { CreatePostDialog } from "../../components/dashboard/modals/posts/CreatePostDialog"
 import { Database } from "@/types/supabase";
 import { useQuery } from "react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PostGallery } from "./PostGallery";
 import { format, parseISO } from "date-fns";
 import { DeletePostDialog } from "../../components/dashboard/modals/posts/DeletePostDialog";
@@ -29,6 +29,7 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
     const [profileImageUrls, setProfileImageUrls] = useState<{ publicUrl: string }[]>([]);
     const [commentId, setCommentId] = useState<string[]>([]);
     const pathname = usePathname();
+    const [openPopover, setOpenPopover] = useState<string | null>(null);
 
     const fetchPostData = useQuery(
         'posts',
@@ -96,32 +97,39 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
 
     const commentedUserId = commentedUser.data?.map((user) => user.users?.id).filter(id => id !== undefined);
 
-    const { data: profileImages } = useQuery(['profile-pictures'], async () => {
-        const { data, error } = await supabase
-            .from('profile-pictures')
-            .select('user_id, image_url')
-            .in('user_id', commentedUserId || []);
+    useEffect(() => {
+        if (commentedUserId && commentedUserId.length > 0) {
+            const fetchProfileImages = async () => {
+                const { data, error } = await supabase
+                    .from('profile-pictures')
+                    .select('user_id, image_url')
+                    .in('user_id', commentedUserId);
 
-        if (error) {
-            throw error;
-        }
+                if (error) {
+                    console.error("Error fetching profile images:", error);
+                    return;
+                }
 
-        const urlMap: Record<string, string> = {};
-        if (data) {
-            await Promise.all(
-                data.map(async (image) => {
-                    const { data: publicURL } = await supabase.storage
-                        .from('profile-pictures')
-                        .getPublicUrl(image.image_url);
-                    if (publicURL && image.user_id) urlMap[image.user_id] = publicURL.publicUrl;
-                })
-            );
-            setProfileImageUrls(Object.values(urlMap).map(publicUrl => ({ publicUrl })));
+                const urlMap: Record<string, string> = {};
+                await Promise.all(
+                    data.map(async (image) => {
+                        if (image.image_url) {
+                            const { data: publicURL } = await supabase.storage
+                                .from('profile-pictures')
+                                .getPublicUrl(image.image_url);
+                            if (publicURL && image.user_id) {
+                                urlMap[image.user_id] = publicURL.publicUrl;
+                            }
+                        }
+                    })
+                );
+
+                setProfileImageUrls(Object.entries(urlMap).map(([_, url]) => ({ publicUrl: url })));
+            };
+
+            fetchProfileImages();
         }
-        return urlMap;
-    }, {
-        cacheTime: 10 * 60 * 1000,
-    });
+    }, [commentedUserId]);
 
     return (
         <>
@@ -152,13 +160,17 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
                         </div>
                         <div className="flex flex-col gap-4 mt-8">
                             {data?.filter((comment) => comment.post_id === post.id).map((comment) => (
-                                <div key={comment.id} 
-                                className="flex justify-between items-start gap-8">
+                                <div key={comment.id}
+                                    className="flex justify-between items-start gap-8">
                                     <div className="flex items-start gap-4">
                                         <div className="flex gap-4 items-start">
                                             <Link href={`/user-profile/${comment.user_id}`} key={comment.user_id}>
                                                 <div className="flex gap-2">
-                                                    <Image src={profileImageUrls[0]?.publicUrl} width={36} height={36} alt="" className="rounded-full border border-white/10" />
+                                                    <Image src={profileImageUrls[0]?.publicUrl}
+                                                        width={36}
+                                                        height={36}
+                                                        alt="" className="rounded-full border border-white/10"
+                                                        priority />
                                                 </div>
                                             </Link>
                                             <div className="flex flex-col gap-1">

@@ -145,10 +145,16 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                             </div>
                             <div className="flex gap-4">
                                 <div className="flex flex-col">
-                                    <p className="text-lg text-white/70 font-medium">{availableSpots} spots left</p>
+                                    <p className="text-sm text-white/60">
+                                        {availableSpots === null || availableSpots === 0 ? "No limits" : `${availableSpots} spots available`}
+                                    </p>
                                     <div className="flex gap-2 mt-1 items-center">
                                         <Ticket className="h-4 w-4" />
-                                        <p className="text-sm font-bold tracking-wide text-white/70">{event.ticket_price}</p>
+                                        {event?.ticket_price === 0 ? (
+                                            <p className="text-sm text-white/60">FREE</p>
+                                        ) : (
+                                            <p className="text-sm text-white/60">{event?.ticket_price !== null ? `From $${event.ticket_price}` : "FREE"}</p>
+                                        )}
                                     </div>
                                 </div>
                                 <ShareDialog />

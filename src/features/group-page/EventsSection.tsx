@@ -127,7 +127,11 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
                                         <p className="text-white/60">{event.event_address}</p>
                                         <div className="flex gap-2 mt-1">
                                             <Ticket className="h-6 w-6" />
-                                            <p className="font-bold tracking-wide text-white/70">{event.ticket_price}</p>
+                                            {event?.ticket_price === 0 ? (
+                                                <p className="text-sm text-white/60">FREE</p>
+                                            ) : (
+                                                <p className="text-sm text-white/60">{event?.ticket_price !== null ? `From $${event.ticket_price}` : "FREE"}</p>
+                                            )}
                                         </div>
                                     </div>
                                     {pathname.includes("dashboard") && (

@@ -75,7 +75,7 @@ export const DeleteUserProfileImageDialog = () => {
                 asChild>
                     <Trash className="text-red-500 cursor-pointer" />
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Delete picture</DialogTitle>
                         <DialogDescription className="text-white/70">

@@ -10,7 +10,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { Card } from "@/components/ui/card";
 import { Heart } from "lucide-react";
-import { SavedEventsSection } from "@/components/dashboard/modals/event-searcher/SavedEventsSection";
+import { SavedEventsSection } from "@/components/event-searcher/SavedEventsSection";
 import { Navbar } from "@/components/dashboard/Navbar";
 import GridLoader from "react-spinners/GridLoader";
 import Link from "next/link";

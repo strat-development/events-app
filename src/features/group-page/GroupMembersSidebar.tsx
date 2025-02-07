@@ -77,7 +77,11 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
                         {memoizedGroupMembers?.slice(0, 12).map((member) => (
                             <Link href={`/user-profile/${member.users?.id}`} key={member.users?.id}>
                                 <Image className="rounded-full border border-white/10"
-                                    src={profileImageUrls[0]?.publicUrl} width={64} height={64} alt="" />
+                                    src={profileImageUrls[0]?.publicUrl} 
+                                    width={64} 
+                                    height={64} 
+                                    alt="" 
+                                    priority />
                             </Link>
                         ))}
                     </div>

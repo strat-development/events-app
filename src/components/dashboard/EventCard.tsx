@@ -135,7 +135,7 @@ export const EventCard = () => {
         <div className="flex flex-col gap-4">
             <div className="flex gap-4">
                 <Button className={attendingVisits === true ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
-                            variant="ghost"
+                    variant="ghost"
                     onClick={() => {
                         setAttendingVisits(true);
                         fetchedEventsByAttendees.refetch();
@@ -143,7 +143,7 @@ export const EventCard = () => {
                     Attending
                 </Button>
                 <Button className={attendingVisits === false ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
-                            variant="ghost"
+                    variant="ghost"
                     onClick={() => {
                         setAttendingVisits(false);
                         fetchedEventsByHosts.refetch();
@@ -190,7 +190,11 @@ export const EventCard = () => {
                                     <p className="text-sm text-white/60">{event.events?.event_address}</p>
                                     <div className="flex gap-2 mt-1 items-center">
                                         <Ticket className="h-4 w-4" />
-                                        <p className="text-sm font-bold tracking-wide text-white/70">{event.events?.ticket_price}</p>
+                                        {event.events?.ticket_price === 0 ? (
+                                            <p className="text-sm text-white/60">FREE</p>
+                                        ) : (
+                                            <p className="text-sm text-white/60">{event.events?.ticket_price !== null ? `From $${event.events?.ticket_price}` : "FREE"}</p>
+                                        )}
                                     </div>
                                 </div>
                                 <Button className="rounded-md mt-2 w-fit text-sm"
@@ -227,7 +231,11 @@ export const EventCard = () => {
                                     <p className="text-sm text-white/60">{event.event_address}</p>
                                     <div className="flex items-center gap-2 mt-1">
                                         <Ticket className="h-4 w-4" />
-                                        <p className="text-sm font-bold tracking-wide text-white/70">{event.ticket_price}</p>
+                                        {event?.ticket_price === 0 ? (
+                                            <p className="text-sm text-white/60">FREE</p>
+                                        ) : (
+                                            <p className="text-sm text-white/60">{event?.ticket_price !== null ? `From $${event.ticket_price}` : "FREE"}</p>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="flex gap-4 items-baseline">

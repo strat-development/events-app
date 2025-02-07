@@ -21,7 +21,6 @@ export default async function ChangeLogPage() {
                     </div>
 
                     <div className="flex flex-col gap-4 min-[768px]:w-[70%]">
-                        <h2 className="text-xl font-semibold tracking-wider">{post.logTitle}</h2>
                         <Image className="rounded-md"
                             src={post.logImage?.url || ""} alt={post.logTitle || ""} width={2000} height={2000} />
                         <div className="text-content"

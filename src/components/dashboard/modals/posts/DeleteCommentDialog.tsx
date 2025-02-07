@@ -6,7 +6,6 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { useMutation, useQueryClient } from "react-query";
-import { supabaseAdmin } from "@/lib/admin";
 
 interface DeleteCommentDialogProps {
     commentId: string;
