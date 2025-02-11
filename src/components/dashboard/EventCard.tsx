@@ -190,7 +190,7 @@ export const EventCard = () => {
                                     <p className="text-sm text-white/60">{event.events?.event_address}</p>
                                     <div className="flex gap-2 mt-1 items-center">
                                         <Ticket className="h-4 w-4" />
-                                        {event.events?.ticket_price === 0 ? (
+                                        {event?.events?.ticket_price !== null && (event.events?.ticket_price ?? 0) > 10000 ? (
                                             <p className="text-sm text-white/60">FREE</p>
                                         ) : (
                                             <p className="text-sm text-white/60">{event.events?.ticket_price !== null ? `From $${event.events?.ticket_price}` : "FREE"}</p>
@@ -231,7 +231,7 @@ export const EventCard = () => {
                                     <p className="text-sm text-white/60">{event.event_address}</p>
                                     <div className="flex items-center gap-2 mt-1">
                                         <Ticket className="h-4 w-4" />
-                                        {event?.ticket_price === 0 ? (
+                                        {event?.ticket_price !== null && event.ticket_price > 10000 ? (
                                             <p className="text-sm text-white/60">FREE</p>
                                         ) : (
                                             <p className="text-sm text-white/60">{event?.ticket_price !== null ? `From $${event.ticket_price}` : "FREE"}</p>

@@ -157,7 +157,7 @@ export const CreateGroupDialog = () => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button className="bg-transparent" variant="outline">Create Group</Button>
+                    <Button className="bg-transparent w-fit" variant="outline">Create Group</Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>
@@ -185,16 +185,16 @@ export const CreateGroupDialog = () => {
                                     value={groupCountry}
                                     onChange={(e) => setGroupCountry(e.target.value)}
                                 />
-                                <Button onClick={() => setModalStepCount(2)}>Next step</Button>
+                                <Button className='w-fit' onClick={() => setModalStepCount(2)}>Next step</Button>
                             </>
                         )}
 
                         {modalStepCount === 2 && (
                             <>
                                 <GroupTopicsModalStep />
-                                <div className="flex gap-4">
-                                    <Button onClick={() => setModalStepCount(1)}>Previous step</Button>
-                                    <Button onClick={() => setModalStepCount(3)}>Next step</Button>
+                                <div className="flex justify-between gap-4">
+                                    <Button className='w-fit' onClick={() => setModalStepCount(1)}>Previous step</Button>
+                                    <Button className='w-fit' onClick={() => setModalStepCount(3)}>Next step</Button>
                                 </div>
                             </>
                         )}
@@ -202,9 +202,9 @@ export const CreateGroupDialog = () => {
                         {modalStepCount === 3 && (
                             <>
                                 <GroupDescriptionModalStep />
-                                <div className="flex gap-4">
-                                    <Button onClick={() => setModalStepCount(2)}>Previous step</Button>
-                                    <Button onClick={() => setModalStepCount(4)}>Next step</Button>
+                                <div className="flex justify-between gap-4">
+                                    <Button className='w-fit' onClick={() => setModalStepCount(2)}>Previous step</Button>
+                                    <Button className='w-fit' onClick={() => setModalStepCount(4)}>Next step</Button>
                                 </div>
                             </>
                         )}
@@ -215,8 +215,8 @@ export const CreateGroupDialog = () => {
                                         setFiles(selectedFiles);
                                     }}
                                 />
-                                <div className="flex gap-4">
-                                    <Button onClick={() => setModalStepCount(2)}>Previous step</Button>
+                                <div className="flex justify-between gap-4">
+                                    <Button className='w-fit' onClick={() => setModalStepCount(2)}>Previous step</Button>
                                     {selectedInterests.length > 0 && editorContent.length > 0 && groupCity.length > 0 && groupCountry.length > 0 && groupName.length > 0 && files.length == 1 && (
                                         <HoverBorderGradient
                                             onClick={() => {

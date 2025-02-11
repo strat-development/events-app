@@ -1,6 +1,6 @@
 "use client"
 
-import { Flag, Ticket } from "lucide-react"
+import { Ticket } from "lucide-react"
 import { Button } from "./ui/button"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Database } from "@/types/supabase"
@@ -146,11 +146,11 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                             <div className="flex gap-4">
                                 <div className="flex flex-col">
                                     <p className="text-sm text-white/60">
-                                        {availableSpots === null || availableSpots === 0 ? "No limits" : `${availableSpots} spots available`}
+                                        {availableSpots > 10000 ? "No limits" : `${availableSpots} spots available`}
                                     </p>
                                     <div className="flex gap-2 mt-1 items-center">
                                         <Ticket className="h-4 w-4" />
-                                        {event?.ticket_price === 0 ? (
+                                        {event?.ticket_price !== null && event.ticket_price > 10000 ? (
                                             <p className="text-sm text-white/60">FREE</p>
                                         ) : (
                                             <p className="text-sm text-white/60">{event?.ticket_price !== null ? `From $${event.ticket_price}` : "FREE"}</p>
