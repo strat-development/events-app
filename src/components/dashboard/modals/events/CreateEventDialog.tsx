@@ -17,6 +17,7 @@ import { FileUpload } from "@/components/ui/file-upload"
 import { GroupDescriptionModalStep } from "@/features/create-group-modal/GroupDescriptionModalStep"
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Plus } from "lucide-react"
 
 interface CreateEventDialogProps {
     ownerId: string
@@ -212,10 +213,16 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                 setIsOpen(open)
             }}>
                 <DialogTrigger asChild>
-                    <Button className="bg-transparent"
+                    <Button
+                        className="flex flex-col items-center justify-center w-[280px] h-[440px] rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
                         onClick={() => fetchGroups.refetch()}
-                        variant="outline">
-                        Create Event
+                        variant="ghost">
+                        <div className="flex flex-col items-center">
+                            <div className="text-6xl text-white/70">
+                                <Plus size={128} />
+                            </div>
+                            <p className="text-xl tracking-wide text-white/50 font-medium">Create new event</p>
+                        </div>
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">

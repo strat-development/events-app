@@ -9,14 +9,15 @@ import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { Pagination } from "@mui/material"
-import { Ticket } from "lucide-react"
+import { Globe, Ticket } from "lucide-react"
 import { format, parseISO } from "date-fns";
 import { useRouter } from "next/navigation"
 import { DeleteEventDialog } from "./modals/events/DeleteEventDialog"
+import { CreateEventDialog } from "./modals/events/CreateEventDialog"
 
 export const EventCard = () => {
     const supabase = createClientComponentClient<Database>()
-    const { eventCreatorId } = useGroupOwnerContext();
+    const { eventCreatorId, ownerId } = useGroupOwnerContext();
     const { userId } = useUserContext();
     const [attendingVisits, setAttendingVisits] = useState(true)
     const [imageUrls, setImageUrls] = useState<{ [eventId: string]: string }>({});
@@ -154,13 +155,20 @@ export const EventCard = () => {
 
 
             {attendingVisits && currentAttendingItems.length === 0 && (
-                <div className="flex flex-col items-center gap-4">
-                    <p className="text-white/70 text-center">You have no upcoming events to attend.</p>
-                </div>
-            )}
-            {!attendingVisits && currentHostItems.length === 0 && (
-                <div className="flex flex-col items-center gap-4">
-                    <p className="text-white/70 text-center">You have no upcoming events to host.</p>
+                <div className="flex flex-col self-center items-center gap-8 mt-24">
+                    <h2 className="text-white/70 text-center text-2xl font-semibold tracking-wide">You have no upcoming events to attend.</h2>
+                    <Button
+                        className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
+                        onClick={() => router.push('/home')}
+                        variant="ghost">
+                        <div className="flex flex-col items-center gap-8">
+                            <div className="text-6xl text-white/70">
+                                <Globe size={128}
+                                strokeWidth={1} />
+                            </div>
+                            <p className="text-xl tracking-wide text-white/50 font-medium">Discover events</p>
+                        </div>
+                    </Button>
                 </div>
             )}
 
@@ -191,9 +199,9 @@ export const EventCard = () => {
                                     <div className="flex gap-2 mt-1 items-center">
                                         <Ticket className="h-4 w-4" />
                                         {event?.events?.ticket_price !== null && (event.events?.ticket_price ?? 0) > 10000 ? (
-                                            <p className="text-sm text-white/60">FREE</p>
+                                            <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
                                         ) : (
-                                            <p className="text-sm text-white/60">{event.events?.ticket_price !== null ? `From $${event.events?.ticket_price}` : "FREE"}</p>
+                                            <p className="text-sm text-white/60 font-bold tracking-wide">{event.events?.ticket_price}$</p>
                                         )}
                                     </div>
                                 </div>
@@ -207,45 +215,50 @@ export const EventCard = () => {
 
             <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                 {!attendingVisits && (
-                    currentHostItems?.map((event) => (
-                        <div key={event.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">
-                            <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
-                                {event.id && imageUrls[event.id] ? (
-                                    <Image
-                                        src={imageUrls[event.id]}
-                                        alt={event.event_title || ""}
-                                        width={200}
-                                        height={200}
-                                        className="object-cover rounded-md w-full max-h-[240px]"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
-                                        <p className="text-center font-medium">No image available 😔</p>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.event_title}</h1>
+                    <>
+                        <CreateEventDialog ownerId={ownerId} />
+
+                        {currentHostItems?.map((event) => (
+                            <div key={event.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">
+
+                                <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                                    {event.id && imageUrls[event.id] ? (
+                                        <Image
+                                            src={imageUrls[event.id]}
+                                            alt={event.event_title || ""}
+                                            width={200}
+                                            height={200}
+                                            className="object-cover rounded-md w-full max-h-[240px]"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                            <p className="text-center font-medium">No image available 😔</p>
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="flex flex-col gap-1">
-                                    <p className="text-sm text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                                    <p className="text-sm text-white/60">{event.event_address}</p>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <Ticket className="h-4 w-4" />
-                                        {event?.ticket_price !== null && event.ticket_price > 10000 ? (
-                                            <p className="text-sm text-white/60">FREE</p>
-                                        ) : (
-                                            <p className="text-sm text-white/60">{event?.ticket_price !== null ? `From $${event.ticket_price}` : "FREE"}</p>
-                                        )}
+                                    <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.event_title}</h1>
+                                    <div className="flex flex-col gap-1">
+                                        <p className="text-sm text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                        <p className="text-sm text-white/60">{event.event_address}</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <Ticket className="h-4 w-4" />
+                                            {event?.ticket_price !== null && event.ticket_price > 10000 ? (
+                                                <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
+                                            ) : (
+                                                <p className="text-sm text-white/60 font-bold tracking-wide">{event?.ticket_price}$</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4 items-baseline">
+                                        <Button className="rounded-md mt-2 w-fit text-sm"
+                                            onClick={() => router.push(`/dashboard/event-page/${event.id}`)}>View event</Button>
+                                        <DeleteEventDialog eventId={event.id} />
                                     </div>
                                 </div>
-                                <div className="flex gap-4 items-baseline">
-                                    <Button className="rounded-md mt-2 w-fit text-sm"
-                                        onClick={() => router.push(`/dashboard/event-page/${event.id}`)}>View event</Button>
-                                    <DeleteEventDialog eventId={event.id} />
-                                </div>
                             </div>
-                        </div>
-                    ))
+                        ))}
+                    </>
                 )}
             </div>
 

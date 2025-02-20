@@ -1,4 +1,4 @@
-import { items } from "@/data/grid-data";
+import { items } from "@/data/hero-data";
 import { BentoGrid, BentoGridItem } from "../ui/bento-grid"
 
 export const LandingPageGrid = () => {

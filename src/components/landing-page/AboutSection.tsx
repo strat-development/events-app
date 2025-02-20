@@ -1,31 +1,8 @@
 import Image from "next/image"
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card"
-
-interface Action {
-    title: string
-    description?: string
-    image_url?: string
-}
+import { actions } from "@/data/hero-data"
 
 export const AboutSection = () => {
-    const actions: Action[] = [
-        {
-            title: 'Payments',
-            description: 'There are no payments so just enjoy the project, have fun and share positive expeiernces',
-            image_url: '/payments.png'
-        },
-        {
-            title: 'Project idea',
-            description: 'The project idea is to create a space where people can share their experiences, learn from each other and improve',
-            image_url: '/chat-icon.png'
-        },
-        {
-            title: 'Location',
-            description: 'We are basically everywhere, so you can join us from any part of the world. Create events wherever you are',
-            image_url: '/location.png'
-        }
-    ]
-
     function classNames(...classes: (string | boolean)[]): string {
         return classes.filter(Boolean).join(' ')
     }

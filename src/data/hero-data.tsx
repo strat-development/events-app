@@ -1,6 +1,11 @@
 import { IconBuildingCarousel, IconRobot, IconTableOptions } from "@tabler/icons-react";
 import { ChartArea, Ticket } from "lucide-react";
-import { title } from "process";
+
+interface Action {
+  title: string
+  description?: string
+  image_url?: string
+}
 
 export const items = [
   {
@@ -26,14 +31,14 @@ export const items = [
   },
   {
     title: "Custom event page",
-    description: "Customize you event pages to fit your needs",
+    description: "Customize your event pages to fit your needs",
     header: null,
     icon: <IconTableOptions className="h-6 w-6 text-neutral-500" />,
     imagePath: "/Custom-event-page.png"
   },
   {
     title: "Automatic event search",
-    description: "Fint events all around the internet and save to your dashboard",
+    description: "Find events all around the internet and save to your dashboard",
     header: null,
     icon: <IconRobot className="h-6 w-6 text-neutral-500" />,
     imagePath: "/Automatic-search.png"
@@ -46,3 +51,21 @@ export const items = [
     imagePath: "/BarLineChart.png"
   }
 ];
+
+export const actions: Action[] = [
+  {
+      title: 'Payments',
+      description: 'There are no payments. Just enjoy the project, have fun and share positive experiences',
+      image_url: '/payments.png'
+  },
+  {
+      title: 'Project idea',
+      description: 'The project idea is to create a space where people can share their experiences, learn from each other and improve',
+      image_url: '/chat-icon.png'
+  },
+  {
+      title: 'Location',
+      description: 'We are basically everywhere, you can join us from any part of the world. Create events wherever you are',
+      image_url: '/location.png'
+  }
+]

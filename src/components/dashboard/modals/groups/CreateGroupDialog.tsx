@@ -21,6 +21,7 @@ import { HoverBorderGradient } from '@/components/ui/hover-border-gradient';
 import { FileUpload } from '@/components/ui/file-upload';
 import { supabaseAdmin } from '@/lib/admin';
 import { GroupData } from '@/types/types';
+import { Plus } from 'lucide-react';
 
 export const CreateGroupDialog = () => {
     const supabase = createClientComponentClient<Database>();
@@ -157,7 +158,16 @@ export const CreateGroupDialog = () => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button className="bg-transparent w-fit" variant="outline">Create Group</Button>
+                    <Button
+                        className="flex flex-col items-center justify-center w-[280px] h-[384px] rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
+                        variant="ghost">
+                        <div className="flex flex-col items-center">
+                            <div className="text-6xl text-white/70">
+                                <Plus size={128} />
+                            </div>
+                            <p className="text-xl tracking-wide text-white/50 font-medium">Create group</p>
+                        </div>
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>

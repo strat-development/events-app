@@ -21,8 +21,6 @@ export const EventsSection = () => {
 
     return (
         <div className="flex flex-col gap-4 min-h-[80vh]">
-            <CreateEventDialog ownerId={ownerId} />
-
             {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
                 <EventCard />
             )}

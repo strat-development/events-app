@@ -22,8 +22,6 @@ export const GroupSection = () => {
     return (
         <>
             <div className="flex flex-col gap-4 min-h-[80vh]">
-                <CreateGroupDialog />
-
                 {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
                     <GroupCard />
                 )}
