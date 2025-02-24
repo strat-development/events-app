@@ -197,7 +197,7 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                             {isSetToEdit === false && (
                                 <div dangerouslySetInnerHTML={{ __html: user.user_bio as string }}></div>
                             ) || (
-                                    <div className="flex flex-col gap-4">
+                                    <div className="flex flex-col gap-4 ">
                                         <TextEditor
                                             editorContent={user.user_bio as string}
                                             onChange={setUserBio}

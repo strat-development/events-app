@@ -130,7 +130,6 @@ export const InterestsSection = () => {
         );
     };
 
-
     const removeInterests = async (interests: string[]) => {
         const updatedInterests = userInterests.filter((interest) => !interests.includes(interest))
         const { data, error } = await supabase

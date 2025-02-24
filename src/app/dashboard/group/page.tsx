@@ -4,7 +4,7 @@ import { GroupSection } from "@/components/dashboard/GroupSection";
 import { Navbar } from "@/components/dashboard/Navbar";
 import { useUserContext } from "@/providers/UserContextProvider";
 
-export default function YourGroupsPage() {
+export default function GroupsPage() {
     const { userId } = useUserContext();
 
     return (

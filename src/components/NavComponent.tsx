@@ -11,7 +11,6 @@ import { useState } from "react";
 import { Github, Instagram } from "lucide-react";
 import Image from "next/image";
 import { HoverBorderGradient } from "./ui/hover-border-gradient";
-import { useUserContext } from "@/providers/UserContextProvider";
 
 export const NavComponent = () => {
     const authModal = useModal();

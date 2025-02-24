@@ -1,8 +1,7 @@
 import { Database } from "@/types/supabase"
-import { GroupData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useEffect, useMemo, useState } from "react"
-import { useQuery, useQueryClient } from "react-query"
+import { useQuery } from "react-query"
 import Image from "next/image"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { Pagination } from "@mui/material"
@@ -11,7 +10,7 @@ import { useRouter } from "next/navigation"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { DeleteGroupDialog } from "./modals/groups/DeleteGroupDialog"
 import { CreateGroupDialog } from "./modals/groups/CreateGroupDialog"
-import { Globe } from "../ui/globe"
+import { Globe } from "lucide-react"
 
 
 
@@ -156,55 +155,60 @@ export const GroupCard = () => {
 
 
 
-            {currentAttendingItems && currentAttendingItems.length === 0 && (
-                <div className="flex flex-col self-center items-center gap-8 mt-24">
-                    <h2 className="text-white/70 text-center text-2xl font-semibold tracking-wide">You have no upcoming events to attend.</h2>
-                    <Button
-                        className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
-                        onClick={() => router.push('/home')}
-                        variant="ghost">
-                        <div className="flex flex-col items-center gap-8">
-                            <div className="text-6xl text-white/70">
-                                <Globe size={128}
-                                    strokeWidth={1} />
-                            </div>
-                            <p className="text-xl tracking-wide text-white/50 font-medium">Discover groups and events</p>
-                        </div>
-                    </Button>
-                </div>
-            )}
+
 
             <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                 {attendingGroups && (
-                    currentAttendingItems?.map((group) => (
-                        <div key={group.groups?.id} className="flex flex-col gap-2 w-[280px] h-[384px] border rounded-md border-white/10 p-4">
-                            <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
-                                {group.groups?.id && memoizedImageUrls[group.groups?.id] ? (
-                                    <Image
-                                        src={memoizedImageUrls[group.groups?.id]}
-                                        alt={group.groups?.group_name || ""}
-                                        width={200}
-                                        height={200}
-                                        className="object-cover rounded-md w-full max-h-[240px]"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
-                                        <p className="text-center font-medium">No image available 😔</p>
+
+                    <>
+                        {currentAttendingItems && currentAttendingItems.length === 0 && (
+                            <div className="flex flex-col justify-self-center w-full items-center gap-8 mt-24">
+                                <h2 className="text-white/70 text-center text-2xl font-semibold tracking-wide">You are not a member of any group </h2>
+                                <Button
+                                    className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
+                                    onClick={() => router.push('/home')}
+                                    variant="ghost">
+                                    <div className="flex flex-col items-center gap-8">
+                                        <div className="text-6xl text-white/70">
+                                            <Globe size={128}
+                                                strokeWidth={1} />
+                                        </div>
+                                        <p className="text-xl tracking-wide text-white/50 font-medium">Discover groups and events</p>
                                     </div>
-                                )}
+                                </Button>
                             </div>
-                            <div className="flex flex-col gap-1">
-                                <h1 className="text-lg font-bold tracking-wider line-clamp-2">{group.groups?.group_name}</h1>
-                                <div className="flex flex-col gap-1">
+                        )}
 
-                                    <p className="text-sm text-white/60">{group.groups?.group_city}, {group.groups?.group_country}</p>
-
+                        {currentAttendingItems?.map((group) => (
+                            <div key={group.groups?.id} className="flex flex-col gap-2 w-[280px] h-[384px] border rounded-md border-white/10 p-4">
+                                <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                                    {group.groups?.id && memoizedImageUrls[group.groups?.id] ? (
+                                        <Image
+                                            src={memoizedImageUrls[group.groups?.id]}
+                                            alt={group.groups?.group_name || ""}
+                                            width={200}
+                                            height={200}
+                                            className="object-cover rounded-md w-full max-h-[240px]"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                            <p className="text-center font-medium">No image available 😔</p>
+                                        </div>
+                                    )}
                                 </div>
-                                <Button className="rounded-md mt-2 w-fit text-sm"
-                                    onClick={() => router.push(`/group-page/${group.groups?.id}`)}>View group</Button>
+                                <div className="flex flex-col gap-1">
+                                    <h1 className="text-lg font-bold tracking-wider line-clamp-2">{group.groups?.group_name}</h1>
+                                    <div className="flex flex-col gap-1">
+
+                                        <p className="text-sm text-white/60">{group.groups?.group_city}, {group.groups?.group_country}</p>
+
+                                    </div>
+                                    <Button className="rounded-md mt-2 w-fit text-sm"
+                                        onClick={() => router.push(`/group-page/${group.groups?.id}`)}>View group</Button>
+                                </div>
                             </div>
-                        </div>
-                    ))
+                        ))}
+                    </>
                 )}
             </div>
 

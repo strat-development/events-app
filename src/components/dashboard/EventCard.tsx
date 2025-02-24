@@ -153,63 +153,64 @@ export const EventCard = () => {
                 </Button>
             </div>
 
-
-            {attendingVisits && currentAttendingItems.length === 0 && (
-                <div className="flex flex-col self-center items-center gap-8 mt-24">
-                    <h2 className="text-white/70 text-center text-2xl font-semibold tracking-wide">You have no upcoming events to attend.</h2>
-                    <Button
-                        className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
-                        onClick={() => router.push('/home')}
-                        variant="ghost">
-                        <div className="flex flex-col items-center gap-8">
-                            <div className="text-6xl text-white/70">
-                                <Globe size={128}
-                                strokeWidth={1} />
-                            </div>
-                            <p className="text-xl tracking-wide text-white/50 font-medium">Discover events</p>
-                        </div>
-                    </Button>
-                </div>
-            )}
-
             <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                 {attendingVisits && (
-                    currentAttendingItems?.map((event) => (
-                        <div key={event.events?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">
-                            <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
-                                {event.events?.id && memoizedImageUrls[event.events?.id] ? (
-                                    <Image
-                                        src={memoizedImageUrls[event.events?.id]}
-                                        alt={event.events?.event_title || ""}
-                                        width={200}
-                                        height={200}
-                                        className="object-cover rounded-md w-full max-h-[240px]"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-md">
-                                        <p className="text-center font-medium">No image available 😔</p>
+                    <>
+                        {attendingVisits && currentAttendingItems.length === 0 && (
+                            <div className="flex flex-col justify-self-center items-center w-full gap-8 mt-24">
+                                <h2 className="text-white/70 text-center text-2xl font-semibold tracking-wide">You have no upcoming events to attend.</h2>
+                                <Button
+                                    className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
+                                    onClick={() => router.push('/home')}
+                                    variant="ghost">
+                                    <div className="flex flex-col items-center gap-8">
+                                        <div className="text-6xl text-white/70">
+                                            <Globe size={128}
+                                                strokeWidth={1} />
+                                        </div>
+                                        <p className="text-xl tracking-wide text-white/50 font-medium">Discover events</p>
                                     </div>
-                                )}
+                                </Button>
                             </div>
-                            <div className="flex flex-col gap-1">
-                                <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.events?.event_title}</h1>
-                                <div className="flex flex-col gap-1">
-                                    <p className="text-sm text-white/70">{format(parseISO(event.events?.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                                    <p className="text-sm text-white/60">{event.events?.event_address}</p>
-                                    <div className="flex gap-2 mt-1 items-center">
-                                        <Ticket className="h-4 w-4" />
-                                        {event?.events?.ticket_price !== null && (event.events?.ticket_price ?? 0) > 10000 ? (
-                                            <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
-                                        ) : (
-                                            <p className="text-sm text-white/60 font-bold tracking-wide">{event.events?.ticket_price}$</p>
-                                        )}
-                                    </div>
+                        )}
+
+                        {currentAttendingItems?.map((event) => (
+                            <div key={event.events?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">
+                                <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                                    {event.events?.id && memoizedImageUrls[event.events?.id] ? (
+                                        <Image
+                                            src={memoizedImageUrls[event.events?.id]}
+                                            alt={event.events?.event_title || ""}
+                                            width={200}
+                                            height={200}
+                                            className="object-cover rounded-md w-full max-h-[240px]"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-md">
+                                            <p className="text-center font-medium">No image available 😔</p>
+                                        </div>
+                                    )}
                                 </div>
-                                <Button className="rounded-md mt-2 w-fit text-sm"
-                                    onClick={() => router.push(`/event-page/${event.events?.id}`)}>View event</Button>
+                                <div className="flex flex-col gap-1">
+                                    <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.events?.event_title}</h1>
+                                    <div className="flex flex-col gap-1">
+                                        <p className="text-sm text-white/70">{format(parseISO(event.events?.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                        <p className="text-sm text-white/60">{event.events?.event_address}</p>
+                                        <div className="flex gap-2 mt-1 items-center">
+                                            <Ticket className="h-4 w-4" />
+                                            {event?.events?.ticket_price !== null && (event.events?.ticket_price ?? 0) > 10000 ? (
+                                                <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
+                                            ) : (
+                                                <p className="text-sm text-white/60 font-bold tracking-wide">{event.events?.ticket_price}$</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <Button className="rounded-md mt-2 w-fit text-sm"
+                                        onClick={() => router.push(`/event-page/${event.events?.id}`)}>View event</Button>
+                                </div>
                             </div>
-                        </div>
-                    ))
+                        ))}
+                    </>
                 )}
             </div>
 
