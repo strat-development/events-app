@@ -1,14 +1,11 @@
 "use client"
 
 import { EventCard } from "./EventCard"
-import { CreateEventDialog } from "./modals/events/CreateEventDialog"
-import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export const EventsSection = () => {
-    const { eventCreatorId, ownerId } = useGroupOwnerContext()
     const { userId, loading } = useUserContext();
     const router = useRouter();
 
@@ -21,7 +18,7 @@ export const EventsSection = () => {
 
     return (
         <div className="flex flex-col gap-4 min-h-[80vh]">
-            {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
+            {userId.length > 0 && (
                 <EventCard />
             )}
         </div>

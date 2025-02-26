@@ -46,7 +46,6 @@ export const AuthModal = () => {
     return (
         <>
             <Modal
-                title="Welcome back!"
                 isOpen={isOpen}
                 onClose={onClose}
                 onChange={onChange}>

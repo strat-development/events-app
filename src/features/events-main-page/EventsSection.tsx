@@ -205,32 +205,34 @@ export const EventsSection = () => {
                         </div>
                     ))}
 
-                    <Pagination>
-                        <PaginationContent className="flex gap-8">
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
-                                    aria-disabled={currentPage === 1}
-                                />
-                            </PaginationItem>
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                <PaginationItem key={page}>
-                                    <PaginationLink
-                                        isActive={page === currentPage}
-                                        onClick={() => handlePageChange(page)}
-                                    >
-                                        {page}
-                                    </PaginationLink>
+                    {totalItems > 0 && (
+                        <Pagination>
+                            <PaginationContent className="flex gap-8">
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                        aria-disabled={currentPage === 1}
+                                    />
                                 </PaginationItem>
-                            ))}
-                            <PaginationItem>
-                                <PaginationNext
-                                    onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
-                                    aria-disabled={currentPage === totalPages}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                    <PaginationItem key={page}>
+                                        <PaginationLink
+                                            isActive={page === currentPage}
+                                            onClick={() => handlePageChange(page)}
+                                        >
+                                            {page}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                        aria-disabled={currentPage === totalPages}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    )}
                 </div>
             </div>
         </>

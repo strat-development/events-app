@@ -13,18 +13,17 @@ export default function Home() {
     const router = useRouter();
 
     useEffect(() => {
+
         if (!loading && !userId) {
             router.push('/');
+            return;
         }
 
-        if (!userName && !loading) {
+        if (!loading && (!userName || userName.trim() === "")) {
             router.push('/dashboard');
             return;
         }
-        
     }, [loading, userId, userName, router]);
-
-
 
     return (
         <div className="flex flex-col items-center mt-24 gap-16">

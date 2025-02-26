@@ -42,11 +42,11 @@ export default function UserContextProvider({ children }: { children: React.Reac
                     .select("user_role, full_name, email, id, user_interests")
                     .eq("id", user.id)
                     .single();
-
+    
                 if (error) {
                     console.log(error);
                 }
-
+    
                 if (userData) {
                     setUserRole(userData.user_role);
                     setUserName(userData.full_name);
@@ -54,8 +54,11 @@ export default function UserContextProvider({ children }: { children: React.Reac
                     setUserId(userData.id);
                     setUserInterests(userData.user_interests);
                 }
+                setLoading(false);
             };
             getUserRole();
+        } else {
+            setLoading(false);
         }
     }, [user, supabase]);
 

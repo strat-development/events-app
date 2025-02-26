@@ -2,13 +2,14 @@ import { globeConfig, sampleArcs } from "@/data/globe-data";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import "../../styles/landing-page.css"
+import React from "react";
 
 const World = dynamic(() => import("../../components/ui/globe").then((m) => m.World), {
     ssr: false,
 });
 
 
-export const LandingPageGlobe = () => {
+export const LandingPageGlobe = React.memo(() => {
     return (
         <>
             <div className="max-w-[1200px] mx-auto w-full relative h-full">
@@ -47,4 +48,4 @@ export const LandingPageGlobe = () => {
             </div>
         </>
     )
-}
+})

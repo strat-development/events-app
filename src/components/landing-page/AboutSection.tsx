@@ -1,8 +1,9 @@
 import Image from "next/image"
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card"
 import { actions } from "@/data/hero-data"
+import React from "react"
 
-export const AboutSection = () => {
+export const AboutSection = React.memo(() => {
     function classNames(...classes: (string | boolean)[]): string {
         return classes.filter(Boolean).join(' ')
     }
@@ -32,4 +33,4 @@ export const AboutSection = () => {
             </div>
         </>
     )
-}
+})

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { LandingPageGrid } from "@/components/landing-page/LandingPageGrid";
 import { LandingPageGlobe } from "@/components/landing-page/LandingPageGlobe";
@@ -7,18 +7,29 @@ import { useRouter } from "next/navigation";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { FlipWords } from "@/components/ui/flip-words";
 import "../app/globals.css";
-import "../styles/landing-page.css"
+import "../styles/landing-page.css";
 import Image from "next/image";
 import { AboutSection } from "@/components/landing-page/AboutSection";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { motion } from "framer-motion";
 
 export default function Home() {
-  const session = useSessionContext()
-  const router = useRouter()
-  const words = ["Huddle.", "Create.", "Network.", "Learn."]
+  const session = useSessionContext();
+  const router = useRouter();
+  const words = ["Huddle.", "Create.", "Network.", "Learn."];
+
+  const [gridRef, isGridVisible] = useIntersectionObserver({ threshold: 0.1 }, 300);
+  const [globeRef, isGlobeVisible] = useIntersectionObserver({ threshold: 0.1 }, 300);
+  const [aboutRef, isAboutVisible] = useIntersectionObserver({ threshold: 0.1 }, 300);
 
   if (!session.session?.user.role === false) {
-    router.push("/home")
+    router.push("/home");
   }
+
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 200 },
+    visible: { opacity: 1, y: 0 },
+  };
 
   return (
     <main className="flex w-full justify-self-center min-h-screen flex-col items-center justify-between no-padding">
@@ -33,8 +44,10 @@ export default function Home() {
                 We are all about networking, improvement and inspiration.
               </p>
             </div>
-            <div className="left-[20%] top-[60%] absolute min-[900px]:left-[60%] transform min-[900px]:top-[30%] -translate-y-1/2 opacity-0 animate-slideInFromTop delay-200 z-20 max-[900px]:w-[700px] w-[100%] h-auto"
-              style={{ animationDelay: "500ms" }}>
+            <div
+              className="left-[20%] top-[60%] absolute min-[900px]:left-[60%] transform min-[900px]:top-[30%] -translate-y-1/2 opacity-0 animate-slideInFromTop delay-200 z-20 max-[900px]:w-[700px] w-[100%] h-auto"
+              style={{ animationDelay: "500ms" }}
+            >
               <Image
                 src="/Home-screen.png"
                 alt="Huddle."
@@ -43,7 +56,9 @@ export default function Home() {
               />
             </div>
 
-            <div className="absolute left-0 top-[85%] min-[900px]:left-[45%] transform -translate-x-1/2 min-[900px]:top-1/2 -translate-y-1/2 opacity-0 animate-slideInFromTopWithOpacity z-10 max-[900px]:w-[700px] w-[100%] h-auto">
+            <div
+              className="absolute left-0 top-[85%] min-[900px]:left-[45%] transform -translate-x-1/2 min-[900px]:top-1/2 -translate-y-1/2 opacity-0 animate-slideInFromTopWithOpacity z-10 max-[900px]:w-[700px] w-[100%] h-auto"
+            >
               <Image
                 src="/User-dashboard.png"
                 alt="Huddle."
@@ -54,9 +69,45 @@ export default function Home() {
           </div>
         </AuroraBackground>
       </div>
-      <LandingPageGrid />
-      <AboutSection />
-      <LandingPageGlobe />
+
+      <div ref={gridRef} style={{ minHeight: "500px" }}>
+        {isGridVisible && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+            transition={{ duration: 0.5 }}
+          >
+            <LandingPageGrid />
+          </motion.div>
+        )}
+      </div>
+
+      <div ref={aboutRef} style={{ minHeight: "500px" }}>
+        {isAboutVisible && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+            transition={{ duration: 0.5 }}
+          >
+            <AboutSection />
+          </motion.div>
+        )}
+      </div>
+
+      <div className="w-full" ref={globeRef} style={{ minHeight: "500px" }}>
+        {isGlobeVisible && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+            transition={{ duration: 0.5 }}
+          >
+            <LandingPageGlobe />
+          </motion.div>
+        )}
+      </div>
     </main>
   );
 }

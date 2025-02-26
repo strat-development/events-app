@@ -7,7 +7,6 @@ import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
 
 export const GroupSection = () => {
-    const { ownerId } = useGroupOwnerContext()
     const { userId, loading } = useUserContext();
     const router = useRouter();
 
@@ -20,7 +19,7 @@ export const GroupSection = () => {
     return (
         <>
             <div className="flex flex-col gap-4 min-h-[80vh]">
-                {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
+                {userId.length > 0 && (
                     <GroupCard />
                 )}
             </div>
