@@ -9,11 +9,12 @@ import { format, startOfToday, parseISO } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import Image from "next/image";
 import { UserGroupsSection } from "./UserGroupsSection";
-import { Pagination } from "@mui/material";
 import { CalendarDialog } from "@/components/CalendarDialog";
 import { Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
+
 
 export const EventsSection = () => {
     const supabase = createClientComponentClient<Database>();
@@ -140,9 +141,10 @@ export const EventsSection = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const currentItems = Object.values(memoizedEvents).flat().slice(startIndex, endIndex);
-    const pageCount = Math.ceil((Object.values(memoizedEvents).flat().length ?? 0) / itemsPerPage);
+    const totalItems = Object.values(memoizedEvents).flat().length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
 
@@ -203,27 +205,32 @@ export const EventsSection = () => {
                         </div>
                     ))}
 
-                    <Pagination
-                        className="self-center"
-                        count={pageCount}
-                        page={currentPage}
-                        onChange={handlePageChange}
-                        variant="outlined"
-                        sx={{
-                            '& .MuiPaginationItem-root': {
-                                color: 'white',
-                                backgroundColor: 'rgba(255, 255, 255, 0)',
-                                '&:hover': {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                },
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                            },
-                            '& .Mui-selected': {
-                                backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
-                                color: 'white',
-                            },
-                        }}
-                    />
+                    <Pagination>
+                        <PaginationContent className="flex gap-8">
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                    aria-disabled={currentPage === 1}
+                                />
+                            </PaginationItem>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                <PaginationItem key={page}>
+                                    <PaginationLink
+                                        isActive={page === currentPage}
+                                        onClick={() => handlePageChange(page)}
+                                    >
+                                        {page}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                    aria-disabled={currentPage === totalPages}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
                 </div>
             </div>
         </>

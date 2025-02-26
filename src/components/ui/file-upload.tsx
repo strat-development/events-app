@@ -39,9 +39,9 @@ export const FileUpload = ({
     const handleFileChange = (newFiles: File[]) => {
         const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
         const validFiles = newFiles.filter((file) => {
-            const isValidSize = file.size <= 2 * 1024 * 1024; // 2MB limit
+            const isValidSize = file.size <= 2 * 1024 * 1024;
             const isValidType = allowedTypes.includes(file.type);
-    
+
             if (!isValidSize) {
                 toast({
                     variant: "destructive",
@@ -49,7 +49,7 @@ export const FileUpload = ({
                     description: `${file.name} exceeds the 2MB size limit.`,
                 });
             }
-    
+
             if (!isValidType) {
                 toast({
                     variant: "destructive",
@@ -57,10 +57,10 @@ export const FileUpload = ({
                     description: `${file.name} is not a JPG, JPEG, or PNG image.`,
                 });
             }
-    
+
             return isValidSize && isValidType;
         });
-    
+
         setFiles(validFiles);
         onChange && onChange(validFiles);
     };

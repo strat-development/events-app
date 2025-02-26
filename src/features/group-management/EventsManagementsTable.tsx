@@ -1,8 +1,6 @@
 "use client"
 
 import { UserReportDialog } from "@/components/dashboard/modals/contact/ReportUserDialog"
-import { DeleteGroupUserDialog } from "@/components/dashboard/modals/groups/DeleteGroupUserDialog"
-import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
     Table,
@@ -16,26 +14,38 @@ import { supabaseAdmin } from "@/lib/admin"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { IconDotsVertical } from "@tabler/icons-react"
-import { format, parseISO } from "date-fns"
+import { IconDotsVertical, IconGhost2Filled } from "@tabler/icons-react"
 import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
 import { useQuery } from "react-query"
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationPrevious,
+    PaginationNext,
+    PaginationLink
+} from "@/components/ui/pagination"
 
-export const ManagementTable = () => {
+interface EventsManagementTableProps {
+    searchQuery: string | null
+}
+
+export const EventsManagementTable = ({ searchQuery }: EventsManagementTableProps) => {
     const supabase = createClientComponentClient<Database>()
-    const [membersId, setMembersId] = useState<string[]>()
+    const [attendeesId, setAttendeesId] = useState<string[]>()
     const [profileImageUrls, setProfileImageUrls] = useState<{ user_id: string; publicUrl: string }[]>([]);
     const { userId } = useUserContext();
-    const [searchQuery, setSearchQuery] = useState<string>("")
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 10
 
-    const groupData = useQuery(
-        ['group-data'],
+    const eventData = useQuery(
+        ['event-data'],
         async () => {
             const { data, error } = await supabase
-                .from("groups")
-                .select(`id, group_name`)
-                .eq("group_owner", userId)
+                .from("events")
+                .select(`id, event_title`)
+                .eq("created_by", userId)
 
             if (error) {
                 throw new Error(error.message)
@@ -44,49 +54,57 @@ export const ManagementTable = () => {
             return data
         },
         {
-            enabled: true,
+            enabled: !!userId,
             cacheTime: 10 * 60 * 1000,
+            staleTime: 10 * 60 * 1000,
+            keepPreviousData: true,
         }
     )
 
-    const groupIds = groupData.data?.map(group => group.id)
+    const eventIds = eventData.data?.map(event => event.id)
 
-    const groupMembers = useQuery(
-        ['group-members-data'],
+    const eventAttendees = useQuery(
+        ['event-attendees-data'],
         async () => {
             const { data, error } = await supabaseAdmin
-                .from("group-members")
-                .select(`users (*), group_id, joined_at`)
-                .in("group_id", groupIds || [])
+                .from("event-attendees")
+                .select(`users (*), event_id`)
+                .in("event_id", eventIds || [])
 
             if (error) {
                 throw new Error(error.message)
             }
 
             if (data) {
-                setMembersId(data.map((member) => member.users?.id as string))
+                setAttendeesId(data.map((member) => member.users?.id as string))
             }
             return data
         },
         {
-            enabled: !!groupIds,
+            enabled: !!eventIds && eventIds.length > 0,
             cacheTime: 10 * 60 * 1000,
-        }
-    )
+            staleTime: 10 * 60 * 1000,
+            keepPreviousData: true,
+        })
 
     const { data: profileImages } = useQuery(
-        ['profile-pictures', membersId],
+        ['profile-pictures', attendeesId],
         async () => {
             const { data, error } = await supabase
                 .from('profile-pictures')
                 .select('*')
-                .in('user_id', membersId || [])
+                .in('user_id', attendeesId || [])
             if (error) {
                 throw error;
             }
             return data || [];
         },
-        { enabled: !!membersId, cacheTime: 10 * 60 * 1000 }
+        {
+            enabled: !!attendeesId,
+            cacheTime: 10 * 60 * 1000,
+            staleTime: 10 * 60 * 1000,
+            keepPreviousData: true,
+        }
     );
 
     useEffect(() => {
@@ -103,90 +121,59 @@ export const ManagementTable = () => {
         }
     }, [profileImages]);
 
-    const fetchEventsByGroupId = async (groupId: string) => {
-        const { data, error } = await supabase
-            .from("events")
-            .select("*")
-            .eq("group_id", groupId)
-            .lt("event_date", new Date().toISOString());
-        if (error) {
-            throw new Error(error.message);
-        }
-
-        return data;
-    };
-
-    const { data: pastEventsData } = useQuery(
-        ['group-events', groupIds],
-        async () => {
-            if (!groupIds || groupIds.length === 0) return [];
-
-            const { data, error } = await supabase
-                .from("events")
-                .select("*")
-                .in("group_id", groupIds)
-                .lt("event_date", new Date().toISOString());
-
-            if (error) throw new Error(error.message);
-            return data || [];
-        },
-        { enabled: !!groupIds }
-    );
-
     const combinedData = useMemo(() => {
-        if (!groupMembers.data || !groupData.data) return [];
+        if (!eventAttendees.data || !eventData.data) return [];
 
-        return groupMembers.data.map((member) => {
-            const group = groupData.data.find((group) => group.id === member.group_id);
+        return eventAttendees.data.map((member) => {
+            const event = eventData.data.find((event) => event.id === member.event_id);
             const profileImageUrl = profileImageUrls.find((url) => url.user_id === member.users?.id)?.publicUrl;
-
 
             return {
                 userName: member.users?.full_name || "Unknown User",
-                groupName: group?.group_name || "Unknown Group",
+                eventName: event?.event_title || "Unknown Event",
                 profileImageUrl: profileImageUrl,
-                joinedAt: member.joined_at,
                 userId: member.users?.id,
             };
         });
-    }, [groupMembers.data, groupData.data, profileImageUrls, pastEventsData]);
-
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(event.target.value);
-    };
+    }, [eventAttendees.data, eventData.data, profileImageUrls]);
 
     const filteredData = useMemo(() => {
         return combinedData.filter((item) =>
-            item.userName.toLowerCase().includes(searchQuery.toLowerCase())
+            item.userName.toLowerCase().includes((searchQuery ?? "").toLowerCase())
         );
     }, [combinedData, searchQuery]);
 
-    return (
-        <div className="max-w-[1200px] w-full pl- min-[900px]:pl-16 flex flex-col gap-8 max-[768px]:flex-wrap">
-            <Input className="max-w-[180px] placeholder:text-white/50"
-                id="search-input"
-                type="text"
-                placeholder="Search interests"
-                value={searchQuery}
-                onChange={handleSearchChange}
-            />
+    const totalItems = filteredData.length
+    const totalPages = Math.ceil(totalItems / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    const paginatedData = filteredData.slice(startIndex, endIndex)
 
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page)
+    }
+
+    if (eventData.isLoading || eventAttendees.isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <div className="flex flex-col gap-8 w-full">
             <Table>
                 <TableHeader>
                     <TableRow>
                         <TableHead>Profile Image</TableHead>
                         <TableHead>User Name</TableHead>
-                        <TableHead>Group Name</TableHead>
-                        <TableHead>Joined At</TableHead>
+                        <TableHead>Event Name</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {filteredData.map((item, index) => (
+                    {paginatedData.map((item, index) => (
                         <TableRow className="text-white/70"
                             key={index}>
                             <TableCell>
-                                {item.profileImageUrl && item.profileImageUrl == null && (
+                                {item.profileImageUrl && (
                                     <Image
                                         src={item.profileImageUrl}
                                         alt="Profile"
@@ -194,11 +181,15 @@ export const ManagementTable = () => {
                                         width={48}
                                         height={48}
                                     />
-                                ) || <div className="w-10 h-10 rounded-full" />}
+                                ) || (
+                                        <div className="flex h-[50px] w-[50px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
+                                            <IconGhost2Filled className="w-6 h-6 text-white/70"
+                                                strokeWidth={1} />
+                                        </div>
+                                    )}
                             </TableCell>
                             <TableCell className="font-medium">{item.userName}</TableCell>
-                            <TableCell>{item.groupName}</TableCell>
-                            <TableCell> {format(parseISO(item.joinedAt), 'yyyy-MM-dd')} </TableCell>
+                            <TableCell>{item.eventName}</TableCell>
                             <TableCell>
                                 <Popover>
                                     <PopoverTrigger>
@@ -209,7 +200,7 @@ export const ManagementTable = () => {
                                     <PopoverContent className="w-fit">
                                         <div className="flex flex-col gap-2">
                                             <UserReportDialog userId={item.userId || ""} />
-                                            <DeleteGroupUserDialog userId={item.userId || ""} />
+                                            {/* <DeleteEventUserDialog userId={item.userId || ""} /> */}
                                         </div>
                                     </PopoverContent>
                                 </Popover>
@@ -218,6 +209,33 @@ export const ManagementTable = () => {
                     ))}
                 </TableBody>
             </Table>
+
+            <Pagination>
+                <PaginationContent className="flex gap-8">
+                    <PaginationItem>
+                        <PaginationPrevious
+                            onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                            aria-disabled={currentPage === 1}
+                        />
+                    </PaginationItem>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <PaginationItem key={page}>
+                            <PaginationLink
+                                isActive={page === currentPage}
+                                onClick={() => handlePageChange(page)}
+                            >
+                                {page}
+                            </PaginationLink>
+                        </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                        <PaginationNext
+                            onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                            aria-disabled={currentPage === totalPages}
+                        />
+                    </PaginationItem>
+                </PaginationContent>
+            </Pagination>
         </div>
     )
 }

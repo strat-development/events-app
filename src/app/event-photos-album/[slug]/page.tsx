@@ -3,12 +3,12 @@
 import { EventHero } from "@/features/custom-event-page/EventHero";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
-import { Pagination } from "@mui/material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Key, useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
 
 export default function EventPhotosAlbumPage({
     params
@@ -90,14 +90,15 @@ export default function EventPhotosAlbumPage({
 
     const memoizedAlbums = useMemo(() => albums, [albums]);
 
+    const totalItems = memoizedAlbums.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const currentItems = memoizedAlbums.slice(startIndex, endIndex);
-    const pageCount = Math.ceil(memoizedAlbums.length / itemsPerPage);
 
-    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
-        setCurrentPage(page);
-    };
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page)
+    }
 
     return (
         <>
@@ -124,27 +125,32 @@ export default function EventPhotosAlbumPage({
                             </div>
                         ))}
 
-                        <Pagination
-                            className="self-center"
-                            count={pageCount}
-                            page={currentPage}
-                            onChange={handlePageChange}
-                            variant="outlined"
-                            sx={{
-                                '& .MuiPaginationItem-root': {
-                                    color: 'white',
-                                    backgroundColor: 'rgba(255, 255, 255, 0)',
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                    },
-                                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                                },
-                                '& .Mui-selected': {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
-                                    color: 'white',
-                                },
-                            }}
-                        />
+<Pagination>
+                    <PaginationContent className="flex gap-8">
+                        <PaginationItem>
+                            <PaginationPrevious
+                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                aria-disabled={currentPage === 1}
+                            />
+                        </PaginationItem>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <PaginationItem key={page}>
+                                <PaginationLink
+                                    isActive={page === currentPage}
+                                    onClick={() => handlePageChange(page)}
+                                >
+                                    {page}
+                                </PaginationLink>
+                            </PaginationItem>
+                        ))}
+                        <PaginationItem>
+                            <PaginationNext
+                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                aria-disabled={currentPage === totalPages}
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
                     </div>
                 </div>
             </div>

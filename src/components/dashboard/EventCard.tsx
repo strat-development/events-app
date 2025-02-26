@@ -8,18 +8,19 @@ import { Button } from "../ui/button"
 import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
-import { Pagination } from "@mui/material"
 import { Globe, Ticket } from "lucide-react"
 import { format, parseISO } from "date-fns";
 import { useRouter } from "next/navigation"
 import { DeleteEventDialog } from "./modals/events/DeleteEventDialog"
 import { CreateEventDialog } from "./modals/events/CreateEventDialog"
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
+
 
 export const EventCard = () => {
     const supabase = createClientComponentClient<Database>()
     const { eventCreatorId, ownerId } = useGroupOwnerContext();
     const { userId } = useUserContext();
-    const [attendingVisits, setAttendingVisits] = useState(true)
+    const [attendingEvents, setAttendingEvents] = useState(true)
     const [imageUrls, setImageUrls] = useState<{ [eventId: string]: string }>({});
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
@@ -71,7 +72,7 @@ export const EventCard = () => {
         }
     );
 
-    const eventIds = attendingVisits
+    const eventIds = attendingEvents
         ? fetchedEventsByAttendees.data?.map(event => event.events?.id) || []
         : fetchedEventsByHosts.data?.map(event => event.id) || [];
 
@@ -126,27 +127,27 @@ export const EventCard = () => {
     const currentAttendingItems = memoizedEventsByAttendees?.slice(startIndex, endIndex) ?? [];
     const currentHostItems = memoizedEventsByHosts?.slice(startIndex, endIndex) ?? [];
 
-    const pageCount = Math.ceil((attendingVisits ? (memoizedEventsByAttendees?.length ?? 0) : (memoizedEventsByHosts?.length ?? 0)) / itemsPerPage);
+    const totalPages = Math.ceil((attendingEvents ? (memoizedEventsByAttendees?.length ?? 0) : (memoizedEventsByHosts?.length ?? 0)) / itemsPerPage);
 
-    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    const handlePageChange = (page: number) => {
         setCurrentPage(page);
-    };
+    }
 
     return (
         <div className="flex flex-col gap-4">
             <div className="flex gap-4">
-                <Button className={attendingVisits === true ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
+                <Button className={attendingEvents === true ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
                     variant="ghost"
                     onClick={() => {
-                        setAttendingVisits(true);
+                        setAttendingEvents(true);
                         fetchedEventsByAttendees.refetch();
                     }}>
                     Attending
                 </Button>
-                <Button className={attendingVisits === false ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
+                <Button className={attendingEvents === false ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
                     variant="ghost"
                     onClick={() => {
-                        setAttendingVisits(false);
+                        setAttendingEvents(false);
                         fetchedEventsByHosts.refetch();
                     }}>
                     Hosting
@@ -154,9 +155,9 @@ export const EventCard = () => {
             </div>
 
             <div className="flex flex-wrap max-[800px]:justify-center gap-8">
-                {attendingVisits && (
+                {attendingEvents && (
                     <>
-                        {attendingVisits && currentAttendingItems.length === 0 && (
+                        {attendingEvents && currentAttendingItems.length === 0 && (
                             <div className="flex flex-col justify-self-center items-center w-full gap-8 mt-24">
                                 <h2 className="text-white/70 text-center text-2xl font-semibold tracking-wide">You have no upcoming events to attend.</h2>
                                 <Button
@@ -215,7 +216,7 @@ export const EventCard = () => {
             </div>
 
             <div className="flex flex-wrap max-[800px]:justify-center gap-8">
-                {!attendingVisits && (
+                {!attendingEvents && (
                     <>
                         <CreateEventDialog ownerId={ownerId} />
 
@@ -263,27 +264,34 @@ export const EventCard = () => {
                 )}
             </div>
 
-            <Pagination
-                className="self-center"
-                count={pageCount}
-                page={currentPage}
-                onChange={handlePageChange}
-                variant="outlined"
-                sx={{
-                    '& .MuiPaginationItem-root': {
-                        color: 'white',
-                        backgroundColor: 'rgba(255, 255, 255, 0)',
-                        '&:hover': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        },
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                    },
-                    '& .Mui-selected': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
-                        color: 'white',
-                    },
-                }}
-            />
+            {(attendingEvents && currentAttendingItems.length > 0) || (!attendingEvents && currentHostItems.length > 0) ? (
+                <Pagination>
+                    <PaginationContent className="flex gap-8">
+                        <PaginationItem>
+                            <PaginationPrevious
+                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                aria-disabled={currentPage === 1}
+                            />
+                        </PaginationItem>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <PaginationItem key={page}>
+                                <PaginationLink
+                                    isActive={page === currentPage}
+                                    onClick={() => handlePageChange(page)}
+                                >
+                                    {page}
+                                </PaginationLink>
+                            </PaginationItem>
+                        ))}
+                        <PaginationItem>
+                            <PaginationNext
+                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                aria-disabled={currentPage === totalPages}
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            ) : null}
         </div>
     )
 }

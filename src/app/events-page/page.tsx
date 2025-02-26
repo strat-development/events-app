@@ -5,7 +5,6 @@ import { useCityContext } from "@/providers/cityContextProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { EventData } from "@/types/types";
-import { Pagination } from "@mui/material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { format, parseISO } from "date-fns";
 import { Ticket } from "lucide-react";
@@ -14,6 +13,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import stringSimilarity from "string-similarity";
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination";
 
 export default function EventsPage() {
     const supabase = createClientComponentClient<Database>();
@@ -131,12 +131,14 @@ export default function EventsPage() {
 
     const memoizedEvents = useMemo(() => events, [events]);
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
-    const currentItems = memoizedEvents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+   
+    const totalPages = Math.ceil(memoizedEvents.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = memoizedEvents.slice(startIndex, endIndex);
 
-    const pageCount = Math.ceil(memoizedEvents.length / itemsPerPage);
-
-    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-        setCurrentPage(value);
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
     };
 
     return (
@@ -182,22 +184,32 @@ export default function EventsPage() {
                     ))}
                 </div>
 
-                <Pagination
-                    className="self-center"
-                    count={pageCount}
-                    page={currentPage}
-                    onChange={handlePageChange}
-                    variant="outlined"
-                    sx={{
-                        '& .MuiPaginationItem-root': {
-                            color: 'white',
-                            backgroundColor: 'rgba(255, 255, 255, 0)',
-                            '&:hover': {
-                                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                            },
-                        },
-                    }}
-                />
+                <Pagination>
+                    <PaginationContent className="flex gap-8">
+                        <PaginationItem>
+                            <PaginationPrevious
+                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                aria-disabled={currentPage === 1}
+                            />
+                        </PaginationItem>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <PaginationItem key={page}>
+                                <PaginationLink
+                                    isActive={page === currentPage}
+                                    onClick={() => handlePageChange(page)}
+                                >
+                                    {page}
+                                </PaginationLink>
+                            </PaginationItem>
+                        ))}
+                        <PaginationItem>
+                            <PaginationNext
+                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                aria-disabled={currentPage === totalPages}
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
             </div>
         </>
     );

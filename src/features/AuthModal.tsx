@@ -10,36 +10,35 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { useModal } from "@/hooks/useModal";
 
-
 export const AuthModal = () => {
     const supabaseClient = createClientComponentClient<Database>()
     const router = useRouter()
     const { session } = useSessionContext();
-    const { onClose, isOpen } = useModal();
+    const { onClose, isOpen, showSignUp } = useModal();
+
     const onChange = (open: boolean) => {
         if (!open) {
-            onClose()
+            onClose();
         }
     }
 
     useEffect(() => {
         if (session) {
             onClose();
-            const createProfil =
-                async () => {
-                    const { data, error, status, count } = await supabaseClient
-                        .from("users")
-                        .upsert(
-                            {
-                                email: session.user.email ?? '',
-                                id: session.user.id ?? ''
-                            },
-                        )
+            const createProfil = async () => {
+                const { error, status } = await supabaseClient
+                    .from("users")
+                    .upsert(
+                        {
+                            email: session.user.email ?? '',
+                            id: session.user.id ?? ''
+                        },
+                    )
 
-                    if (error && status !== 406) {
-                        console.log(error)
-                    }
-                };
+                if (error && status !== 406) {
+                    console.log(error)
+                }
+            };
             createProfil();
         }
     }, [session, router, onClose])
@@ -55,6 +54,7 @@ export const AuthModal = () => {
                     theme="dark"
                     magicLink={false}
                     providers={[]}
+                    view={showSignUp ? "sign_up" : "sign_in"}
                     supabaseClient={supabaseClient}
                     appearance={{
                         theme: ThemeSupa,

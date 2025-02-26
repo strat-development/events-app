@@ -39,20 +39,19 @@ export const NavComponent = () => {
                     </Link>
                 </div>
 
-
                 {!session.session?.user.role === true && (
                     <div className="flex gap-4 items-center">
                         <div className="flex gap-4">
                             <Button className="text-white/70 rounded-lg"
                                 variant="ghost"
                                 onClick={() => {
-                                    authModal.onOpen();
+                                    authModal.onOpen(false);
                                 }}>
                                 Login
                             </Button>
                             <HoverBorderGradient className="font-medium tracking-wide"
                                 onClick={() => {
-                                    authModal.onOpen();
+                                    authModal.onOpen(true);
                                 }}>
                                 Register
                             </HoverBorderGradient>
@@ -110,7 +109,6 @@ export const NavComponent = () => {
                             About
                         </Link>
                     </div>
-
 
                     <div className="flex gap-8 text-white/50">
                         <Link href="https://github.com/ddebixx"
