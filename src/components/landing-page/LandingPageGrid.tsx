@@ -1,10 +1,13 @@
+"use client"
+
 import { items } from "@/data/hero-data";
 import { BentoGrid, BentoGridItem } from "../ui/bento-grid"
 import React from "react";
+import { motion } from "framer-motion";
 
 export const LandingPageGrid = React.memo(() => {
     return (
-        <div className="py-24 max-w-[1200px] w-full max-[1200px]:px-4">
+        <motion.div className="py-24 max-w-[1200px] w-full max-[1200px]:px-4">
             <BentoGrid>
                 {items.map((item, i) => (
                     <BentoGridItem
@@ -18,6 +21,6 @@ export const LandingPageGrid = React.memo(() => {
                     />
                 ))}
             </BentoGrid>
-        </div>
+        </motion.div>
     );
 })

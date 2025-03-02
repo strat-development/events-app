@@ -1,14 +1,15 @@
 "use client"
 
 
-import React, { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import React, { useCallback, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { Toaster } from "@/components/ui/toaster";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import { Delete, Trash } from "lucide-react";
 
 interface DeleteEventDialogProps {
     eventId: string;
@@ -18,6 +19,64 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
     const supabase = createClientComponentClient<Database>()
     const queryClient = useQueryClient()
     const [isOpen, setIsOpen] = useState(false);
+    const [email, setEmail] = useState<string[]>([])
+    const [fullName, setFullName] = useState<string[]>([])
+    const [groupName, setGroupName] = useState<string>("")
+
+    const attendeesData = useQuery(
+        ["event-attendees", eventId],
+        async () => {
+            const { data, error } = await supabase
+                .from("event-attendees")
+                .select(`users (id, full_name, email)`)
+                .eq('event_id', eventId)
+
+            if (error) {
+                console.error("Error fetching attendees data:", error.message)
+                throw new Error(error.message)
+            }
+
+            if (data) {
+                setEmail(data.map((member) => member.users ? member.users.email as string : ""))
+                setFullName(data.map((member) => member.users ? member.users.full_name as string : ""))
+            }
+
+            return data
+        },
+        {
+            enabled: isOpen,
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+        })
+
+    const fetchEventData = useQuery(
+        ['event', eventId],
+        async () => {
+            const { data, error } = await supabase
+                .from("events")
+                .select("*")
+                .eq("id", eventId)
+                .single()
+            if (error) {
+                throw error
+            }
+
+            if (data) {
+                setGroupName(data.event_group ?? "")
+            }
+
+            return data
+        },
+        {
+            enabled: isOpen,
+            cacheTime: 10 * 60 * 1000,
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+        }
+    )
+
 
     const deleteEventMutation = useMutation(
         async (eventId: string) => {
@@ -25,6 +84,22 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
                 .from("events")
                 .delete()
                 .eq('id', eventId)
+
+            const emailResponse = await fetch('/api/deleted-event-mail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    userFullName: fullName,
+                    groupName: groupName
+                })
+            });
+
+            if (!emailResponse.ok) {
+                throw new Error('Failed to send emails');
+            }
 
             if (error) {
                 console.error("Error deleting event:", error.message)
@@ -57,7 +132,10 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                <Button variant="destructive">Delete</Button>
+                    <Button variant="destructive">
+                        <Trash strokeWidth={1}
+                            size={20} />
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>

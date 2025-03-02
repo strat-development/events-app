@@ -1,7 +1,6 @@
 "use client";
 
 import { LandingPageGrid } from "@/components/landing-page/LandingPageGrid";
-import { LandingPageGlobe } from "@/components/landing-page/LandingPageGlobe";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/navigation";
 import { AuroraBackground } from "@/components/ui/aurora-background";
@@ -12,6 +11,7 @@ import Image from "next/image";
 import { AboutSection } from "@/components/landing-page/AboutSection";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { motion } from "framer-motion";
+import { LandingPageMap } from "@/components/landing-page/LandingPageMap";
 
 export default function Home() {
   const session = useSessionContext();
@@ -104,7 +104,7 @@ export default function Home() {
             variants={fadeInUp}
             transition={{ duration: 0.5 }}
           >
-            <LandingPageGlobe />
+            <LandingPageMap />
           </motion.div>
         )}
       </div>

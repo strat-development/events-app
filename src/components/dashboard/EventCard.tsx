@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation"
 import { DeleteEventDialog } from "./modals/events/DeleteEventDialog"
 import { CreateEventDialog } from "./modals/events/CreateEventDialog"
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
+import { EditEventDialog } from "./modals/events/EditEventDialog"
 
 
 export const EventCard = () => {
@@ -252,9 +253,14 @@ export const EventCard = () => {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex gap-4 items-baseline">
-                                        <Button className="rounded-md mt-2 w-fit text-sm"
-                                            onClick={() => router.push(`/dashboard/event-page/${event.id}`)}>View event</Button>
+                                    <div className="flex justify-between items-center gap-4 mt-2">
+                                        <div className="flex gap-4">
+                                            <Button className="rounded-md w-fit text-sm text-white/70" 
+                                                variant={"outline"}
+                                                onClick={() => router.push(`/dashboard/event-page/${event.id}`)}>View event</Button>
+                                            <EditEventDialog eventId={event.id} />
+                                        </div>
+
                                         <DeleteEventDialog eventId={event.id} />
                                     </div>
                                 </div>
