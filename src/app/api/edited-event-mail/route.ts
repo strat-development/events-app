@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
     try {
-        const { email, userFullName, groupName, visitDate } = await request.json();
+        const { email, userFullName, groupName, visitDate, eventAddress, eventTitle } = await request.json();
 
         if (!Array.isArray(email) || !Array.isArray(userFullName) || email.length !== userFullName.length) {
             return new Response(JSON.stringify({ error: "Invalid email or userFullName data" }), { status: 400 });
@@ -20,6 +20,8 @@ export async function POST(request: Request) {
                     fullName: userFullName[index],
                     group_name: groupName,
                     date: visitDate,
+                    eventTitle: eventTitle,
+                    eventAddress: eventAddress,
                 }) as React.ReactElement,
             });
         });

@@ -32,7 +32,35 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
     const [modalStepCount, setModalStepCount] = useState(1)
     const [email, setEmail] = useState<string[]>([])
     const [fullName, setFullName] = useState<string[]>([])
+    const [groupId, setGroupId] = useState<string>("")
     const [groupName, setGroupName] = useState<string>("")
+
+    const groupData = useQuery(
+        ["group", groupId],
+        async () => {
+            const { data, error } = await supabase
+                .from("groups")
+                .select("group_name")
+                .eq('id', groupId)
+
+            if (error) {
+                console.error("Error fetching group data:", error.message)
+                throw new Error(error.message)
+            }
+
+            if (data) {
+                setGroupName(data[0].group_name || "")
+            }
+
+            return data
+        },
+        {
+            enabled: isOpen,
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+        })
+
     const clearStates = useCallback(() => {
         setEventTitle("")
         setEditorContent("")
@@ -94,7 +122,7 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
                 setSpotsLimit(data.attendees_limit)
                 setIsFreeTicket(data.ticket_price === 999999999)
                 setIsUnlimitedSpots(data.attendees_limit === 999999999)
-                setGroupName(data.event_group ?? "")
+                setGroupId(data.event_group ?? "")
             }
 
             return data
@@ -118,7 +146,7 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
             if (error) {
                 throw error;
             }
-    
+
             const emailResponse = await fetch('/api/edited-event-mail', {
                 method: 'POST',
                 headers: {
@@ -129,13 +157,15 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
                     userFullName: fullName,
                     groupName: groupName,
                     visitDate: eventDate,
+                    eventAddress: eventAddress,
+                    eventTitle: eventTitle,
                 })
             });
-    
+
             if (!emailResponse.ok) {
                 throw new Error('Failed to send emails');
             }
-    
+
             return data;
         },
         {
@@ -158,7 +188,7 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
             }
         }
     );
-    
+
 
     return (
         <>

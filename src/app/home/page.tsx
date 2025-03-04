@@ -14,7 +14,7 @@ export default function Home() {
 
     useEffect(() => {
 
-        if (!loading && !userId) {
+        if (!loading && userId === null) {
             router.push('/');
             return;
         }

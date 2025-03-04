@@ -22,7 +22,34 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
     const [eventData, setEventData] = useState<EventData[]>()
     const [attendeeData, setAttendeeData] = useState<string[]>([])
     const queryClient = useQueryClient()
-    const { userId } = useUserContext()
+    const { userId, userName, userEmail } = useUserContext()
+    const [groupId, setGroupId] = useState<string>("")
+    const [groupName, setGroupName] = useState<string>("")
+
+    const groupData = useQuery(
+        ["group", groupId],
+        async () => {
+            const { data, error } = await supabase
+                .from("groups")
+                .select("group_name")
+                .eq('id', groupId)
+
+            if (error) {
+                console.error("Error fetching group data:", error.message)
+                throw new Error(error.message)
+            }
+
+            if (data) {
+                setGroupName(data[0].group_name || "")
+            }
+
+            return data
+        },
+        {
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+        })
 
     useQuery(['event-navbar-data'], async () => {
         const { data, error } = await supabase
@@ -37,6 +64,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
 
         if (data) {
             setEventData([data as unknown as EventData])
+            setGroupId(data.event_group || "")
         }
     },
         {
@@ -55,15 +83,32 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
             throw error
         }
 
-        if (data) {
-            toast({
-                title: "You have successfully registered for this event",
-                description: "You can now attend this event",
+        const emailResponse = await fetch('/api/attending-event-mail', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: userEmail,
+                userFullName: userName,
+                groupName: groupName,
+                visitDate: eventData?.map((event) => event.starts_at),
+                eventTitle: eventData?.map((event) => event.event_title),
+                eventAddress: eventData?.map((event) => event.event_address)
             })
+        });
+
+        if (!emailResponse.ok) {
+            throw new Error('Failed to send emails');
         }
     }, {
         onSuccess: () => {
             queryClient.invalidateQueries('attendee')
+
+            toast({
+                title: "You have successfully registered for this event",
+                description: "You can now attend this event",
+            })
         }
     })
 
@@ -140,14 +185,11 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                     {memoizedEventData?.map((event) => (
                         <>
                             <div className="flex flex-col max-[640px]:hidden">
-                                <p className="text-lg font-medium">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                                <p className="text-white/70">{event.event_address}</p>
+                                <p className="text-lg font-medium text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                <p className="text-white/50">{event.event_address}</p>
                             </div>
                             <div className="flex gap-4">
                                 <div className="flex flex-col">
-                                    <p className="text-sm text-white/60">
-                                        {availableSpots > 10000 ? "No limits" : `${availableSpots} spots available`}
-                                    </p>
                                     <div className="flex gap-2 mt-1 items-center">
                                         <Ticket className="h-4 w-4" />
                                         {event?.ticket_price !== null && event.ticket_price > 10000 ? (
@@ -156,6 +198,9 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                             <p className="text-sm text-white/60 font-bold tracking-wide">{event?.ticket_price}$</p>
                                         )}
                                     </div>
+                                    <p className="text-sm text-white/60">
+                                        {availableSpots > 10000 ? "No spot limits" : `${availableSpots} spots available`}
+                                    </p>
                                 </div>
                                 <ShareDialog />
                                 {attendeeData.length > 0 ? (

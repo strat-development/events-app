@@ -14,6 +14,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import stringSimilarity from "string-similarity";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination";
+import GridLoader from "react-spinners/GridLoader";
 
 export default function EventsPage() {
     const supabase = createClientComponentClient<Database>();
@@ -29,10 +30,18 @@ export default function EventsPage() {
     const searchParams = useSearchParams();
 
     useEffect(() => {
-        if (!loading && !userId) {
+        if (!loading && userId === null) {
             router.push('/');
         }
     }, [loading, userId, router]);
+
+    if (loading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center">
+                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
+            </div>
+        )
+    }
 
     useEffect(() => {
         const searchParam = searchParams.get('search');
@@ -131,7 +140,7 @@ export default function EventsPage() {
 
     const memoizedEvents = useMemo(() => events, [events]);
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
-   
+
     const totalPages = Math.ceil(memoizedEvents.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;

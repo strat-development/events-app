@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
+import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { IconGhost2Filled } from "@tabler/icons-react";
@@ -8,8 +9,9 @@ import { format, parseISO } from "date-fns";
 import { Calendar, MapPin } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
+import GridLoader from "react-spinners/GridLoader";
 
 export default function EventAttendeesPage({
     params
@@ -23,6 +25,21 @@ export default function EventAttendeesPage({
     const [attendeesId, setAttendeesId] = useState<string[]>([])
     const [profileImageUrls, setProfileImageUrls] = useState<Record<string, string>>({});
     const router = useRouter();
+    const { userId, loading } = useUserContext();
+
+    useEffect(() => {
+        if (!loading && userId === null) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
+
+    if (loading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center">
+                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
+            </div>
+        )
+    }
 
     const eventData = useQuery(
         ['event-data'],

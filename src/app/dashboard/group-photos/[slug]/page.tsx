@@ -8,6 +8,7 @@ import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import GridLoader from "react-spinners/GridLoader";
 
 export default function GroupPhotosPage({
     params
@@ -23,10 +24,18 @@ export default function GroupPhotosPage({
     const pathname = usePathname();
 
     useEffect(() => {
-        if (!loading && !userId && !ownerId) {
+        if (!loading && userId === null && ownerId === null) {
             router.push('/');
         }
-    }, [loading, userId, ownerId, router]);
+    }, [loading, userId, router, ownerId]);
+
+    if (loading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center">
+                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
+            </div>
+        )
+    }
 
     return (
         <>

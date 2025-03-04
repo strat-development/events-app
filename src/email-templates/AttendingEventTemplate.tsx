@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-interface EditedEventTemplateProps {
+interface AttendingEventTemplateProps {
     fullName: string;
     group_name: string;
     date: string;
@@ -8,7 +8,7 @@ interface EditedEventTemplateProps {
     eventAddress: string;
 }
 
-export const EditedEventTemplate: React.FC<Readonly<EditedEventTemplateProps>> = ({
+export const AttendingEventTemplate: React.FC<Readonly<AttendingEventTemplateProps>> = ({
     fullName,
     group_name,
     date,
@@ -23,7 +23,7 @@ export const EditedEventTemplate: React.FC<Readonly<EditedEventTemplateProps>> =
                         <tr>
                             <td align="center" style={{ padding: '24px' }}>
                                 <h1 style={{ color: 'rgba(255, 255, 255, 0.7)', letterSpacing: '.2rem', fontSize: '24px' }}>Hello, <span style={{ color: '#fff', fontWeight: 'bold' }}>{fullName}</span>!</h1>
-                                <p style={{ color: 'rgba(255, 255, 255, 0.5)', letterSpacing: '.1rem', margin: '8px 0', fontSize: '16px' }}>Your event at <span style={{ fontSize: '20px', color: '#fff', fontWeight: '600' }}>{group_name}</span> has been edited.</p>
+                                <p style={{ color: 'rgba(255, 255, 255, 0.5)', letterSpacing: '.1rem', margin: '8px 0', fontSize: '16px' }}>This is a reminder that your event with <span style={{ fontSize: '20px', color: '#fff', fontWeight: '600' }}>{group_name}</span> is happening soon.</p>
                                 <br />
                                 <br />
                                 <table width="100%" cellPadding="0" cellSpacing="0">
@@ -39,7 +39,9 @@ export const EditedEventTemplate: React.FC<Readonly<EditedEventTemplateProps>> =
                                     </tr>
                                     <tr>
                                         <td align="left" style={{ paddingBottom: '8px' }}>
-                                            <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '16px', margin: 0 }}>{date}</p>
+                                            <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '16px', margin: 0 }}>
+                                                <span style={{ color: '#fff' }}>Event date:</span> {date}
+                                            </p>
                                         </td>
                                     </tr>
                                 </table>
@@ -59,7 +61,7 @@ export const EditedEventTemplate: React.FC<Readonly<EditedEventTemplateProps>> =
                                         marginTop: '16px',
                                     }}
                                 >
-                                    Go to website
+                                    View Event Details
                                 </a>
                             </td>
                         </tr>

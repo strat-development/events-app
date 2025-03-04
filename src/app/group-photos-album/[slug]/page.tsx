@@ -5,10 +5,12 @@ import { supabaseAdmin } from "@/lib/admin";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Key, useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination";
+import { useUserContext } from "@/providers/UserContextProvider";
+import GridLoader from "react-spinners/GridLoader";
 
 export default function GroupPhotosAlbumPage({ params }: { params: { slug: string } }) {
     const groupId = params.slug;
@@ -18,6 +20,22 @@ export default function GroupPhotosAlbumPage({ params }: { params: { slug: strin
     const itemsPerPage = 20;
     const searchParams = useSearchParams();
     const albumId = searchParams.get('albumId');
+    const { userId, loading } = useUserContext();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!loading && userId === null) {
+            router.push('/');
+        }
+    }, [loading, userId, router]);
+
+    if (loading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center">
+                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
+            </div>
+        )
+    }
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['group-picture-albums', groupId],

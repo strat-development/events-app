@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-interface EditedEventTemplateProps {
+interface AttendingEventTemplateProps {
     fullName: string;
     group_name: string;
     date: string;
@@ -8,7 +8,7 @@ interface EditedEventTemplateProps {
     eventAddress: string;
 }
 
-export const EditedEventTemplate: React.FC<Readonly<EditedEventTemplateProps>> = ({
+export const AttendingEventTemplate: React.FC<Readonly<AttendingEventTemplateProps>> = ({
     fullName,
     group_name,
     date,
@@ -19,38 +19,37 @@ export const EditedEventTemplate: React.FC<Readonly<EditedEventTemplateProps>> =
         <table width="100%" cellPadding="0" cellSpacing="0" style={{ margin: 0, padding: 0 }}>
             <tr>
                 <td align="center" style={{ padding: '20px' }}>
-                    <table width="600" cellPadding="0" cellSpacing="0" style={{ maxWidth: '100%', background: 'linear-gradient(135deg, #050505, #070707)', borderRadius: '16px', boxShadow: '0 24px 16px rgba(0, 0, 0, 0.7)' }}>
+                    <table width="600" cellPadding="0" cellSpacing="0" style={{ maxWidth: '100%', background: '#fff', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                         <tr>
                             <td align="center" style={{ padding: '24px' }}>
-                                <h1 style={{ color: 'rgba(255, 255, 255, 0.7)', letterSpacing: '.2rem', fontSize: '24px' }}>Hello, <span style={{ color: '#fff', fontWeight: 'bold' }}>{fullName}</span>!</h1>
-                                <p style={{ color: 'rgba(255, 255, 255, 0.5)', letterSpacing: '.1rem', margin: '8px 0', fontSize: '16px' }}>Your event at <span style={{ fontSize: '20px', color: '#fff', fontWeight: '600' }}>{group_name}</span> has been edited.</p>
-                                <br />
-                                <br />
+                                <h1 style={{ color: '#333', fontSize: '24px', fontWeight: 'bold' }}>Hi {fullName},</h1>
                                 <table width="100%" cellPadding="0" cellSpacing="0">
                                     <tr>
                                         <td align="left" style={{ paddingBottom: '8px' }}>
-                                            <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: '600', margin: 0 }}>{eventTitle}</h2>
+                                            <h2 style={{ color: '#333', fontSize: '20px', fontWeight: '600', margin: 0 }}>{eventTitle}</h2>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td align="left" style={{ paddingBottom: '8px' }}>
-                                            <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '16px', margin: 0 }}>{eventAddress}</p>
+                                            <p style={{ color: '#666', fontSize: '16px', margin: 0 }}>{eventAddress}</p>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td align="left" style={{ paddingBottom: '8px' }}>
-                                            <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '16px', margin: 0 }}>{date}</p>
+                                            <p style={{ color: '#666', fontSize: '16px', margin: 0 }}>{date}</p>
                                         </td>
                                     </tr>
                                 </table>
+                                <p style={{ color: '#666', fontSize: '16px', margin: '8px 0' }}>This is a reminder that your event with <strong>{group_name}</strong> is happening on {date}.</p>
+                                <p style={{ color: '#666', fontSize: '16px', margin: '8px 0' }}>See you there!</p>
                                 <a
                                     href="https://huddle.net.pl"
                                     target="_blank"
                                     style={{
-                                        padding: '16px',
-                                        background: '#fff',
-                                        color: 'rgba(0, 0, 0, 0.8)',
-                                        borderRadius: '8px',
+                                        padding: '12px 24px',
+                                        background: '#007bff',
+                                        color: '#fff',
+                                        borderRadius: '4px',
                                         fontWeight: '700',
                                         textDecoration: 'none',
                                         display: 'inline-block',
@@ -59,7 +58,7 @@ export const EditedEventTemplate: React.FC<Readonly<EditedEventTemplateProps>> =
                                         marginTop: '16px',
                                     }}
                                 >
-                                    Go to website
+                                    View Event Details
                                 </a>
                             </td>
                         </tr>

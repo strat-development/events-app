@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Key, useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
+import GridLoader from "react-spinners/GridLoader";
 
 export default function EventPhotosAlbumPage({
     params
@@ -28,10 +29,18 @@ export default function EventPhotosAlbumPage({
     const albumId = searchParams.get('albumId');
 
     useEffect(() => {
-        if (!loading && !userId) {
+        if (!loading && userId === null) {
             router.push('/');
         }
     }, [loading, userId, router]);
+
+    if (loading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center">
+                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
+            </div>
+        )
+    }
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['event-picture-albums', eventId],
@@ -125,32 +134,32 @@ export default function EventPhotosAlbumPage({
                             </div>
                         ))}
 
-<Pagination>
-                    <PaginationContent className="flex gap-8">
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
-                                aria-disabled={currentPage === 1}
-                            />
-                        </PaginationItem>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                            <PaginationItem key={page}>
-                                <PaginationLink
-                                    isActive={page === currentPage}
-                                    onClick={() => handlePageChange(page)}
-                                >
-                                    {page}
-                                </PaginationLink>
-                            </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
-                                aria-disabled={currentPage === totalPages}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
+                        <Pagination>
+                            <PaginationContent className="flex gap-8">
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                        aria-disabled={currentPage === 1}
+                                    />
+                                </PaginationItem>
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                    <PaginationItem key={page}>
+                                        <PaginationLink
+                                            isActive={page === currentPage}
+                                            onClick={() => handlePageChange(page)}
+                                        >
+                                            {page}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                        aria-disabled={currentPage === totalPages}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
                     </div>
                 </div>
             </div>

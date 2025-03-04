@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import { Delete, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 
 interface DeleteEventDialogProps {
     eventId: string;
@@ -21,7 +21,34 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [email, setEmail] = useState<string[]>([])
     const [fullName, setFullName] = useState<string[]>([])
+    const [groupId, setGroupId] = useState<string>("")
     const [groupName, setGroupName] = useState<string>("")
+
+    const groupData = useQuery(
+        ["group", groupId],
+        async () => {
+            const { data, error } = await supabase
+                .from("groups")
+                .select("group_name")
+                .eq('id', groupId)
+
+            if (error) {
+                console.error("Error fetching group data:", error.message)
+                throw new Error(error.message)
+            }
+
+            if (data) {
+                setGroupName(data[0].group_name || "")
+            }
+
+            return data
+        },
+        {
+            enabled: isOpen,
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+        })
 
     const attendeesData = useQuery(
         ["event-attendees", eventId],
@@ -63,7 +90,7 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
             }
 
             if (data) {
-                setGroupName(data.event_group ?? "")
+                setGroupId(data.event_group ?? "")
             }
 
             return data

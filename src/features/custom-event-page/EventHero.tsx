@@ -3,10 +3,9 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
-import { supabaseAdmin } from "@/lib/admin"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { useUserContext } from "@/providers/UserContextProvider"
-import { EventAttendeesData, EventData } from "@/types/types"
+import { EventData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import Link from "next/link"
 import Image from "next/image"
@@ -85,10 +84,6 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
             });
         }
     })
-
-
-
-
 
     const { data: images, isLoading } = useQuery(
         ['event-pictures', eventId],

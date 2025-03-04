@@ -15,6 +15,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Key, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination";
+import GridLoader from "react-spinners/GridLoader";
 
 export default function GroupPhotosAlbumPage({
     params
@@ -38,11 +39,18 @@ export default function GroupPhotosAlbumPage({
     const albumId = searchParams.get('albumId');
 
     useEffect(() => {
-        if (!ownerId || !userId && !loading) {
+        if (!loading && userId === null && ownerId === null) {
             router.push('/');
-            return
         }
-    }, [ownerId, userId, router]);
+    }, [loading, userId, router, ownerId]);
+
+    if (loading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center">
+                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
+            </div>
+        )
+    }
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['group-picture-albums', groupId],
