@@ -1,6 +1,5 @@
 "use client"
 
-import { Navbar } from "@/components/dashboard/Navbar";
 import { CustomGroupPage } from "@/features/group-page/CustomGroupPage";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";

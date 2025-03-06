@@ -1,3 +1,5 @@
+"use client"
+
 import { Navbar } from "@/components/dashboard/Navbar";
 import { ManagementSection } from "@/features/group-management/ManagementSection";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";

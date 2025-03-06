@@ -6,11 +6,11 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
-interface PostGalleryProps {
+interface GroupPostsGalleryProps {
     postId: string;
 }
 
-export const PostGallery = ({ postId }: PostGalleryProps) => {
+export const GroupPostsGallery = ({ postId }: GroupPostsGalleryProps) => {
     const supabase = createClientComponentClient<Database>();
     const [posts, setPosts] = useState<any[]>([]);
 
@@ -18,7 +18,7 @@ export const PostGallery = ({ postId }: PostGalleryProps) => {
         ['post-images', postId],
         async () => {
             const { data, error } = await supabase
-                .from('post-pictures')
+                .from('group-posts-pictures')
                 .select('*')
                 .eq('post_id', postId);
 
@@ -46,7 +46,7 @@ export const PostGallery = ({ postId }: PostGalleryProps) => {
                 const imageUrlsArray = JSON.parse(imageUrls);
                 const publicUrls = await Promise.all(imageUrlsArray.map(async (imagePath: string) => {
                     const { data: publicURL } = await supabase.storage
-                        .from('posts-pictures')
+                        .from('group-posts-pictures')
                         .getPublicUrl(imagePath);
 
                     return { publicUrl: publicURL.publicUrl };

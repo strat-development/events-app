@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { GroupCard } from "./GroupCard"
-import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
 

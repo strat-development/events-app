@@ -1,14 +1,11 @@
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { CreatePostDialog } from "../../components/dashboard/modals/posts/CreatePostDialog"
 import { Database } from "@/types/supabase";
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { PostGallery } from "./PostGallery";
 import { format, parseISO } from "date-fns";
 import { DeletePostDialog } from "../../components/dashboard/modals/posts/DeletePostDialog";
 import { PostReportDialog } from "@/components/dashboard/modals/contact/PostReportDialog";
-import { AddComment } from "./AddComment";
-import { PostsData } from "@/types/types";
+import { GroupPostsData } from "@/types/types";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { IconDotsVertical } from "@tabler/icons-react";
@@ -17,14 +14,17 @@ import { DeleteCommentDialog } from "@/components/dashboard/modals/posts/DeleteC
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AddComment } from "../custom-user-page/AddComment";
+import { CreateGroupPostDialog } from "@/components/dashboard/modals/posts/CreateGroupPostDialog";
+import { GroupPostsGallery } from "./GroupPostsGallery";
 
-interface UserPostsSectionProps {
-    userId: string;
+interface GroupPostsSectionProps {
+    groupId: string;
 }
 
-export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
+export const GroupPostsSection = ({ groupId }: GroupPostsSectionProps) => {
     const supabase = createClientComponentClient<Database>();
-    const [posts, setPosts] = useState<PostsData[]>([]);
+    const [posts, setPosts] = useState<GroupPostsData[]>([]);
     const [profileImageUrls, setProfileImageUrls] = useState<{ publicUrl: string }[]>([]);
     const [commentId, setCommentId] = useState<string[]>([]);
     const pathname = usePathname();
@@ -33,9 +33,9 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
         'posts',
         async () => {
             const { data, error } = await supabase
-                .from('posts')
+                .from('group-posts')
                 .select('*')
-                .eq('user_id', userId)
+                .eq('group_id', groupId)
 
             if (error) {
                 console.error('Error fetching posts:', error);
@@ -54,7 +54,7 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
         'comments',
         async () => {
             const { data, error } = await supabase
-                .from('post-comments')
+                .from('group-posts-comments')
                 .select('*')
                 .eq('post_id', posts.map((post) => post.id));
 
@@ -77,7 +77,7 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
         'user',
         async () => {
             const { data, error } = await supabase
-                .from("post-comments")
+                .from("group-posts-comments")
                 .select(`users (id, full_name)`)
                 .in('id', commentId || []);
 
@@ -93,15 +93,15 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
         }
     );
 
-    const commentedUserId = commentedUser.data?.map((user) => user.users?.id).filter(id => id !== undefined);
+    const commentedGroupId = commentedUser.data?.map((user) => user.users?.id).filter(id => id !== undefined);
 
     useEffect(() => {
-        if (commentedUserId && commentedUserId.length > 0) {
+        if (commentedGroupId && commentedGroupId.length > 0) {
             const fetchProfileImages = async () => {
                 const { data, error } = await supabase
                     .from('profile-pictures')
                     .select('user_id, image_url')
-                    .in('user_id', commentedUserId);
+                    .in('user_id', commentedGroupId);
 
                 if (error) {
                     console.error("Error fetching profile images:", error);
@@ -127,22 +127,22 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
 
             fetchProfileImages();
         }
-    }, [commentedUserId]);
+    }, [commentedGroupId]);
 
     return (
         <>
-            <div className="flex flex-col gap-8 items-center justify-center w-full">
-                {pathname.includes('/dashboard') && <CreatePostDialog />}
+            <div className="flex flex-col gap-8 items-center justify-center w-full p-8">
+                {pathname.includes('/dashboard') && <CreateGroupPostDialog groupId={groupId} />}
 
                 {posts.map((post) => (
                     <div key={post.id} className="flex flex-col gap-4">
-                        <PostGallery postId={post.id} />
+                        <GroupPostsGallery postId={post.id} />
                         <div className="flex w-full flex-col gap-4">
                             <div className="flex justify-between gap-4 items-center">
                                 <h2 className="text-white text-xl">{post.post_title}</h2>
 
                                 <div>
-                                    {pathname.includes('/dashboard') && userId === post.user_id && (
+                                    {pathname.includes('/dashboard') && groupId === post.group_id && (
                                         <DeletePostDialog postId={post.id} />
                                     ) || (
                                             <PostReportDialog postId={post.id} />
@@ -190,7 +190,7 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
                                             <div className="flex flex-col gap-2">
                                                 <ReportCommentDialog commentId={comment.id} />
 
-                                                {userId === comment.user_id && (
+                                                {groupId === comment.user_id && (
                                                     <DeleteCommentDialog commentId={comment.id} />
                                                 )}
                                             </div>
@@ -198,8 +198,6 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
                                     </Popover>
                                 </div>
                             ))}
-
-
 
                         </div>
                         <div className="flex flex-col gap-4">

@@ -8,15 +8,17 @@ import { TextEditor } from "../../../../features/TextEditor";
 import { Toaster } from "@/components/ui/toaster";
 import { FileUpload } from "@/components/ui/file-upload";
 import { useMutation, useQueryClient } from "react-query";
-import { useUserContext } from "@/providers/UserContextProvider";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { Input } from "@/components/ui/input";
 
-export const CreatePostDialog = () => {
-    const { userId } = useUserContext();
+interface CreateGroupPostDialogProps {
+    groupId: string;
+}
+
+export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) => {
     const supabase = createClientComponentClient<Database>();
     const queryClient = useQueryClient();
     const [modalStepCount, setModalStepCount] = useState(1);
@@ -28,11 +30,11 @@ export const CreatePostDialog = () => {
     const createPost = useMutation(
         async () => {
             const { data, error } = await supabase
-                .from("posts")
+                .from("group-posts")
                 .insert([
                     {
                         post_content: editorContent,
-                        user_id: userId,
+                        group_id: groupId,
                         post_title: title
                     },
                 ])
@@ -56,7 +58,7 @@ export const CreatePostDialog = () => {
                     description: "Your post has been created successfully",
                 });
 
-                queryClient.invalidateQueries(['posts']);
+                queryClient.invalidateQueries(['group-posts']);
                 setIsOpen(false);
                 setEditorContent("");
                 setFiles([]);
@@ -83,7 +85,7 @@ export const CreatePostDialog = () => {
     const uploadFiles = async (files: File[], postId: string) => {
         const uploadPromises = files.map((file) => {
             const path = `${postId}/${file.name}${Math.random()}.${file.name.split('.').pop()}`;
-            return { promise: supabaseAdmin.storage.from('posts-pictures').upload(path, file), path };
+            return { promise: supabaseAdmin.storage.from('group-posts-pictures').upload(path, file), path };
         });
 
         const responses = await Promise.all(uploadPromises.map(({ promise }) => promise));
@@ -105,7 +107,7 @@ export const CreatePostDialog = () => {
 
     const addImagesToPost = async (postId: string, paths: string[]) => {
         const { data: existingData, error: fetchError } = await supabase
-            .from('post-pictures')
+            .from('group-posts-pictures')
             .select('image_urls')
             .eq('post_id', postId)
             .maybeSingle();
@@ -123,7 +125,7 @@ export const CreatePostDialog = () => {
         const imageUrlsJson = JSON.stringify(newUrls);
 
         const { error: upsertError } = await supabase
-            .from('post-pictures')
+            .from('group-posts-pictures')
             .upsert({ post_id: postId, image_urls: imageUrlsJson });
 
         if (upsertError) {

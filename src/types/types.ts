@@ -16,4 +16,6 @@ export type SocialMediaTypes = 'Facebook' | 'Instagram' | 'X';
 
 export type PostsData = Database["public"]["Tables"]["posts"]["Row"];
 
+export type GroupPostsData = Database["public"]["Tables"]["group-posts"]["Row"];
+
 export type CommentsData = Database["public"]["Tables"]["post-comments"]["Row"];

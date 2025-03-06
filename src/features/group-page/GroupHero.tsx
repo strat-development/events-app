@@ -301,27 +301,25 @@ export const GroupHero = ({
                                     </div>
                                     {pathname.includes("/dashboard") && userId === ownerId && !groupCityToEdit && <Button onClick={() => setGroupCityToEdit(true)}>Edit</Button>}
                                 </div>
-                                <div>
-                                    {pathname.includes("/dashboard") && userId === ownerId && groupCityToEdit && (
-                                        <div className="flex gap-4">
-                                            <Input placeholder="New group city"
+                                {pathname.includes("/dashboard") && userId === ownerId && groupCityToEdit && (
+                                    <div className="flex gap-4">
+                                        <Input placeholder="New group city"
 
-                                                value={newGroupCity}
-                                                onChange={(e) => setNewGroupCity(e.target.value)}
-                                            />
-                                            <Input placeholder="New group country"
-                                                value={newGroupCountry}
-                                                onChange={(e) => setNewGroupCountry(e.target.value)}
-                                            />
-                                            <Button onClick={() => setGroupCityToEdit(false)}>Cancel</Button>
-                                            <Button onClick={() => {
-                                                editGroupLocationMutation.mutateAsync()
+                                            value={newGroupCity}
+                                            onChange={(e) => setNewGroupCity(e.target.value)}
+                                        />
+                                        <Input placeholder="New group country"
+                                            value={newGroupCountry}
+                                            onChange={(e) => setNewGroupCountry(e.target.value)}
+                                        />
+                                        <Button onClick={() => setGroupCityToEdit(false)}>Cancel</Button>
+                                        <Button onClick={() => {
+                                            editGroupLocationMutation.mutateAsync()
 
-                                                setGroupCityToEdit(false)
-                                            }}>Save</Button>
-                                        </div>
-                                    )}
-                                </div>
+                                            setGroupCityToEdit(false)
+                                        }}>Save</Button>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex gap-2 items-center">
@@ -329,7 +327,7 @@ export const GroupHero = ({
                                     strokeWidth={1} />
                                 <p className="text-white/60 font-medium tracking-wide">{memoizedGroupMembersData?.length || 0} {memoizedGroupMembersData?.length === 1 ? "member" : "members"}</p>
                             </div>
-                                    
+
                             <GroupReportDialog groupId={groupId} />
                         </div>
                     </div>
@@ -344,6 +342,9 @@ export const GroupHero = ({
                             <Link className="tracking-wider text-white/70 active:underline" href={`/dashboard/group-photos/${groupId}`}>
                                 Photos
                             </Link>
+                            <Link className="tracking-wider text-white/70 active:underline" href={`/dashboard/group-posts/${groupId}`}>
+                                Posts
+                            </Link>
                         </div>
                     ) || (
                             <div className="flex gap-4">
@@ -352,6 +353,9 @@ export const GroupHero = ({
                                 </Link>
                                 <Link className="tracking-wider text-white/70 active:underline" href={`/group-photos/${groupId}`}>
                                     Photos
+                                </Link>
+                                <Link className="tracking-wider text-white/70 active:underline" href={`/group-posts/${groupId}`}>
+                                    Posts
                                 </Link>
                             </div>
                         )}
@@ -368,7 +372,7 @@ export const GroupHero = ({
                         </div>
                     )}
                 </div>
-            </div >
+            </div>
 
             <Toaster />
         </>

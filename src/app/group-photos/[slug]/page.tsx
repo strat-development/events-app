@@ -1,6 +1,5 @@
 "use client"
 
-import { CreateGroupImagesAlbumDialog } from "@/components/dashboard/modals/groups/CreateGroupImagesAlbumDialog";
 import { GroupGallery } from "@/features/group-page/GroupGallery";
 import { GroupHero } from "@/features/group-page/GroupHero";
 import { useUserContext } from "@/providers/UserContextProvider";

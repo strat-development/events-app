@@ -13,7 +13,6 @@ export default function Home() {
     const router = useRouter();
 
     useEffect(() => {
-
         if (!loading && userId === null) {
             router.push('/');
             return;

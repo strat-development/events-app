@@ -1,8 +1,10 @@
+"use client"
+
 import { Navbar } from "@/components/dashboard/Navbar";
 import { StatisticsSection } from "@/features/statistics/StatisticsSection";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import GridLoader from "react-spinners/GridLoader";
 

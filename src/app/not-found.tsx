@@ -6,10 +6,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import "../styles/404.css"
+import { useSessionContext } from "@supabase/auth-helpers-react";
 
 export default function NotFound() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const router = useRouter();
+  const session = useSessionContext();
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -35,7 +37,11 @@ export default function NotFound() {
             <Button className="flex gap-4 w-fit text-lg px-4"
               variant={"ghost"}
               onClick={() => {
-                router.push("/");
+                if (!session.session?.user.role === true) {
+                  router.push("/home");
+                } else {
+                  router.push("/");
+                }
               }}>
               <IconGhost2 strokeWidth={1} size={36} />
               Run away
