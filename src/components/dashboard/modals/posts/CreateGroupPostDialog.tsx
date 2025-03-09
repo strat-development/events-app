@@ -7,12 +7,13 @@ import { useState } from "react";
 import { TextEditor } from "../../../../features/TextEditor";
 import { Toaster } from "@/components/ui/toaster";
 import { FileUpload } from "@/components/ui/file-upload";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { Input } from "@/components/ui/input";
+import { Plus } from "lucide-react";
 
 interface CreateGroupPostDialogProps {
     groupId: string;
@@ -26,6 +27,60 @@ export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) =
     const [editorContent, setEditorContent] = useState("");
     const [title, setTitle] = useState("");
     const [files, setFiles] = useState<File[]>([]);
+    const [fullName, setFullName] = useState<string[]>([])
+    const [groupName, setGroupName] = useState<string>("")
+    const [email, setEmail] = useState<string[]>([])
+
+    const groupData = useQuery(
+        ["group", groupId],
+        async () => {
+            const { data, error } = await supabase
+                .from("groups")
+                .select("group_name")
+                .eq('id', groupId)
+
+            if (error) {
+                console.error("Error fetching group data:", error.message)
+                throw new Error(error.message)
+            }
+
+            if (data) {
+                setGroupName(data[0].group_name || "")
+            }
+
+            return data
+        },
+        {
+            enabled: isOpen,
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+        })
+
+    const membersData = useQuery(
+        ["group-members", groupId],
+        async () => {
+            const { data, error } = await supabase
+                .from("group-members")
+                .select(`users (id, full_name, email)`)
+                .eq("group_id", groupId)
+
+
+            if (error) {
+                console.error("Error fetching attendees data:", error.message)
+                throw new Error(error.message)
+            }
+
+            if (data) {
+                setEmail(data.map((member) => member.users ? member.users.email as string : ""))
+                setFullName(data.map((member) => member.users ? member.users.full_name as string : ""))
+            }
+        }, {
+        enabled: isOpen,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+    })
 
     const createPost = useMutation(
         async () => {
@@ -51,6 +106,22 @@ export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) =
             onSuccess: async (data) => {
                 if (files.length > 0) {
                     await uploadFilesAndAddToPost(data.id);
+                }
+
+                const emailResponse = await fetch('/api/post-notification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        userFullName: fullName,
+                        groupName: groupName,
+                    })
+                });
+
+                if (!emailResponse.ok) {
+                    throw new Error('Failed to send emails');
                 }
 
                 toast({
@@ -137,11 +208,15 @@ export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) =
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger asChild>
-                    <Button
-                        className="bg-transparent w-full"
-                        variant="outline">
-                        Create Post
+                <DialogTrigger className="w-full" asChild>
+                    <Button className="flex flex-col items-center justify-center w-full h-[280px] rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
+                        variant="ghost">
+                        <div className="flex flex-col items-center">
+                            <div className="text-6xl text-white/70">
+                                <Plus size={128} />
+                            </div>
+                            <p className="text-xl tracking-wide text-white/50 font-medium">Create post</p>
+                        </div>
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px] pt-12 overflow-x-hidden">
@@ -179,7 +254,7 @@ export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) =
                     </div>
 
                     <DialogFooter>
-                        {editorContent.length > 0 && (
+                        {editorContent.length > 0 && files.length > 0 && title !== "" && (
                             <HoverBorderGradient onClick={() => createPost.mutate()}>
                                 Create Post
                             </HoverBorderGradient>

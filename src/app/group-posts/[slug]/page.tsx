@@ -19,14 +19,13 @@ export default function GroupPostsPage({
 }) {
     const groupId = params.slug;
     const { userId, loading } = useUserContext();
-    const { ownerId } = useGroupOwnerContext();
     const router = useRouter();
 
     useEffect(() => {
-        if (!loading && userId === null && ownerId === null) {
+        if (!loading && userId === null) {
             router.push('/');
         }
-    }, [loading, userId, router, ownerId]);
+    }, [loading, userId, router]);
 
     if (loading) {
         return (
@@ -38,7 +37,7 @@ export default function GroupPostsPage({
 
     return (
         <>
-            {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
+            {userId.length > 0 && (
                 <div className="flex justify-self-center justify-between items-start min-h-screen max-w-[1200px] w-full">
                     <Navbar />
                     <div className="flex flex-col mt-24 max-w-[1200px] w-full justify-self-center">

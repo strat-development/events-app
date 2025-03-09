@@ -9,10 +9,9 @@ import { useMutation, useQueryClient } from "react-query";
 
 interface DeleteCommentDialogProps {
     commentId: string;
-    onAction?: () => void;
 }
 
-export const DeleteCommentDialog = ({ commentId, onAction }: DeleteCommentDialogProps) => {
+export const DeleteCommentDialog = ({ commentId }: DeleteCommentDialogProps) => {
     const supabase = createClientComponentClient<Database>();
     const [isOpen, setIsOpen] = useState(false);
     const queryClient = useQueryClient();

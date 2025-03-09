@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
     Carousel,
     CarouselApi,
@@ -9,6 +8,7 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "../ui/card";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface PostsImageCarouselProps {
     imageUrls: string[];
@@ -16,11 +16,11 @@ interface PostsImageCarouselProps {
 }
 
 export function PostsImageCarousel({ imageUrls, imageCount }: PostsImageCarouselProps) {
-    const [api, setApi] = React.useState<CarouselApi>()
-    const [current, setCurrent] = React.useState(0)
-    const [count, setCount] = React.useState(0)
+    const [api, setApi] = useState<CarouselApi>()
+    const [current, setCurrent] = useState(0)
+    const [count, setCount] = useState(0)
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!api) {
             return
         }
@@ -47,6 +47,7 @@ export function PostsImageCarousel({ imageUrls, imageCount }: PostsImageCarousel
                                     alt={`Image ${index}`}
                                     width={1920}
                                     height={1080}
+                                    priority
                                 />
                             </CardContent>
                         </Card>

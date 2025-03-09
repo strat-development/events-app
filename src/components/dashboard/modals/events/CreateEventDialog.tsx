@@ -387,32 +387,34 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                                 />
                                 <div className="flex justify-between gap-4">
                                     <Button className="w-fit" onClick={() => setModalStepCount(3)}>Previous Step</Button>
-                                    <HoverBorderGradient
-                                        onClick={() => {
-                                            if (!eventTitle || !editorContent || !eventAddress || !selectedGroup || !eventDate || !files) {
-                                                toast({
-                                                    variant: "destructive",
-                                                    title: "Invalid Fields",
-                                                    description: "Please fill all the required fields.",
-                                                });
-                                                return;
-                                            }
-
-                                            createEvent.mutate({
-                                                event_title: eventTitle,
-                                                event_description: editorContent,
-                                                starts_at: eventDate,
-                                                event_address: eventAddress,
-                                                created_by: userId,
-                                                event_group: selectedGroup,
-                                                event_topics: groupTopics,
-                                                ticket_price: isFreeTicket ? 999999999 : eventTicketPrice,
-                                                attendees_limit: isUnlimitedSpots ? 999999999 : spotsLimit,
-                                            } as unknown as EventData);
-                                        }}
-                                    >
-                                        Create Event
-                                    </HoverBorderGradient>
+                                    {eventTitle && editorContent && eventAddress && selectedGroup && eventDate && files.length > 0 && (
+                                        <HoverBorderGradient
+                                            onClick={() => {
+                                                if (!eventTitle || !editorContent || !eventAddress || !selectedGroup || !eventDate || !files) {
+                                                    toast({
+                                                        variant: "destructive",
+                                                        title: "Invalid Fields",
+                                                        description: "Please fill all the required fields.",
+                                                    });
+                                                    return;
+                                                } else {
+                                                    createEvent.mutate({
+                                                        event_title: eventTitle,
+                                                        event_description: editorContent,
+                                                        starts_at: eventDate,
+                                                        event_address: eventAddress,
+                                                        created_by: userId,
+                                                        event_group: selectedGroup,
+                                                        event_topics: groupTopics,
+                                                        ticket_price: isFreeTicket ? 999999999 : eventTicketPrice,
+                                                        attendees_limit: isUnlimitedSpots ? 999999999 : spotsLimit,
+                                                    } as unknown as EventData);
+                                                }
+                                            }}
+                                        >
+                                            Create Event
+                                        </HoverBorderGradient>
+                                    )}
                                 </div>
                             </>
                         )}

@@ -28,7 +28,6 @@ export default function UserContextProvider({ children }: { children: React.Reac
     const [userId, setUserId] = useState<string>("");
     const [userInterests, setUserInterests] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-
     const { supabaseClient: supabase } = useSessionContext();
     const user = useSupaUser();
     const clearUserRole = () => setUserRole("");

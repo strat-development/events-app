@@ -28,6 +28,7 @@ import {
     PaginationNext,
     PaginationLink
 } from "@/components/ui/pagination"
+import Link from "next/link"
 
 interface GroupManagementTableProps {
     searchQuery: string | null
@@ -180,22 +181,28 @@ export const GroupManagementTable = ({ searchQuery }: GroupManagementTableProps)
                             <TableRow className="text-white/70"
                                 key={index}>
                                 <TableCell>
-                                    {item.profileImageUrl && (
-                                        <Image
-                                            src={item.profileImageUrl}
-                                            alt="Profile"
-                                            className="w-10 h-10 rounded-full"
-                                            width={48}
-                                            height={48}
-                                        />
-                                    ) || (
-                                            <div className="flex h-[50px] w-[50px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
-                                                <IconGhost2Filled className="w-6 h-6 text-white/70"
-                                                    strokeWidth={1} />
-                                            </div>
-                                        )}
+                                    <Link href={`/user-profile/${item.userId}`}>
+                                        {item.profileImageUrl && (
+                                            <Image
+                                                src={item.profileImageUrl}
+                                                alt="Profile"
+                                                className="w-10 h-10 rounded-full"
+                                                width={48}
+                                                height={48}
+                                            />
+                                        ) || (
+                                                <div className="flex h-[50px] w-[50px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
+                                                    <IconGhost2Filled className="w-6 h-6 text-white/70"
+                                                        strokeWidth={1} />
+                                                </div>
+                                            )}
+                                    </Link>
                                 </TableCell>
-                                <TableCell className="font-medium">{item.userName}</TableCell>
+                                <TableCell className="font-medium">
+                                    <Link href={`/user-profile/${item.userId}`}>
+                                        {item.userName}
+                                    </Link>
+                                </TableCell>
                                 <TableCell>{item.groupName}</TableCell>
                                 <TableCell> {format(parseISO(item.joinedAt), 'yyyy-MM-dd')} </TableCell>
                                 <TableCell>

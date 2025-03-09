@@ -3,7 +3,6 @@ import { Database } from "@/types/supabase";
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
-import { DeletePostDialog } from "../../components/dashboard/modals/posts/DeletePostDialog";
 import { PostReportDialog } from "@/components/dashboard/modals/contact/PostReportDialog";
 import { GroupPostsData } from "@/types/types";
 import { Popover, PopoverContent } from "@/components/ui/popover";
@@ -17,6 +16,7 @@ import { usePathname } from "next/navigation";
 import { AddComment } from "../custom-user-page/AddComment";
 import { CreateGroupPostDialog } from "@/components/dashboard/modals/posts/CreateGroupPostDialog";
 import { GroupPostsGallery } from "./GroupPostsGallery";
+import { DeleteGroupPostsDialog } from "@/components/dashboard/modals/groups/DeleteGroupPostsDialog";
 
 interface GroupPostsSectionProps {
     groupId: string;
@@ -131,11 +131,11 @@ export const GroupPostsSection = ({ groupId }: GroupPostsSectionProps) => {
 
     return (
         <>
-            <div className="flex flex-col gap-8 items-center justify-center w-full p-8">
+            <div className="flex flex-col gap-8 items-center justify-center p-8 min-[1150px]:max-w-[55%] min-[1150px]:w-full">
                 {pathname.includes('/dashboard') && <CreateGroupPostDialog groupId={groupId} />}
 
                 {posts.map((post) => (
-                    <div key={post.id} className="flex flex-col gap-4">
+                    <div key={post.id} className="flex flex-col gap-4 w-full">
                         <GroupPostsGallery postId={post.id} />
                         <div className="flex w-full flex-col gap-4">
                             <div className="flex justify-between gap-4 items-center">
@@ -143,7 +143,7 @@ export const GroupPostsSection = ({ groupId }: GroupPostsSectionProps) => {
 
                                 <div>
                                     {pathname.includes('/dashboard') && groupId === post.group_id && (
-                                        <DeletePostDialog postId={post.id} />
+                                        <DeleteGroupPostsDialog postId={post.id} />
                                     ) || (
                                             <PostReportDialog postId={post.id} />
                                         )}
