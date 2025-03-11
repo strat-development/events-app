@@ -53,7 +53,7 @@ export default function GroupPhotosAlbumPage({
     }
 
     const { data: albumsData, error: albumsError } = useQuery(
-        ['group-picture-albums', groupId],
+        ['picture-albums', groupId],
         async () => {
             const { data, error } = await supabase
                 .from('group-picture-albums')
@@ -191,15 +191,14 @@ export default function GroupPhotosAlbumPage({
                                 <div className="flex gap-4 justify-self-end justify-end">
                                     {selectedImages.length > 0 && (
                                         <Button className="max-[900px]:hidden"
+                                            variant="ghost"
                                             onClick={() => {
                                                 deleteImagesMutation.mutate(Array.from(selectedImages));
                                                 setSelectedImages([]);
                                             }
                                             }
                                             disabled={selectedImages.length === 0}>
-                                            <Trash className="text-red-600"
-                                                strokeWidth={1}
-                                                size={24} />
+                                            <Trash size={20} className="text-red-500" />
                                         </Button>
                                     )}
                                     <UpdateGroupImagesAlbumDialog />
@@ -233,19 +232,6 @@ export default function GroupPhotosAlbumPage({
                                 ))}
                             </div>
                         </div>
-                        {selectedImages.length > 0 && (
-                            <Button className="fixed w-fit p-2 rounded-full bottom-8 right-8 min-[900px]:hidden"
-                                onClick={() => {
-                                    deleteImagesMutation.mutate(Array.from(selectedImages));
-                                    setSelectedImages([]);
-                                }
-                                }
-                                disabled={selectedImages.length === 0}>
-                                <Trash className="text-red-600"
-                                    strokeWidth={1}
-                                    size={24} />
-                            </Button>
-                        )}
                     </div>
                 )}
 

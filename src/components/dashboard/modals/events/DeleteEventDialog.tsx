@@ -160,24 +160,24 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
                     <Button variant="destructive">
-                        <Trash strokeWidth={1}
-                            size={20} />
+                        <Trash size={20} />
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Delete event</DialogTitle>
-                        <DialogDescription className="text-white/70">
+                        <DialogTitle className="text-white/70 text-base">Delete event</DialogTitle>
+                        <DialogDescription className="text-white/50">
                             Are you sure you want to delete this event? If not please close this dialog.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button variant="destructive"
+                        <Button className="text-red-500" 
+                        variant="ghost"
                             type="submit"
                             onClick={() => {
                                 deleteEventMutation.mutate(eventId)
                             }}>
-                            Delete event
+                            <Trash size={20} />
                         </Button>
                     </DialogFooter>
                 </DialogContent>

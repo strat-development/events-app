@@ -205,7 +205,7 @@ export const EventsManagementTable = ({ searchQuery }: EventsManagementTableProp
                                         </div>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-fit">
-                                        <div className="flex flex-col gap-2">
+                                        <div className="flex flex-col">
                                             <UserReportDialog userId={item.userId || ""} />
                                         </div>
                                     </PopoverContent>

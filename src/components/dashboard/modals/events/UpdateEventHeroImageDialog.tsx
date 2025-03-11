@@ -6,6 +6,7 @@ import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { ImageUp } from "lucide-react";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
@@ -150,8 +151,8 @@ export const UpdateEventHeroImageDialog = ({ eventId }: UpdateEventHeroImageDial
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline"
-                        className="w-fit">Update image</Button>
+                    <Button variant="ghost"
+                        className="text-blue-500"><ImageUp size={20} /></Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <FileUpload
@@ -162,22 +163,24 @@ export const UpdateEventHeroImageDialog = ({ eventId }: UpdateEventHeroImageDial
 
                     <DialogFooter>
                         {(images?.length ?? 0) === 0 ? (
-                            <Button onClick={() => {
-                                if (files.length > 0) {
-                                    uploadFiles(files)
-                                        .then((paths) => {
-                                            addEventPicture.mutateAsync(paths);
+                            <Button variant="ghost"
+                                className="text-blue-500"
+                                onClick={() => {
+                                    if (files.length > 0) {
+                                        uploadFiles(files)
+                                            .then((paths) => {
+                                                addEventPicture.mutateAsync(paths);
 
-                                            setFiles([]);
-                                        })
-                                        .catch((error) => console.error('Error uploading files:', error));
-                                } else {
-                                    toast({
-                                        title: "Error",
-                                        description: "Error uploading image",
-                                    });
-                                }
-                            }}>Upload</Button>
+                                                setFiles([]);
+                                            })
+                                            .catch((error) => console.error('Error uploading files:', error));
+                                    } else {
+                                        toast({
+                                            title: "Error",
+                                            description: "Error uploading image",
+                                        });
+                                    }
+                                }}><ImageUp size={20} /></Button>
                         ) : (
                             <HoverBorderGradient onClick={() => {
                                 if (files.length > 0) {

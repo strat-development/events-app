@@ -78,7 +78,7 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
             <div className="flex flex-col gap-4 sticky top-24">
                 <h2 className='text-2xl tracking-wider font-bold'>Group members</h2>
                 <div className="flex items-start gap-4">
-                    <div className='flex gap-4'>
+                    <div className='flex flex-wrap gap-4'>
                         {memoizedGroupMembers?.slice(0, 11).map((member) => (
                             <Link href={`/user-profile/${member.users?.id}`} key={member.users?.id}>
                                 <div className='flex flex-col items-center border border-white/10 p-4 rounded-md text-center w-[144px] h-full'>
@@ -95,7 +95,7 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
                                             <IconGhost2Filled className="w-6 h-6 text-white/70" strokeWidth={1} />
                                         </div>
                                     )}
-                                    <span className='font-medium w-full text-white/70'>{member.users?.full_name}</span>
+                                    <span className='font-medium w-full text-white/70 truncate'>{member.users?.full_name}</span>
                                 </div>
                             </Link>
                         ))}

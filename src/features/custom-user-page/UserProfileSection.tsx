@@ -11,7 +11,7 @@ import { UserDataModal } from "../../components/dashboard/modals/user-profile/Us
 import { DeleteUserProfileImageDialog } from "../../components/dashboard/modals/user-profile/DeleteUserProfileImageDialog";
 import { EditSocialsDialog } from "../../components/dashboard/modals/user-profile/EditSocialsDialog";
 import { SocialMediaTypes } from "@/types/types";
-import { Facebook, Instagram, Twitter } from "lucide-react";
+import { Facebook, Instagram, Save, Twitter, X } from "lucide-react";
 import Link from "next/link";
 import { TextEditor } from "@/features/TextEditor";
 import { Button } from "../../components/ui/button";
@@ -201,23 +201,29 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                             editorContent={user.user_bio as string}
                                             onChange={setUserBio}
                                         />
-                                        <Button variant="outline"
-                                            onClick={() => setIsSetToEdit(false)}>
-                                            Cancel
-                                        </Button>
-                                        <Button onClick={() => {
-                                            editUserBioMutation.mutate(userBio as string)
+                                        <div className="flex gap-4">
+                                            <Button variant="ghost"
+                                                className="text-red-500"
+                                                onClick={() => setIsSetToEdit(false)}>
+                                                <X size={20} />
+                                            </Button>
+                                            <Button variant="ghost"
+                                                className="w-fit text-blue-500"
+                                                onClick={() => {
+                                                    editUserBioMutation.mutate(userBio as string)
 
-                                            setIsSetToEdit(false)
-                                        }}>
-                                            Save changes
-                                        </Button>
+                                                    setIsSetToEdit(false)
+                                                }}>
+                                                <Save size={20} />
+                                            </Button>
+                                        </div>
                                     </div>
                                 )}
                             {!isSetToEdit &&
                                 pathname === "/dashboard" && (
                                     <div className="flex gap-4">
-                                        <Button onClick={() => setIsSetToEdit(true)}>
+                                        <Button variant="ghost"
+                                            onClick={() => setIsSetToEdit(true)}>
                                             Edit BIO
                                         </Button>
                                     </div>
@@ -241,10 +247,11 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                 </div>
                             );
                         })}
+                        {pathname === "/dashboard" && (
+                            <EditSocialsDialog />
+                        )}
                     </div>
-                    {pathname === "/dashboard" && (
-                        <EditSocialsDialog />
-                    )}
+
                 </div>
             )}
 

@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
+import { Trash } from "lucide-react";
 
 interface DeleteGroupPictureDialogProps {
     images: any;
@@ -62,8 +63,10 @@ export const DeleteGroupPictureDialog = ({ images }: DeleteGroupPictureDialogPro
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button className="w-fit" 
-                    variant="destructive">Delete</Button>
+                    <Button className="w-fit flex gap-2 text-red-500 border border-red-500 hover:bg-red-500 hover:text-white" 
+                    variant="ghost">
+                        <span className="text-white">Delete image</span><Trash size={20} /> 
+                        </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[240px]">
                     <DialogHeader>

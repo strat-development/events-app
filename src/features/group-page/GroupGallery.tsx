@@ -26,7 +26,7 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
     const pathname = usePathname();
 
     const { data: albumsData, error: albumsError } = useQuery(
-        ['group-picture-albums', groupId],
+        ['picture-albums', groupId],
         async () => {
             const { data, error } = await supabase
                 .from('group-picture-albums')

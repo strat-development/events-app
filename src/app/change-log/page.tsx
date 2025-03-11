@@ -15,14 +15,19 @@ export default async function ChangeLogPage() {
 
             {changeLogData.changeLogPosts.map((post, index) => (
                 <div key={index}
-                className="flex flex-col min-[768px]:flex-row min-[768px]:justify-center relative gap-8 border-t border-white/10 pt-4">
+                    className="flex flex-col w-full min-[768px]:flex-row min-[768px]:justify-center relative gap-8 border-t border-white/10 pt-4">
                     <div className="justify-self-start">
                         <p className="sticky justify-self-start top-24 text-white/50 text-sm">{post.logCreatedAt}</p>
                     </div>
 
                     <div className="flex flex-col gap-4 min-[768px]:w-[70%]">
-                        <Image className="rounded-md"
-                            src={post.logImage?.url || ""} alt={post.logTitle || ""} width={2000} height={2000} />
+                        {post.logImage?.url && (
+                            <Image className="rounded-md"
+                                src={post.logImage?.url || ""} alt={post.logTitle || ""} width={2000} height={2000} />
+                        ) || (
+                                <></>
+                            )}
+
                         <div className="text-content"
                             dangerouslySetInnerHTML={{ __html: post.changeLogDescription?.html || "" }} />
                         <div className="flex flex-col w-full">

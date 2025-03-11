@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import { Flag } from "lucide-react";
+import { Flag, Share } from "lucide-react";
 import { useState, Suspense, lazy } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -20,11 +20,10 @@ export const ShareDialog = ({ expanded }: ShareDialogProps) => {
                 if (expanded) expanded(false);
             }}>
             <DialogTrigger asChild>
-                <Button variant="outline"
+                <Button variant="ghost"
                     className="flex gap-1 items-center h-fit">
-                    <Flag strokeWidth={1}
-                        size={16} />
-                    <p>Share</p>
+                    <Share
+                        size={20} />
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[360px]">

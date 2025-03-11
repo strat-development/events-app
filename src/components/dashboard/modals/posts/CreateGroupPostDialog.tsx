@@ -13,7 +13,7 @@ import { Database } from "@/types/supabase";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
+import { Plus, Save } from "lucide-react";
 
 interface CreateGroupPostDialogProps {
     groupId: string;
@@ -255,9 +255,11 @@ export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) =
 
                     <DialogFooter>
                         {editorContent.length > 0 && files.length > 0 && title !== "" && (
-                            <HoverBorderGradient onClick={() => createPost.mutate()}>
-                                Create Post
-                            </HoverBorderGradient>
+                            <Button className="text-blue-500"
+                            variant="ghost" 
+                            onClick={() => createPost.mutate()}>
+                                <Save size={20} />
+                            </Button>
                         )}
                     </DialogFooter>
                 </DialogContent>

@@ -213,7 +213,7 @@ export const GroupManagementTable = ({ searchQuery }: GroupManagementTableProps)
                                             </div>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-fit">
-                                            <div className="flex flex-col gap-2">
+                                            <div className="flex flex-col">
                                                 <UserReportDialog userId={item.userId || ""} />
                                                 <DeleteGroupUserDialog userId={item.userId || ""} />
                                             </div>

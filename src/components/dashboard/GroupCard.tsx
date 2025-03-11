@@ -9,8 +9,9 @@ import { useRouter } from "next/navigation"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { DeleteGroupDialog } from "./modals/groups/DeleteGroupDialog"
 import { CreateGroupDialog } from "./modals/groups/CreateGroupDialog"
-import { Globe } from "lucide-react"
+import { Edit, Globe } from "lucide-react"
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination";
+import { EditGroupDialog } from "./modals/groups/EditGroupModal"
 
 export const GroupCard = () => {
     const supabase = createClientComponentClient<Database>()
@@ -150,10 +151,6 @@ export const GroupCard = () => {
                 </Button>
             </div>
 
-
-
-
-
             <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                 {attendingGroups && (
 
@@ -236,9 +233,13 @@ export const GroupCard = () => {
                                     <div className="flex flex-col gap-1">
                                         <p className="text-sm text-white/60">{group.group_city}, {group.group_country}</p>
                                     </div>
-                                    <div className="flex gap-4 items-baseline">
-                                        <Button className="rounded-md mt-2 w-fit text-sm"
-                                            onClick={() => router.push(`/dashboard/group-page/${group.id}`)}>View group</Button>
+                                    <div className="flex justify-between gap-4 items-center w-full">
+                                        <div className="flex items-center gap-2">
+                                            <Button className="rounded-md mt-2 w-fit text-sm"
+                                                onClick={() => router.push(`/dashboard/group-page/${group.id}`)}>View group</Button>
+                                            <EditGroupDialog groupId={group.id} />
+                                        </div>
+
                                         <DeleteGroupDialog groupId={group.id} />
                                     </div>
                                 </div>

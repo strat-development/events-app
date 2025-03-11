@@ -8,6 +8,7 @@ import { Database } from "@/types/supabase"
 import { UserData } from "@/types/types"
 import { Dialog } from "@radix-ui/react-dialog"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { Edit } from "lucide-react"
 import { useState } from "react"
 import { useMutation, useQueryClient } from "react-query"
 
@@ -50,7 +51,10 @@ export const EditUserProfileDialog = () => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button className="w-fit">Edit user</Button>
+                    <Button variant="ghost"
+                        className="text-white/70">
+                        <Edit size={20} />
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <Input

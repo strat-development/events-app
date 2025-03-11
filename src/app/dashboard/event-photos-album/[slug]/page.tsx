@@ -55,7 +55,7 @@ export default function EventPhotosAlbumPage({
 
 
     const { data: albumsData, error: albumsError } = useQuery(
-        ['event-picture-albums', eventId],
+        ['picture-albums', eventId],
         async () => {
             const { data, error } = await supabase
                 .from('event-picture-albums')
@@ -200,16 +200,15 @@ export default function EventPhotosAlbumPage({
                             {pathname.includes("/dashboard") && eventCreatorId === userId && (
                                 <div className="flex gap-4 justify-self-end justify-end">
                                     {selectedImages.length > 0 && (
-                                        <Button className="max-[900px]:hidden"
+                                        <Button variant="ghost" 
+                                        className="max-[900px]:hidden text-red-500"
                                             onClick={() => {
                                                 deleteImagesMutation.mutate(Array.from(selectedImages));
                                                 setSelectedImages([]);
                                             }
                                             }
                                             disabled={selectedImages.length === 0}>
-                                            <Trash className="text-red-600"
-                                                strokeWidth={1}
-                                                size={24} />
+                                            <Trash size={20} />
                                         </Button>
                                     )}
                                     <UpdateEventImagesAlbumDialog />

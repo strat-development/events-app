@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import { Trash } from "lucide-react";
 
 interface DeleteGroupDialogProps {
     groupId: string;
@@ -58,7 +59,7 @@ export const DeleteGroupDialog = ({ groupId }: DeleteGroupDialogProps) => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="destructive">Delete</Button>
+                    <Trash size={20} className="text-red-500" />
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>
@@ -68,12 +69,13 @@ export const DeleteGroupDialog = ({ groupId }: DeleteGroupDialogProps) => {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button variant="destructive"
+                        <Button className="text-red-500"
+                            variant="ghost"
                             type="submit"
                             onClick={() => {
                                 deleteGroupMutation.mutate(groupId)
                             }}>
-                            Delete Group
+                            <Trash size={20} />
                         </Button>
                     </DialogFooter>
                 </DialogContent>

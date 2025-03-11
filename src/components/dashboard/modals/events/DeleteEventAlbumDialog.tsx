@@ -98,22 +98,23 @@ export const DeleteEventAlbumDialog = ({ albumId }: DeleteEventAlbumDialogProps)
             <div className="absolute top-8 right-8">
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                     <DialogTrigger asChild>
-                        <Trash className="text-red-500 cursor-pointer" />
+                        <Trash size={20} className="text-red-500" />
                     </DialogTrigger>
                     <DialogContent className="max-w-[425px]">
                         <DialogHeader>
-                            <DialogTitle>Delete Album</DialogTitle>
-                            <DialogDescription>
+                            <DialogTitle className="text-white/70 text-base">Delete Album</DialogTitle>
+                            <DialogDescription className="text-white/50">
                                 Are you sure you want to delete this Album? If not please close this dialog.
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                            <Button variant="destructive"
+                            <Button variant="ghost"
+                                className="text-red-500"
                                 type="submit"
                                 onClick={() => {
                                     deleteAlbumData.mutate(albumId);
                                 }}>
-                                Delete Album
+                                <Trash size={20} />
                             </Button>
                         </DialogFooter>
                     </DialogContent>

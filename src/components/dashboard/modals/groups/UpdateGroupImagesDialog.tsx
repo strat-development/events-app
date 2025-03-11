@@ -8,6 +8,7 @@ import { toast } from "@/components/ui/use-toast"
 import { supabaseAdmin } from "@/lib/admin";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { ImageUp } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -23,7 +24,7 @@ export const UpdateGroupImagesAlbumDialog = () => {
     const [files, setFiles] = useState<File[]>([]);
 
     const { data: albumsData, error: albumsError } = useQuery(
-        ['group-picture-albums-urls', albumId],
+        ['picture-albums-urls', albumId],
         async () => {
             const { data, error } = await supabase
                 .from('group-picture-albums')
@@ -105,10 +106,13 @@ export const UpdateGroupImagesAlbumDialog = () => {
         <div className="justify-self-end">
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button>Upload more</Button>
+                    <Button className="w-fit flex gap-2 text-blue-500 border border-blue-500 hover:bg-blue-500 hover:text-white"
+                        variant="ghost">
+                        <span className="text-white">Upload Images</span><ImageUp size={20} />
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
-                <FileUpload
+                    <FileUpload
                         onChange={(selectedFiles) => {
                             setFiles(selectedFiles);
                         }}

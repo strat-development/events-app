@@ -74,8 +74,8 @@ export const UserReportDialog = ({ expanded, userId }: UserReportProps) => {
                     <Button variant="ghost"
                         className="w-fit flex items-center mt-2 gap-2 cursor-pointer text-white/50"
                         onClick={() => setIsOpen(true)}>
-                        <IconExclamationCircle size={20} />
                         Report User
+                        <IconExclamationCircle size={20} />
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px] w-full flex flex-col items-center z-[999999999999999]">

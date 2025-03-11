@@ -8,11 +8,11 @@ import { toast } from "@/components/ui/use-toast";
 import { useMutation, useQueryClient } from "react-query";
 import { Trash } from "lucide-react";
 
-interface DeleteCommentDialogProps {
+interface DeleteGroupCommentDialogProps {
     commentId: string;
 }
 
-export const DeleteCommentDialog = ({ commentId }: DeleteCommentDialogProps) => {
+export const DeleteGroupCommentDialog = ({ commentId }: DeleteGroupCommentDialogProps) => {
     const supabase = createClientComponentClient<Database>();
     const [isOpen, setIsOpen] = useState(false);
     const queryClient = useQueryClient();
@@ -20,7 +20,7 @@ export const DeleteCommentDialog = ({ commentId }: DeleteCommentDialogProps) => 
     const deleteComment = useMutation(
         async (commentId: string) => {
             const { data: comments, error: fetchError } = await supabase
-                .from("post-comments")
+                .from("group-posts-comments")
                 .delete()
                 .eq("id", commentId)
         },
@@ -31,7 +31,7 @@ export const DeleteCommentDialog = ({ commentId }: DeleteCommentDialogProps) => 
                     description: "Comment deleted successfully",
                 });
 
-                queryClient.invalidateQueries("comment-comments");
+                queryClient.invalidateQueries("group-posts-comments");
             },
             onError: () => {
                 toast({
@@ -44,12 +44,14 @@ export const DeleteCommentDialog = ({ commentId }: DeleteCommentDialogProps) => 
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <Button variant="ghost"
-                    className="w-fit flex items-center mt-2 gap-2 cursor-pointer text-white/50"
-                    onClick={() => setIsOpen(true)}>
-                    Delete
-                    <Trash className="text-red-500" size={20} />
-                </Button>
+                <DialogTrigger asChild>
+                    <Button variant="ghost"
+                        className="w-fit flex items-center mt-2 gap-2 cursor-pointer text-white/50"
+                        onClick={() => setIsOpen(true)}>
+                        Delete
+                        <Trash className="text-red-500" size={20} />
+                    </Button>
+                </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Delete Comment</DialogTitle>

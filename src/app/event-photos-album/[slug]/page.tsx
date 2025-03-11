@@ -43,7 +43,7 @@ export default function EventPhotosAlbumPage({
     }
 
     const { data: albumsData, error: albumsError } = useQuery(
-        ['event-picture-albums', eventId],
+        ['picture-albums', eventId],
         async () => {
             const { data, error } = await supabase
                 .from('event-picture-albums')

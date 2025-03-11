@@ -41,7 +41,7 @@ export const NavComponent = () => {
 
                 {!session.session?.user.role === true && (
                     <div className="flex gap-4 items-center">
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 max-[768px]:hidden">
                             <Button className="text-white/70 rounded-lg"
                                 variant="ghost"
                                 onClick={() => {
@@ -64,35 +64,76 @@ export const NavComponent = () => {
                             strokeWidth={1} />
                     </div>
                 ) || (
-                        <div className="flex gap-2 items-center">
-                            <HoverBorderGradient className="font-medium tracking-wide"
-                                onClick={() => {
-                                    router.push("/dashboard");
-                                }}>
-                                Dashboard
-                            </HoverBorderGradient>
-                            <Button className="bg-transparent rounded-lg text-white/70"
-                                variant="ghost"
-                                onClick={(
-                                    async () => {
-                                        await supabase.auth.signOut();
+                        <>
+                            <div className="flex gap-2 items-center max-[768px]:hidden">
+                                <HoverBorderGradient className="font-medium tracking-wide max-[768px]:hidden"
+                                    onClick={() => {
+                                        router.push("/dashboard");
+                                    }}>
+                                    Dashboard
+                                </HoverBorderGradient>
+                                <Button className="bg-transparent rounded-lg text-white/70 max-[768px]:hidden"
+                                    variant="ghost"
+                                    onClick={(
+                                        async () => {
+                                            await supabase.auth.signOut();
 
-                                        router.push("/");
-                                    }
-                                )}>
-                                Logout
-                            </Button>
+                                            router.push("/");
+                                        }
+                                    )}>
+                                    Logout
+                                </Button>
+                            </div>
                             <IconMenuDeep className="min-[768px]:hidden"
                                 onClick={() => {
                                     setExpanded(!expanded);
                                 }}
                                 strokeWidth={1} />
-                        </div>
+                        </>
                     )}
             </div>
 
             {expanded == true && (
-                <div className="flex flex-col gap-8 justify-between p-2 relative mt-4">
+                <div className="flex flex-col gap-8 justify-between p-2 relative mt-4 w-full">
+                    <div className="flex gap-4 self-end">
+                        {!session.session?.user.role === true && (
+                            <>
+                                <Button className="text-white/70 rounded-lg"
+                                    variant="ghost"
+                                    onClick={() => {
+                                        authModal.onOpen(false);
+                                    }}>
+                                    Login
+                                </Button>
+                                <HoverBorderGradient className="font-medium tracking-wide"
+                                    onClick={() => {
+                                        authModal.onOpen(true);
+                                    }}>
+                                    Register
+                                </HoverBorderGradient>
+                            </>
+                        ) || (
+                                <>
+                                    <HoverBorderGradient className="font-medium tracking-wide"
+                                        onClick={() => {
+                                            router.push("/dashboard");
+                                        }}>
+                                        Dashboard
+                                    </HoverBorderGradient>
+                                    <Button className="bg-transparent rounded-lg text-white/70"
+                                        variant="ghost"
+                                        onClick={(
+                                            async () => {
+                                                await supabase.auth.signOut();
+
+                                                router.push("/");
+                                            }
+                                        )}>
+                                        Logout
+                                    </Button>
+                                </>
+                            )}
+                    </div>
                     <div className="flex flex-col gap-4 min-[768px]:hidden">
                         <Link className="text-xl font-medium text-white/50"
                             onClick={() => {

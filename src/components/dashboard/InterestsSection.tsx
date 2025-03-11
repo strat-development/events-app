@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider"
-import { HoverBorderGradient } from "../ui/hover-border-gradient"
+import { Save } from "lucide-react"
 
 interface UserData {
     user_interests: string[]
@@ -245,7 +245,8 @@ export const InterestsSection = () => {
                     </div>
                 )}
                 {selectedInterests.length > 0 && (
-                    <HoverBorderGradient className="w-fit"
+                    <Button variant="ghost"
+                        className="w-fit text-blue-500"
                         onClick={() => {
                             if (userId) {
                                 addInterests.mutateAsync()
@@ -253,8 +254,9 @@ export const InterestsSection = () => {
 
                             setSelectedInterests([])
                         }}>
-                        Save Interests
-                    </HoverBorderGradient>
+                        <Save size={20} />
+                    </Button>
+
                 )}
             </div>
         </div >

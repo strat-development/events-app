@@ -14,6 +14,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { IconGhost2Filled } from "@tabler/icons-react"
 import { usePathname } from "next/navigation"
+import { Edit, Save, X } from "lucide-react"
 
 interface EventInfoSectionProps {
     eventId: string
@@ -166,18 +167,19 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                                         onChange={setEventDescription}
                                     />
                                     <div className="flex gap-4">
-                                        <Button className="w-fit"
+                                        <Button variant="ghost"
+                                            className="w-fit text-blue-500"
                                             onClick={() => {
                                                 editEventDescriptionMutation.mutate(eventDescription as string)
 
                                                 setIsSetToEdit(false)
                                             }}>
-                                            Save changes
+                                            <Save size={20} />
                                         </Button>
                                         <Button variant="ghost"
-                                            className="w-fit"
+                                            className="w-fit text-red-500"
                                             onClick={() => setIsSetToEdit(false)}>
-                                            Cancel
+                                            <X size={20} />
                                         </Button>
                                     </div>
                                 </div>
@@ -186,8 +188,10 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                     </div>
                     {pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !isSetToEdit &&
                         <div className="flex gap-4">
-                            <Button onClick={() => setIsSetToEdit(true)}>
-                                Edit
+                            <Button variant="ghost"
+                                className="w-fit text-white/70" 
+                            onClick={() => setIsSetToEdit(true)}>
+                                <Edit size={20} />
                             </Button>
                         </div>
                     }

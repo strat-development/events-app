@@ -71,8 +71,8 @@ export const DeleteUserProfileImageDialog = () => {
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger className='absolute top-4 right-4' 
-                asChild>
+                <DialogTrigger className='absolute top-4 right-4'
+                    asChild>
                     <Trash className="text-red-500 cursor-pointer" />
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
@@ -83,11 +83,12 @@ export const DeleteUserProfileImageDialog = () => {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button variant="destructive"
-                        onClick={() => deleteProfilePicture.mutate()}>Delete Picture</Button>
+                        <Button className="text-red-500"
+                            variant="ghost"
+                            onClick={() => deleteProfilePicture.mutate()}><Trash size={20} /></Button>
                     </DialogFooter>
                 </DialogContent>
-            </Dialog>
+            </Dialog >
         </>
     );
 };

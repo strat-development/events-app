@@ -1,6 +1,6 @@
 "use client"
 
-import { Ticket } from "lucide-react"
+import { LogIn, LogOut, Ticket } from "lucide-react"
 import { Button } from "./ui/button"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Database } from "@/types/supabase"
@@ -191,7 +191,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                             <div className="flex gap-4">
                                 <div className="flex flex-col">
                                     <div className="flex gap-2 mt-1 items-center">
-                                        <Ticket className="h-4 w-4" />
+                                        <Ticket size={20} />
                                         {event?.ticket_price !== null && event.ticket_price > 10000 ? (
                                             <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
                                         ) : (
@@ -204,12 +204,12 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                 </div>
                                 <ShareDialog />
                                 {attendeeData.length > 0 ? (
-                                    <Button className="h-fit"
+                                    <Button variant="ghost"
+                                        className="text-red-500 h-fit"
                                         onClick={() => {
                                             removeAttendee.mutateAsync()
-                                        }}
-                                        variant="destructive">
-                                        Unattend
+                                        }}>
+                                        <LogOut size={20} />
                                     </Button>
                                 ) : (
                                     availableSpots <= 0 ? (
@@ -218,11 +218,12 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                             Sold out
                                         </Button>
                                     ) : (
-                                        <Button className="h-fit"
+                                        <Button className="text-green-500"
+                                            variant="ghost"
                                             onClick={() => {
                                                 addAttendee.mutateAsync()
                                             }}>
-                                            Attend
+                                            <LogIn size={20} />
                                         </Button>
                                     )
                                 )}

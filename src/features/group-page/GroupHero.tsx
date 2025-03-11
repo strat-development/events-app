@@ -12,7 +12,7 @@ import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
 import { GroupData, GroupMembersData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { MapPin, Users } from "lucide-react"
+import { Edit, LogIn, LogOut, MapPin, Save, Users, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
@@ -120,7 +120,7 @@ export const GroupHero = ({
         }
     })
 
-    useQuery(['group-members'], async () => {
+    useQuery(['group-members', groupId], async () => {
         const { data, error } = await supabase
             .from("group-members")
             .select("*", { count: "exact" })
@@ -272,7 +272,12 @@ export const GroupHero = ({
                             <div className="flex gap-4">
                                 <div className="flex gap-4 mb-4">
                                     <h1 className="text-2xl font-bold tracking-wider">{group.group_name}</h1>
-                                    {pathname.includes("/dashboard") && userId === ownerId && !groupNameToEdit && <Button onClick={() => setGroupNameToEdit(true)}>Edit</Button>}
+                                    {pathname.includes("/dashboard") && userId === ownerId && !groupNameToEdit &&
+                                        <Button className="text-white/70"
+                                            variant="ghost"
+                                            onClick={() => setGroupNameToEdit(true)}>
+                                            <Edit size={20} />
+                                        </Button>}
                                 </div>
                                 <div>
                                     {pathname.includes("/dashboard") && userId === ownerId && groupNameToEdit && (
@@ -281,12 +286,16 @@ export const GroupHero = ({
                                                 value={newGroupName}
                                                 onChange={(e) => setNewGroupName(e.target.value)}
                                             />
-                                            <Button onClick={() => setGroupNameToEdit(false)}>Cancel</Button>
-                                            <Button onClick={() => {
-                                                editGroupNameMutation.mutateAsync(newGroupName)
+                                            <Button className="text-red-500"
+                                                variant="ghost"
+                                                onClick={() => setGroupNameToEdit(false)}><X size={20} /></Button>
+                                            <Button className="text-blue-500"
+                                                variant="ghost"
+                                                onClick={() => {
+                                                    editGroupNameMutation.mutateAsync(newGroupName)
 
-                                                setGroupNameToEdit(false)
-                                            }}>Save</Button>
+                                                    setGroupNameToEdit(false)
+                                                }}><Save size={20} /></Button>
                                         </div>
                                     )}
                                 </div>
@@ -297,27 +306,41 @@ export const GroupHero = ({
                                     <div className="flex items-center gap-2">
                                         <MapPin size={24}
                                             strokeWidth={1} />
-                                        <p className="text-lg text-white/70">{group.group_city}, {group.group_country}</p>
+                                        {groupCityToEdit === false && (
+                                            <p className="text-lg text-white/70">{group.group_city}, {group.group_country}</p>
+                                        ) || (
+                                                <></>
+                                            )}
                                     </div>
-                                    {pathname.includes("/dashboard") && userId === ownerId && !groupCityToEdit && <Button onClick={() => setGroupCityToEdit(true)}>Edit</Button>}
+                                    {pathname.includes("/dashboard") && userId === ownerId && !groupCityToEdit &&
+                                        <Button className="text-white/70"
+                                            variant="ghost"
+                                            onClick={() => setGroupCityToEdit(true)}>
+                                            <Edit size={20} />
+                                        </Button>}
                                 </div>
                                 {pathname.includes("/dashboard") && userId === ownerId && groupCityToEdit && (
                                     <div className="flex gap-4">
-                                        <Input placeholder="New group city"
-
+                                        <Input className="max-w-[128px]"
+                                            placeholder="New group city"
                                             value={newGroupCity}
                                             onChange={(e) => setNewGroupCity(e.target.value)}
                                         />
-                                        <Input placeholder="New group country"
+                                        <Input className="max-w-[128px]"
+                                            placeholder="New group country"
                                             value={newGroupCountry}
                                             onChange={(e) => setNewGroupCountry(e.target.value)}
                                         />
-                                        <Button onClick={() => setGroupCityToEdit(false)}>Cancel</Button>
-                                        <Button onClick={() => {
-                                            editGroupLocationMutation.mutateAsync()
+                                        <Button className="text-red-500"
+                                            variant="ghost"
+                                            onClick={() => setGroupCityToEdit(false)}><X size={20} /></Button>
+                                        <Button className="text-blue-500"
+                                            variant="ghost"
+                                            onClick={() => {
+                                                editGroupLocationMutation.mutateAsync()
 
-                                            setGroupCityToEdit(false)
-                                        }}>Save</Button>
+                                                setGroupCityToEdit(false)
+                                            }}><Save size={20} /></Button>
                                     </div>
                                 )}
                             </div>
@@ -364,10 +387,13 @@ export const GroupHero = ({
                         <div className="flex gap-4">
                             <ShareDialog />
                             {memoizedGroupMembersData?.some((member) => member.member_id === userId) ? (
-                                <Button variant={"destructive"}
-                                    onClick={() => leaveGroupMutation.mutateAsync()}>Leave group</Button>
+                                <Button variant="ghost"
+                                    className="text-red-500"
+                                    onClick={() => leaveGroupMutation.mutateAsync()}><LogOut size={20} /></Button>
                             ) : (
-                                <Button onClick={() => joinGroupMutation.mutateAsync()}>Join group</Button>
+                                <Button className="text-green-500"
+                                    variant="ghost"
+                                    onClick={() => joinGroupMutation.mutateAsync()}><LogIn size={20} /></Button>
                             )}
                         </div>
                     )}

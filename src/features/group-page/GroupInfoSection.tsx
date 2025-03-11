@@ -11,6 +11,7 @@ import { toast } from "@/components/ui/use-toast"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { usePathname } from "next/navigation"
+import { Edit, Save, X } from "lucide-react"
 
 interface GroupInfoSectionProps {
     groupId: string
@@ -119,18 +120,19 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                                         onChange={setGroupDescription}
                                     />
                                     <div className="flex gap-4">
-                                        <Button className="w-fit"
+                                        <Button variant="ghost"
+                                            className="w-fit text-blue-500"
                                             onClick={() => {
                                                 editGroupDescriptionMutation.mutate(groupDescription as string)
 
                                                 setIsSetToEdit(false)
                                             }}>
-                                            Save changes
+                                            <Save size={20} />
                                         </Button>
-                                        <Button className="w-fit"
-                                            variant="outline"
+                                        <Button variant="ghost"
+                                            className="w-fit text-red-500"
                                             onClick={() => setIsSetToEdit(false)}>
-                                            Cancel
+                                            <X size={20} />
                                         </Button>
                                     </div>
                                 </div>
@@ -138,8 +140,10 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                     </div>
                     {pathname.includes("/dashboard") && userId === ownerId && !isSetToEdit && (
                         <div className="flex gap-4">
-                            <Button onClick={() => setIsSetToEdit(true)}>
-                                Edit
+                            <Button variant="ghost"
+                                className="w-fit text-white/70" 
+                            onClick={() => setIsSetToEdit(true)}>
+                                <Edit size={20} />
                             </Button>
                         </div>
                     )}

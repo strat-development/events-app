@@ -2,7 +2,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { CreatePostDialog } from "../../components/dashboard/modals/posts/CreatePostDialog"
 import { Database } from "@/types/supabase";
 import { useQuery } from "react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PostGallery } from "./PostGallery";
 import { format, parseISO } from "date-fns";
 import { DeletePostDialog } from "../../components/dashboard/modals/posts/DeletePostDialog";
@@ -17,6 +17,8 @@ import { DeleteCommentDialog } from "@/components/dashboard/modals/posts/DeleteC
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import _ from 'lodash';
+import { PostViewModal } from "../group-page/PostViewModal";
 
 interface UserPostsSectionProps {
     userId: string;
@@ -25,9 +27,10 @@ interface UserPostsSectionProps {
 export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
     const supabase = createClientComponentClient<Database>();
     const [posts, setPosts] = useState<PostsData[]>([]);
-    const [profileImageUrls, setProfileImageUrls] = useState<{ publicUrl: string }[]>([]);
+    const [profileImageUrls, setProfileImageUrls] = useState<{ userId: string, publicUrl: string }[]>([]);
     const [commentId, setCommentId] = useState<string[]>([]);
     const pathname = usePathname();
+    const prevCommentedUserId = useRef();
 
     const fetchPostData = useQuery(
         'posts',
@@ -96,117 +99,133 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
     const commentedUserId = commentedUser.data?.map((user) => user.users?.id).filter(id => id !== undefined);
 
     useEffect(() => {
-        if (commentedUserId && commentedUserId.length > 0) {
-            const fetchProfileImages = async () => {
-                const { data, error } = await supabase
-                    .from('profile-pictures')
-                    .select('user_id, image_url')
-                    .in('user_id', commentedUserId);
+        if (!_.isEqual(prevCommentedUserId.current, commentedUserId)) {
+            prevCommentedUserId.current = commentedUserId as any;
 
-                if (error) {
-                    console.error("Error fetching profile images:", error);
-                    return;
-                }
+            if (commentedUserId && commentedUserId.length > 0) {
+                const fetchProfileImages = async () => {
+                    const { data, error } = await supabase
+                        .from('profile-pictures')
+                        .select('user_id, image_url')
+                        .in('user_id', commentedUserId);
 
-                const urlMap: Record<string, string> = {};
-                await Promise.all(
-                    data.map(async (image) => {
-                        if (image.image_url) {
-                            const { data: publicURL } = await supabase.storage
-                                .from('profile-pictures')
-                                .getPublicUrl(image.image_url);
-                            if (publicURL && image.user_id) {
-                                urlMap[image.user_id] = publicURL.publicUrl;
+                    if (error) {
+                        console.error("Error fetching profile images:", error);
+                        return;
+                    }
+
+                    const urlMap: Record<string, string> = {};
+                    await Promise.all(
+                        data.map(async (image) => {
+                            if (image.image_url) {
+                                const { data: publicURL } = await supabase.storage
+                                    .from('profile-pictures')
+                                    .getPublicUrl(image.image_url);
+                                if (publicURL && image.user_id) {
+                                    urlMap[image.user_id] = publicURL.publicUrl;
+                                }
                             }
-                        }
-                    })
-                );
+                        })
+                    );
 
-                setProfileImageUrls(Object.entries(urlMap).map(([_, url]) => ({ publicUrl: url })));
-            };
+                    setProfileImageUrls(Object.entries(urlMap).map(([userId, url]) => ({ userId, publicUrl: url })));
+                };
 
-            fetchProfileImages();
+                fetchProfileImages();
+            }
         }
-    }, [commentedUserId]);
+    }, [commentedUserId, profileImageUrls]);
 
     return (
         <>
             <div className="flex flex-col gap-8 items-center justify-center w-full">
                 {pathname.includes('/dashboard') && <CreatePostDialog />}
 
-                {posts.map((post) => (
-                    <div key={post.id} className="flex flex-col gap-4">
-                        <PostGallery postId={post.id} />
-                        <div className="flex w-full flex-col gap-4">
-                            <div className="flex justify-between gap-4 items-center">
-                                <h2 className="text-white text-xl">{post.post_title}</h2>
+                {posts.map((post) => {
+                    const commentCount = data?.filter((comment) => comment.post_id === post.id).length || 0;
 
-                                <div>
-                                    {pathname.includes('/dashboard') && userId === post.user_id && (
-                                        <DeletePostDialog postId={post.id} />
-                                    ) || (
-                                            <PostReportDialog postId={post.id} />
-                                        )}
+                    return (
+                        <div key={post.id} className="flex flex-col gap-4">
+                            <PostGallery postId={post.id} />
+                            <div className="flex w-full flex-col gap-4">
+                                <div className="flex justify-between gap-4 items-center">
+                                    <h2 className="text-white text-xl">{post.post_title}</h2>
+
+                                    <div>
+                                        {pathname.includes('/dashboard') && userId === post.user_id && (
+                                            <DeletePostDialog postId={post.id} />
+                                        ) || (
+                                                <PostReportDialog postId={post.id} />
+                                            )}
+                                    </div>
+
                                 </div>
-
+                                <div className="flex flex-col gap-2">
+                                    <div className="text-white/70"
+                                        dangerouslySetInnerHTML={{ __html: post.post_content as string }}></div>
+                                    <p className="text-white/50 text-sm justify-self-end">{format(parseISO(post.created_at as string), 'yyyy-MM-dd')}</p>
+                                </div>
                             </div>
-                            <div className="flex flex-col gap-2">
-                                <div className="text-white/70"
-                                    dangerouslySetInnerHTML={{ __html: post.post_content as string }}></div>
-                                <p className="text-white/50 text-sm justify-self-end">{format(parseISO(post.created_at as string), 'yyyy-MM-dd')}</p>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-4 mt-8">
-                            {data?.filter((comment) => comment.post_id === post.id).map((comment) => (
-                                <div key={comment.id}
-                                    className="flex justify-between items-start gap-8">
-                                    <div className="flex items-start gap-4">
-                                        <div className="flex gap-4 items-start">
-                                            <Link href={`/user-profile/${comment.user_id}`} key={comment.user_id}>
-                                                <div className="flex gap-2">
-                                                    <Image src={profileImageUrls[0]?.publicUrl}
-                                                        width={36}
-                                                        height={36}
-                                                        alt="" className="rounded-full border border-white/10"
-                                                        priority />
+                            <div className="flex flex-col gap-4 mt-8">
+                                {data?.filter((comment) => comment.post_id === post.id).slice(0, 3).map((comment) => (
+                                    <div key={comment.id}
+                                        className="flex justify-between items-start gap-8">
+                                        <div className="flex items-start gap-4">
+                                            <div className="flex gap-4 items-start">
+                                                <Link href={`/user-profile/${comment.user_id}`} key={comment.user_id}>
+                                                    <div className="flex gap-2">
+                                                        <Image
+                                                            src={profileImageUrls.find((url) => url.userId === comment.user_id)?.publicUrl || "/default-avatar.png"}
+                                                            width={36}
+                                                            height={36}
+                                                            alt="" className="rounded-full border border-white/10"
+                                                            priority />
+                                                    </div>
+                                                </Link>
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="flex gap-2 items-center">
+                                                        <p className="text-white">{commentedUser.data?.find((user) => user.users?.id)?.users?.full_name}</p>
+                                                        <p className="text-white/50 text-xs">{format(parseISO(comment.created_at as string), 'yyyy-MM-dd')}</p>
+                                                    </div>
+                                                    <p className="text-white/70">{comment.comment_content}</p>
                                                 </div>
-                                            </Link>
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex gap-2 items-center">
-                                                    <p className="text-white">{commentedUser.data?.find((user) => user.users?.id)?.users?.full_name}</p>
-                                                    <p className="text-white/50 text-xs">{format(parseISO(comment.created_at as string), 'yyyy-MM-dd')}</p>
-                                                </div>
-                                                <p className="text-white/70">{comment.comment_content}</p>
                                             </div>
                                         </div>
+                                        <Popover>
+                                            <PopoverTrigger>
+                                                <div className="flex items-center gap-2 cursor-pointer text-white/50">
+                                                    <IconDotsVertical size={20} className="text-white/70" />
+                                                </div>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-fit">
+                                                <div className="flex flex-col gap-2">
+                                                    <ReportCommentDialog commentId={comment.id} />
+
+                                                    {userId === comment.user_id && (
+                                                        <DeleteCommentDialog commentId={comment.id} />
+                                                    )}
+                                                </div>
+                                            </PopoverContent>
+                                        </Popover>
                                     </div>
-                                    <Popover>
-                                        <PopoverTrigger>
-                                            <div className="flex items-center gap-2 cursor-pointer text-white/50">
-                                                <IconDotsVertical size={20} className="text-white/70" />
-                                            </div>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-fit">
-                                            <div className="flex flex-col gap-2">
-                                                <ReportCommentDialog commentId={comment.id} />
+                                ))}
 
-                                                {userId === comment.user_id && (
-                                                    <DeleteCommentDialog commentId={comment.id} />
-                                                )}
-                                            </div>
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
-                            ))}
+                                {commentCount > 3 && (
+                                    <PostViewModal
+                                        post={post as any}
+                                        comments={data || [] as any}
+                                        profileImageUrls={profileImageUrls}
+                                        commentedUser={commentedUser.data || [] as any}
+                                    />
+                                )}
 
-
-
+                            </div>
+                            <div className="flex flex-col gap-4">
+                                <AddComment postId={post.id} />
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-4">
-                            <AddComment postId={post.id} />
-                        </div>
-                    </div>
-                ))}
+                    )
+                })}
             </div>
         </>
     )

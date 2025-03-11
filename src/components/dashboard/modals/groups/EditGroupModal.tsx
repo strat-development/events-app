@@ -13,6 +13,7 @@ import { GroupDescriptionModalStep } from "@/features/create-group-modal/GroupDe
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider";
 import { Modal } from "@/features/Modal";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { Edit, Save } from "lucide-react";
 
 interface EditGroupDialogProps {
     groupId: string;
@@ -131,10 +132,13 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
                             setModalStepCount(2)
                         }}>Previous step</Button>
                         {selectedInterests.length > 0 && editorContent.length > 0 && groupCity.length > 0 && groupCountry.length > 0 && groupName.length > 0 && (
-                            <HoverBorderGradient onClick={() => {
-                                editGroupMutation.mutateAsync()
-                                setIsOpen(false)
-                            }}>Edit group</HoverBorderGradient>
+                            <Button variant="ghost"
+                                className="text-blue-500"
+                                onClick={() => {
+                                    editGroupMutation.mutateAsync()
+                                    setIsOpen(false)
+                                }}><Save size={20} />
+                            </Button>
                         )}
                     </div>
 
@@ -146,17 +150,18 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
     return (
         <>
             <div className="flex flex-col gap-4">
-                <div>
-                    <Button variant="outline"
-                        onClick={() => setIsOpen(true)}>Edit group</Button>
+                <Button variant="ghost"
+                    className="text-white/70"
+                    onClick={() => setIsOpen(true)}>
+                    <Edit size={20} />
+                </Button>
 
-                    <Modal title="Create Group"
-                        body={bodyContent}
-                        isOpen={isOpen}
-                        onClose={() => setIsOpen(false)}
-                        onChange={setIsOpen}
-                    />
-                </div>
+                <Modal title="Create Group"
+                    body={bodyContent}
+                    isOpen={isOpen}
+                    onClose={() => setIsOpen(false)}
+                    onChange={setIsOpen}
+                />
             </div>
 
             <Toaster />

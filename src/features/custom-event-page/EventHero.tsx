@@ -17,6 +17,7 @@ import { UpdateEventHeroImageDialog } from "@/components/dashboard/modals/events
 import { DeleteEventPictureDialog } from "@/components/dashboard/modals/events/DeleteEventPictureDialog"
 import { EventReportDialog } from "@/components/dashboard/modals/contact/EventReportDialog"
 import { usePathname } from "next/navigation"
+import { Save } from "lucide-react"
 
 interface EventHeroProps {
     eventId: string
@@ -205,11 +206,13 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                                         onChange={(e) => setNewEventName(e.target.value)}
                                     />
                                     <Button onClick={() => setEventNameToEdit(false)}>Cancel</Button>
-                                    <Button onClick={() => {
-                                        editEventNameMutation.mutateAsync(newEventName)
+                                    <Button variant="ghost"
+                                        className="w-fit text-blue-500" 
+                                        onClick={() => {
+                                            editEventNameMutation.mutateAsync(newEventName)
 
-                                        setEventNameToEdit(false)
-                                    }}>Save</Button>
+                                            setEventNameToEdit(false)
+                                        }}><Save size={20} /></Button>
                                 </div>
                             )}
 
@@ -247,7 +250,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
 
                                 {pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
                                     images?.length ?? 0) > 0 && (
-                                        <div className="flex gap-4">
+                                        <div className="flex items-start gap-4">
                                             <DeleteEventPictureDialog images={images} />
 
                                             <UpdateEventHeroImageDialog eventId={eventId} />

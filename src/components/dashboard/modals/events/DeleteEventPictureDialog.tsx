@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
+import { Trash } from "lucide-react";
 
 interface DeleteEventPictureDialogProps {
     images: any;
@@ -62,25 +63,30 @@ export const DeleteEventPictureDialog = ({ images }: DeleteEventPictureDialogPro
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button className="w-fit" 
-                    variant="destructive">Delete</Button>
+                    <DialogTrigger asChild>
+                        <Button className="w-fit flex gap-2 text-red-500 border border-red-500 hover:bg-red-500 hover:text-white"
+                            variant="ghost">
+                            <span className="text-white">Delete image</span><Trash size={20} />
+                        </Button>
+                    </DialogTrigger>
                 </DialogTrigger>
-                <DialogContent className="max-w-[240px]">
+                <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete picture</DialogTitle>
-                        <DialogDescription className="text-white/70">
+                        <DialogTitle className="text-white/70 text-base">Delete picture</DialogTitle>
+                        <DialogDescription className="text-white/50">
                             Are you sure you want to delete this picture? If not please close this dialog.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button variant={"destructive"}
+                        <Button className="text-red-500"
+                            variant="ghost"
                             onClick={() => {
                                 if (images) {
                                     if (images[0].hero_picture_url) {
                                         deleteEventPicture.mutateAsync(images[0].hero_picture_url);
                                     }
                                 }
-                            }}>Delete picture</Button>
+                            }}><Trash size={20} /></Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

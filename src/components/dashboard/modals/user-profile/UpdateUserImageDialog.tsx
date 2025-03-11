@@ -7,6 +7,7 @@ import { supabaseAdmin } from "@/lib/admin";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { ImageUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
@@ -129,8 +130,10 @@ export const UpdateUserImageDialog = () => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline"
-                        className="w-fit">Update image</Button>
+                    <Button variant="ghost"
+                        className="text-blue-500">
+                        <ImageUp size={20} />
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <FileUpload

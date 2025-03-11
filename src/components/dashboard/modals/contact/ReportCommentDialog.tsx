@@ -71,15 +71,14 @@ export const ReportCommentDialog = ({ expanded, commentId, onAction }: CommentRe
                     setIsOpen(open);
                     if (expanded) expanded(false);
                 }}>
-                <DialogTrigger asChild>
-                    <Button variant="ghost"
-                        className="flex items-center mt-2 gap-2 cursor-pointer text-white/50"
-                        onClick={() => setIsOpen(true)}>
-                        <IconExclamationCircle size={20} />
-                        Report
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[425px] w-full flex flex-col items-center z-[999999999999999]">
+                    <DialogTrigger asChild>
+                        <Button variant="ghost"
+                            className="flex items-center mt-2 gap-2 cursor-pointer text-white/50 z-[99999999]"
+                            onClick={() => setIsOpen(true)}>
+                            Report <IconExclamationCircle size={20} />
+                        </Button>
+                    </DialogTrigger>
+                <DialogContent className="max-w-[425px] w-full flex flex-col items-center z-[999999999999]">
                     <form className="p-4 w-full"
                         onSubmit={handleSubmit(onSubmit)}>
                         <Input

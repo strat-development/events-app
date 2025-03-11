@@ -9,7 +9,7 @@ import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { SocialMediaTypes } from "@/types/types";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Facebook, Instagram, Twitter } from "lucide-react";
+import { Facebook, Instagram, Save, Twitter } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 
@@ -104,13 +104,14 @@ export const EditSocialsDialog = () => {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button className="w-fit">Edit socials</Button>
+                <Button variant="ghost" 
+                className="w-fit">Edit socials</Button>
             </DialogTrigger>
             <DialogContent className="max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Edit socials</DialogTitle>
                     <DialogDescription className="text-white/70">
-                        Are you sure you want to delete your socials? If not please close this dialog.
+                        Are you sure you want to edit your socials? If not please close this dialog.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -142,7 +143,8 @@ export const EditSocialsDialog = () => {
                 })}
 
                 <DialogFooter>
-                    <HoverBorderGradient
+                    <Button variant="ghost"
+                        className="text-blue-500"
                         onClick={() => {
                             if (Object.values(errors).some(error => error)) {
                                 toast({
@@ -156,8 +158,8 @@ export const EditSocialsDialog = () => {
                             editSocialsMutation.mutate();
                             setIsOpen(false);
                         }}>
-                        Update socials
-                    </HoverBorderGradient>
+                        <Save size={20} />
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

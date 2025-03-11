@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { useQueryClient } from "react-query";
 import { supabaseAdmin } from "@/lib/admin";
+import { Trash } from "lucide-react";
 
 interface DeletePostDialogProps {
     postId: string;
@@ -81,8 +82,11 @@ export const DeletePostDialog = ({ postId }: DeletePostDialogProps) => {
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger asChild>
-                    <Button variant="destructive">Delete Post</Button>
+            <DialogTrigger asChild>
+                    <Button className="w-fit flex gap-2 text-red-500 border border-red-500 hover:bg-red-500 hover:text-white" 
+                    variant="ghost">
+                        <span className="text-white">Delete Post</span><Trash size={20} /> 
+                        </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>
@@ -92,10 +96,10 @@ export const DeletePostDialog = ({ postId }: DeletePostDialogProps) => {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button
-                            variant="destructive"
+                        <Button className="text-red-500"
+                            variant="ghost"
                             onClick={deletePostAndImages}>
-                            Delete post
+                            <Trash size={20} />
                         </Button>
                     </DialogFooter>
                 </DialogContent>

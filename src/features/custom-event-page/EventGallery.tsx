@@ -27,7 +27,7 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
     const pathname = usePathname();
 
     const { data: albumsData, error: albumsError } = useQuery(
-        ['event-picture-albums', eventId],
+        ['picture-albums', eventId],
         async () => {
             const { data, error } = await supabase
                 .from('event-picture-albums')
