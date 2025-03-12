@@ -20,7 +20,6 @@ interface CreateGroupImagesAlbumDialogProps {
 export const CreateGroupImagesAlbumDialog = ({ groupId }: CreateGroupImagesAlbumDialogProps) => {
     const supabase = createClientComponentClient<Database>();
     const queryClient = useQueryClient();
-
     const [isOpen, setIsOpen] = useState(false);
     const [albumName, setAlbumName] = useState("");
     const [files, setFiles] = useState<File[]>([]);
@@ -131,7 +130,7 @@ export const CreateGroupImagesAlbumDialog = ({ groupId }: CreateGroupImagesAlbum
                     <DialogTrigger asChild>
                         <Button className="w-fit flex gap-2 text-blue-500 border border-blue-500 hover:bg-blue-500 hover:text-white"
                             variant="ghost">
-                            <span className="text-white">Upload Images</span><ImageUp size={20} />
+                            <span className="text-white">Create Album</span><ImageUp size={20} />
                         </Button>
                     </DialogTrigger>
                 </DialogTrigger>

@@ -10,6 +10,7 @@ import GroupOwnerContextProvider from "@/providers/GroupOwnerProvider";
 import CityContextProvider from "@/providers/cityContextProvider";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
+import ViewContextProvider from "@/providers/pageViewProvider";
 
 const Footer = dynamic(() => import('@/components/Footer').then(mod => mod.Footer), { ssr: false });
 
@@ -21,7 +22,7 @@ export default function RootLayout({
   const queryClient = new QueryClient();
   const pathname = usePathname();
   const isHomePage = pathname === "/";
-  
+
   return (
     <html lang="en">
       <head>
@@ -34,9 +35,11 @@ export default function RootLayout({
               <GroupDataModalProvider>
                 <GroupOwnerContextProvider>
                   <CityContextProvider>
-                    <Navbar />
-                    {children}
-                    <Footer />
+                    <ViewContextProvider>
+                      <Navbar />
+                      {children}
+                      <Footer />
+                    </ViewContextProvider>
                   </CityContextProvider>
                 </GroupOwnerContextProvider>
               </GroupDataModalProvider>

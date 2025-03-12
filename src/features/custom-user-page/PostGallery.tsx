@@ -76,10 +76,10 @@ export const PostGallery = ({ postId }: PostGalleryProps) => {
         <div className="max-w-[1200px] w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
             {memoizedImages?.map((post) => (
                 <div
-                    className="flex flex-col relative gap-4 text-center items-center"
+                    className="flex flex-col relative gap-4 w-full text-center items-center"
                     key={post.id}>
                     <PostsImageCarousel
-                        imageCount={post.imageUrls.length ?? 0}
+                        imageCount={post.imageUrls.length}
                         imageUrls={post.imageUrls.map((image: any) => image.publicUrl)}
                     />
                 </div>

@@ -15,7 +15,7 @@ export const ManagementSection = () => {
     };
 
     return (
-        <div className="max-w-[1200px] w-full min-h-[80vh] pl-4 min-[900px]:pl-16 flex flex-col gap-8 max-[768px]:flex-wrap">
+        <div className="max-w-[1200px] w-full min-h-[80vh] flex flex-col gap-8 max-[768px]:flex-wrap">
             <div className="flex justify-between gap-8">
                 <Input className="max-w-[180px] placeholder:text-white/50"
                     id="search-input"

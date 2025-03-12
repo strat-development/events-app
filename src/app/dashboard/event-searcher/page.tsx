@@ -98,7 +98,7 @@ export default function EventSearcher() {
     return (
         <div className="flex justify-between items-start pt-24 max-w-[1200px] w-full justify-self-center">
             <Navbar />
-            {/* <div className="max-w-[1200px] min-h-screen w-full justify-self-center flex flex-col items-start justify-start gap-4 pl-4 min-[900px]:pl-16">
+            {/* <div className="max-w-[1200px] min-h-screen w-full justify-self-center flex flex-col items-start justify-start gap-4">
                 <div className="flex gap-4">
                     {eventTypes.map((type, index) => (
                         <Button className={eventType === type ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}

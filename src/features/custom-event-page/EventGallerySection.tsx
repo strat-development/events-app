@@ -10,14 +10,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import GridLoader from "react-spinners/GridLoader";
 
-export default function EventPhotosPage({
-    params
-}: {
-    params: {
-        slug: string
-    }
-}) {
-    const eventId = params.slug;
+interface EventGallerySectionProps {
+    eventId: string;
+}
+
+export const EventGallerySection = ({ eventId }: EventGallerySectionProps) => {
     const { userId, loading } = useUserContext();
     const { eventCreatorId } = useGroupOwnerContext();
     const router = useRouter();
@@ -39,20 +36,14 @@ export default function EventPhotosPage({
 
     return (
         <>
-            {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 &&
-                <div className="flex justify-self-center justify-between items-start min-h-screen max-w-[1200px] w-full">
-                    <Navbar />
-                    <div className="flex flex-col gap-8 max-w-[1200px] w-full min-h-screen relative top-24">
-                        <EventHero eventId={eventId} />
-                        {pathname.includes("/dashboard") && (
-                            <div className="jusify-self-end">
-                                <CreateEventImagesAlbumDialog eventId={eventId} />
-                            </div>
-                        )}
-                        <EventGallery eventId={eventId} />
+            <div className="flex flex-col justify-self-center justify-between items-end gap-8 max-w-[1200px] w-full">
+                {pathname.includes("/dashboard") && (
+                    <div className="jusify-self-end">
+                        <CreateEventImagesAlbumDialog eventId={eventId} />
                     </div>
-                </div>
-            }
+                )}
+                <EventGallery eventId={eventId} />
+            </div>
         </>
     )
 }

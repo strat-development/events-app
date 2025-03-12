@@ -136,7 +136,7 @@ export const StatisticsSection = () => {
 
 
     return (
-        <div className="max-w-[1200px] w-full pl- min-[900px]:pl-16 flex gap-8 max-[768px]:flex-wrap">
+        <div className="max-w-[1200px] w-full flex gap-8 max-[768px]:flex-wrap">
             <Card className="min-[768px]:w-3/4 w-full p-4 border-white/10">
                 <CardContent>
                     <ChartContainer config={chartConfig}>

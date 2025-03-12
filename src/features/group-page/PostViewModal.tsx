@@ -73,7 +73,6 @@ export const PostViewModal = ({ post, comments, profileImageUrls, commentedUser 
             <DialogContent className="max-w-[1200px] w-full">
                 <div key={id} className="flex flex-col min-[1140px]:flex-row max-w-[1200px] w-full gap-8">
                     <div className="min-[1140px]:w-[70%]">
-
                         {isGroupPost ? (
                             <GroupPostsGallery postId={id} />
                         ) : (

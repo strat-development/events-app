@@ -76,7 +76,7 @@ export const GroupPostsGallery = ({ postId }: GroupPostsGalleryProps) => {
         <div className="max-w-[1200px] w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
             {memoizedImages?.map((post) => (
                 <div
-                    className="flex flex-col relative gap-4 text-center items-center"
+                    className="flex flex-col relative gap-4 text-center w-full items-center"
                     key={post.id}>
                     <PostsImageCarousel
                         imageCount={post.imageUrls.length ?? 0}

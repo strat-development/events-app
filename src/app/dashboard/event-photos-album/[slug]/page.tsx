@@ -39,21 +39,6 @@ export default function EventPhotosAlbumPage({
     const searchParams = useSearchParams();
     const albumId = searchParams.get('albumId');
 
-    useEffect(() => {
-        if (!loading && userId === null && eventCreatorId === null) {
-            router.push('/');
-        }
-    }, [loading, userId, router, eventCreatorId]);
-
-    if (loading) {
-        return (
-            <div className="h-screen w-full flex items-center justify-center">
-                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
-            </div>
-        )
-    }
-
-
     const { data: albumsData, error: albumsError } = useQuery(
         ['picture-albums', eventId],
         async () => {
@@ -64,6 +49,7 @@ export default function EventPhotosAlbumPage({
             if (error) {
                 throw error;
             }
+
             return data || [];
         },
         {
@@ -71,6 +57,12 @@ export default function EventPhotosAlbumPage({
             cacheTime: 10 * 60 * 1000,
         }
     );
+
+    useEffect(() => {
+        if (!loading && userId === null && eventCreatorId === null) {
+            router.push('/');
+        }
+    }, [loading, userId, router, eventCreatorId]);
 
     useEffect(() => {
         if (albumsError) {
@@ -190,9 +182,17 @@ export default function EventPhotosAlbumPage({
         setCurrentPage(page)
     }
 
+    if (loading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center">
+                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
+            </div>
+        );
+    }
+
     return (
         <>
-            <div className="flex flex-col gap-8 items-center max-w-[1200px] w-full justify-self-center pl-4 min-[900px]:pl-16">
+            <div className="flex flex-col gap-8 items-center max-w-[1200px] w-full justify-self-center">
                 {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
                     <div className="min-h-screen mt-24 flex flex-col gap-8 items-center justify-center w-full">
                         <EventHero eventId={eventId} />
@@ -200,8 +200,8 @@ export default function EventPhotosAlbumPage({
                             {pathname.includes("/dashboard") && eventCreatorId === userId && (
                                 <div className="flex gap-4 justify-self-end justify-end">
                                     {selectedImages.length > 0 && (
-                                        <Button variant="ghost" 
-                                        className="max-[900px]:hidden text-red-500"
+                                        <Button variant="ghost"
+                                            className="max-[900px]:hidden text-red-500"
                                             onClick={() => {
                                                 deleteImagesMutation.mutate(Array.from(selectedImages));
                                                 setSelectedImages([]);

@@ -11,7 +11,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
 
-
 interface EventGalleryProps {
     eventId: string;
 }
@@ -96,7 +95,8 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
                     {currentItems.map((album) => (
                         <div className="flex flex-col relative gap-2 max-w-[280px] text-center items-center"
                             key={album.id}>
-                            <AlbumsImageCarousel eventId={eventId} album={album}
+                            <AlbumsImageCarousel imageCount={album.publicUrls.length ?? 0}
+                            eventId={eventId} album={album}
                                 imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
                             <p className="text-lg">{album.album_name}</p>
 

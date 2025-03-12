@@ -1,7 +1,9 @@
 import { EventNavbar } from "@/components/EventNavbar"
 import { EventHero } from "./EventHero"
-import { EventInfoSection } from "./EventInfoSection"
 import { EventInfoSidebar } from "./EventInfoSidebar"
+import { EventInfoSection } from "./EventInfoSection"
+import { EventGallerySection } from "./EventGallerySection"
+import { useViewContext } from "@/providers/pageViewProvider"
 
 
 interface EventPageProps {
@@ -11,16 +13,22 @@ interface EventPageProps {
 export const CustomEventPage = ({
     eventId
 }: EventPageProps) => {
+    const { view } = useViewContext();
+
     return (
         <>
-            <div className="max-w-[1200px] w-full justify-self-center pl-4 min-[900px]:pl-16">
-                <div className="flex justify-between gap-8 pb-24">
-                    <div className="flex flex-col gap-8 items-center min-h-screen w-full relative top-24">
+            <div className="max-w-[1200px] w-full justify-self-center items-center">
+                <div className="flex justify-center gap-8 pb-24">
+                    <div className="flex flex-col gap-8 items-center w-full relative top-24">
                         <EventHero eventId={eventId} />
-                        <EventInfoSection eventId={eventId} />
+                        {view == "about" && (
+                            <EventInfoSection eventId={eventId} />
+                        ) || (
+                                <EventGallerySection eventId={eventId} />
+                            )}
                     </div>
                     <div className="w-[30%] max-[900px]:hidden">
-                        <EventInfoSidebar eventId={eventId} />  
+                        <EventInfoSidebar eventId={eventId} />
                     </div>
                 </div>
                 <div className="sticky bottom-0">

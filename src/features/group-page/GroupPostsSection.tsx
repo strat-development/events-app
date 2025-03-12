@@ -142,7 +142,7 @@ export const GroupPostsSection = ({ groupId }: GroupPostsSectionProps) => {
 
     return (
         <>
-            <div className="flex flex-col gap-8 items-center justify-center p-8 min-[1150px]:max-w-[55%] min-[1150px]:w-full">
+            <div className="flex flex-col gap-8 items-center justify-center p-8 w-full">
                 {pathname.includes('/dashboard') && <CreateGroupPostDialog groupId={groupId} />}
 
                 {posts.map((post) => {

@@ -30,27 +30,13 @@ export default function GroupPhotosAlbumPage({
     const [albums, setAlbums] = useState<any[]>([]);
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
     const { userId, loading } = useUserContext();
-    const { ownerId } = useGroupOwnerContext()
+    const { ownerId } = useGroupOwnerContext();
     const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const albumId = searchParams.get('albumId');
-
-    useEffect(() => {
-        if (!loading && userId === null && ownerId === null) {
-            router.push('/');
-        }
-    }, [loading, userId, router, ownerId]);
-
-    if (loading) {
-        return (
-            <div className="h-screen w-full flex items-center justify-center">
-                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
-            </div>
-        )
-    }
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['picture-albums', groupId],
@@ -62,6 +48,7 @@ export default function GroupPhotosAlbumPage({
             if (error) {
                 throw error;
             }
+            
             return data || [];
         },
         {
@@ -69,6 +56,12 @@ export default function GroupPhotosAlbumPage({
             cacheTime: 10 * 60 * 1000,
         }
     );
+
+    useEffect(() => {
+        if (!loading && userId === null && ownerId === null) {
+            router.push('/');
+        }
+    }, [loading, userId, router, ownerId]);
 
     useEffect(() => {
         if (albumsError) {
@@ -105,7 +98,7 @@ export default function GroupPhotosAlbumPage({
 
             fetchAlbumImages();
         }
-    }, [albumsData, albumsError]);
+    }, [albumsData, albumsError, albumId, supabase.storage]);
 
     const deleteImagesMutation = useMutation(
         async (imageUrls: string[]) => {
@@ -177,7 +170,15 @@ export default function GroupPhotosAlbumPage({
     const currentItems = memoizedAlbums.slice(startIndex, endIndex);
 
     const handlePageChange = (page: number) => {
-        setCurrentPage(page)
+        setCurrentPage(page);
+    };
+
+    if (loading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center">
+                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
+            </div>
+        );
     }
 
     return (
@@ -195,8 +196,7 @@ export default function GroupPhotosAlbumPage({
                                             onClick={() => {
                                                 deleteImagesMutation.mutate(Array.from(selectedImages));
                                                 setSelectedImages([]);
-                                            }
-                                            }
+                                            }}
                                             disabled={selectedImages.length === 0}>
                                             <Trash size={20} className="text-red-500" />
                                         </Button>
@@ -265,9 +265,5 @@ export default function GroupPhotosAlbumPage({
 
             <Toaster />
         </>
-    )
+    );
 }
-
-
-
-

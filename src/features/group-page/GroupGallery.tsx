@@ -11,7 +11,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
 
-
 interface GroupGalleryProps {
     groupId: string;
 }
@@ -88,14 +87,18 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
         setCurrentPage(page)
     }
 
+    console.log(currentItems.map((album) => album.publicUrls.length))
+
     return (
         <>
-            <div className="flex flex-col w-full gap-8 justify-center mb-24">
+            <div className="flex flex-col w-full gap-8 justify-center">
                 <div className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
                     {currentItems.map((album) => (
                         <div className="flex flex-col relative gap-2 max-w-[280px] text-center items-center"
                             key={album.id}>
-                            <AlbumsImageCarousel groupId={groupId} album={album}
+                            <AlbumsImageCarousel imageCount={album.publicUrls.length}
+                                groupId={groupId}
+                                album={album}
                                 imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
 
                             <p className="text-lg justify-self-center">{album.album_name}</p>

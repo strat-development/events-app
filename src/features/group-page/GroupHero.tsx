@@ -19,6 +19,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { ShareDialog } from "../qr-code-generator/ShareDialog"
 import { usePathname } from "next/navigation"
+import { useViewContext } from "@/providers/pageViewProvider"
 
 interface GroupHeroProps {
     groupId: string
@@ -41,6 +42,7 @@ export const GroupHero = ({
     const [newGroupCountry, setNewGroupCountry] = useState("")
     const [groupMembersData, setGroupMembersData] = useState<GroupMembersData[]>()
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
+    const { setView } = useViewContext()
 
     useQuery(['groups'], async () => {
         const { data, error } = await supabase
@@ -357,31 +359,23 @@ export const GroupHero = ({
                 ))}
 
                 <div className="py-4 sticky top-24 flex justify-between max-w-[1200px] w-full justify-self-center">
-                    {pathname.includes("dashboard") && (
-                        <div className="flex gap-8">
-                            <Link className="tracking-wider text-white/70 active:underline" href={`/dashboard/group-page/${groupId}`}>
-                                About
-                            </Link>
-                            <Link className="tracking-wider text-white/70 active:underline" href={`/dashboard/group-photos/${groupId}`}>
-                                Photos
-                            </Link>
-                            <Link className="tracking-wider text-white/70 active:underline" href={`/dashboard/group-posts/${groupId}`}>
-                                Posts
-                            </Link>
-                        </div>
-                    ) || (
-                            <div className="flex gap-4">
-                                <Link className="tracking-wider text-white/70 active:underline" href={`/group-page/${groupId}`}>
-                                    About
-                                </Link>
-                                <Link className="tracking-wider text-white/70 active:underline" href={`/group-photos/${groupId}`}>
-                                    Photos
-                                </Link>
-                                <Link className="tracking-wider text-white/70 active:underline" href={`/group-posts/${groupId}`}>
-                                    Posts
-                                </Link>
-                            </div>
-                        )}
+                    <div className="flex gap-4">
+                        <Button variant="ghost"
+                            className="text-white/70"
+                            onClick={() => setView("about")}>
+                            About
+                        </Button>
+                        <Button variant="ghost"
+                            className="text-white/70"
+                            onClick={() => setView("photos")}>
+                            Photos
+                        </Button>
+                        <Button variant="ghost"
+                            className="text-white/70"
+                            onClick={() => setView("posts")}>
+                            Posts
+                        </Button>
+                    </div>
 
                     {userId && (
                         <div className="flex gap-4">

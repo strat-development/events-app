@@ -17,7 +17,10 @@ import { UpdateEventHeroImageDialog } from "@/components/dashboard/modals/events
 import { DeleteEventPictureDialog } from "@/components/dashboard/modals/events/DeleteEventPictureDialog"
 import { EventReportDialog } from "@/components/dashboard/modals/contact/EventReportDialog"
 import { usePathname } from "next/navigation"
-import { Save } from "lucide-react"
+import { Edit, Save } from "lucide-react"
+import { EventInfoSection } from "./EventInfoSection"
+import { EventGallerySection } from "./EventGallerySection"
+import { useViewContext } from "@/providers/pageViewProvider"
 
 interface EventHeroProps {
     eventId: string
@@ -35,6 +38,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
     const [newEventName, setNewEventName] = useState("")
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
     const [groupImageUrls, setGroupImageUrls] = useState<{ publicUrl: string }[]>([]);
+    const { setView } = useViewContext()
 
     useQuery(['events'], async () => {
         const { data, error } = await supabase
@@ -53,8 +57,6 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
         {
             cacheTime: 10 * 60 * 1000,
         })
-
-
 
     const editEventNameMutation = useMutation(async (newEventName: string) => {
         const { data, error } = await supabase
@@ -187,7 +189,11 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                                     <h1 className="text-3xl tracking-wider font-semibold">{event.event_title}</h1>
 
                                     {pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !eventNameToEdit && (
-                                        <Button onClick={() => setEventNameToEdit(true)}>Edit</Button>
+                                        <Button className="text-white/70"
+                                            variant="ghost"
+                                            onClick={() => setEventNameToEdit(true)}>
+                                            <Edit size={20} />
+                                        </Button>
                                     )}
 
                                 </div>
@@ -207,7 +213,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                                     />
                                     <Button onClick={() => setEventNameToEdit(false)}>Cancel</Button>
                                     <Button variant="ghost"
-                                        className="w-fit text-blue-500" 
+                                        className="w-fit text-blue-500"
                                         onClick={() => {
                                             editEventNameMutation.mutateAsync(newEventName)
 
@@ -267,29 +273,16 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
             ))
             }
 
-            {pathname.includes("dashboard") && (
-                <div className="flex gap-4">
-                    <Link className="tracking-wider text-white/70 active:underline"
-                        href={`/dashboard/event-page/${eventId}`}>
-                        About
-                    </Link>
-                    <Link className="tracking-wider text-white/70 active:underline"
-                        href={`/dashboard/event-photos/${eventId}`}>
-                        Photos
-                    </Link>
-                </div>
-            ) || (
-                    <div className="flex gap-4">
-                        <Link className="tracking-wider text-white/70 active:underline"
-                            href={`/event-page/${eventId}`}>
-                            About
-                        </Link>
-                        <Link className="tracking-wider text-white/70 active:underline"
-                            href={`/event-photos/${eventId}`}>
-                            Photos
-                        </Link>
-                    </div>
-                )}
+            <div className="flex gap-4 text-white/70">
+                <Button variant="ghost"
+                    onClick={() => setView("about")}>
+                    About
+                </Button>
+                <Button variant="ghost"
+                    onClick={() => setView("photos")}>
+                    Photos
+                </Button>
+            </div>
         </div>
     )
 }
