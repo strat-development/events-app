@@ -16,10 +16,8 @@ import { format, parseISO } from "date-fns"
 import { UpdateEventHeroImageDialog } from "@/components/dashboard/modals/events/UpdateEventHeroImageDialog"
 import { DeleteEventPictureDialog } from "@/components/dashboard/modals/events/DeleteEventPictureDialog"
 import { EventReportDialog } from "@/components/dashboard/modals/contact/EventReportDialog"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Edit, Save } from "lucide-react"
-import { EventInfoSection } from "./EventInfoSection"
-import { EventGallerySection } from "./EventGallerySection"
 import { useViewContext } from "@/providers/pageViewProvider"
 
 interface EventHeroProps {
@@ -39,6 +37,8 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
     const [groupImageUrls, setGroupImageUrls] = useState<{ publicUrl: string }[]>([]);
     const { setView } = useViewContext()
+    const isEventAlbum = pathname.includes("event-photos-album")
+    const router = useRouter()
 
     useQuery(['events'], async () => {
         const { data, error } = await supabase
@@ -181,7 +181,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
     return (
         <div className="flex flex-col gap-4 max-w-[1200px] w-full justify-self-center">
             {memoizedEventData?.map((event) => (
-                <div key={event.id} className="rounded-md flex justify-between relative">
+                <div key={event.id} className="rounded-xl flex justify-between relative">
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-2">
                             <div className="flex flex-col gap-2">
@@ -226,7 +226,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                                 href={`/group-page/${groupId}`}>
                                 <div className='flex gap-4 items-start'>
                                     {memoizedGroupImages?.map((image) => (
-                                        <Image className="max-w-[48px] min-[900px]:max-w-[72px] rounded-md"
+                                        <Image className="max-w-[48px] min-[900px]:max-w-[72px] rounded-xl"
                                             key={image.publicUrl}
                                             src={image.publicUrl}
                                             alt=""
@@ -245,7 +245,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                         <div className="flex gap-4">
                             <div className="flex flex-col gap-4">
                                 {memoizedImageUrls.map((image) => (
-                                    <Image className="aspect-square min-[768px]:aspect-video rounded-md object-contain border border-white/10"
+                                    <Image className="aspect-square min-[768px]:aspect-video rounded-xl object-contain border border-white/10"
                                         key={image.publicUrl}
                                         src={image.publicUrl}
                                         alt=""
@@ -273,16 +273,33 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
             ))
             }
 
-            <div className="flex gap-4 text-white/70">
-                <Button variant="ghost"
-                    onClick={() => setView("about")}>
-                    About
-                </Button>
-                <Button variant="ghost"
-                    onClick={() => setView("photos")}>
-                    Photos
-                </Button>
-            </div>
+            {isEventAlbum && (
+                <div className="flex gap-4 text-white/70">
+                    <Button variant="ghost"
+                        onClick={() => {
+                            router.push(`/event-page/${eventId}`)
+                        }}>
+                        About
+                    </Button>
+                    <Button variant="ghost"
+                        onClick={() => {
+                            router.push(`/event-page/${eventId}`)
+                        }}>
+                        Photos
+                    </Button>
+                </div>
+            ) || (
+                    <div className="flex gap-4 text-white/70">
+                        <Button variant="ghost"
+                            onClick={() => setView("about")}>
+                            About
+                        </Button>
+                        <Button variant="ghost"
+                            onClick={() => setView("photos")}>
+                            Photos
+                        </Button>
+                    </div>
+                )}
         </div>
     )
 }

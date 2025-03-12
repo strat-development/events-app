@@ -178,7 +178,7 @@ export const EventsSection = () => {
         <>
             <div className="flex flex-col gap-16 items-center w-full min-[1200px]:flex-row min-[1200px]:items-start">
                 <div className="flex flex-col gap-8 min-[1200px]:w-fit min-[1200px]:sticky min-[1200px]:top-24">
-                    <Calendar className="z-[2] hidden border border-white/10 w-full min-[1200px]:flex min-[1200px]:items-center min-[1200px]:justify-center rounded-md"
+                    <Calendar className="z-[2] hidden border border-white/10 w-full min-[1200px]:flex min-[1200px]:items-center min-[1200px]:justify-center rounded-xl"
                         onDayClick={handleDateChange}
                     />
                     <div className="fixed z-[99999] bg-white p-2 rounded-full bottom-[10%] right-[5%] min-[1200px]:hidden">
@@ -206,8 +206,8 @@ export const EventsSection = () => {
                                     <h2 className="text-xl font-semibold text-white/70 tracking-wider">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd')}</h2>
                                     <hr />
                                 </div>
-                                <div className="flex gap-4 border border-white/10 p-4 rounded-md h-[240px]">
-                                    <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square h-fit">
+                                <div className="flex gap-4 border border-white/10 p-4 rounded-xl h-[240px]">
+                                    <div className="flex flex-col items-center justify-center gap-4 border rounded-xl border-white/10 aspect-square h-fit">
                                         {memoizedImageUrls[event.id] && (
                                             <Image
                                                 src={memoizedImageUrls[event.id]}
@@ -217,7 +217,7 @@ export const EventsSection = () => {
                                                 objectFit="cover"
                                             />
                                         ) || (
-                                                <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                                <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
                                                     <p className="text-center font-medium">No image available 😔</p>
                                                 </div>
                                             )}
@@ -236,7 +236,7 @@ export const EventsSection = () => {
                                                     )}
                                             </div>
                                         </div>
-                                        <Button className="rounded-md mt-2 w-fit"
+                                        <Button className="rounded-xl mt-2 w-fit"
                                             onClick={() => router.push(`/event-page/${event.id}`)}>View event</Button>
                                     </div>
                                 </div>

@@ -41,7 +41,7 @@ export const UserInterestsSection = ({ userId }: UserInterestsProps) => {
                 {memoizedUserInterests && (
                     memoizedUserInterests.map((interest, index) => (
                         <div key={index}
-                            className="border border-white/10 bg-gradient-to-br text-white/70 hover:text-white/80 from-white/5 to-transparent py-1 px-2 transition duration-300 rounded-md text-lg cursor-pointer hover:shadow-lg hover:shadow-white/5 max-w-[148px] w-fit">
+                            className="border border-white/10 bg-gradient-to-br text-white/70 hover:text-white/80 from-white/5 to-transparent py-1 px-2 transition duration-300 rounded-xl text-lg cursor-pointer hover:shadow-lg hover:shadow-white/5 max-w-[148px] w-fit">
                             <p className="tracking-wide font-medium truncate"
                                 key={index}>{interest}</p>
                         </div>

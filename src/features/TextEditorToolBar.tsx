@@ -20,7 +20,7 @@ export const TextEditorToolBar = ({ editor }: TextEditorToolBarProps) => {
 
     return (
         <div id="text-editor-toolbar" 
-             className="flex justify-between p-1 border-[1px] rounded-md w-full">
+             className="flex justify-between p-1 border-[1px] rounded-xl w-full">
             <Toggle id="heading"
                     size="sm"
                     pressed={editor.isActive('heading', { level: 2 })}

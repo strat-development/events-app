@@ -104,8 +104,8 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
                                 <h2 className="text-xl font-semibold text-white/70 tracking-wider">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd')}</h2>
                                 <hr />
                             </div>
-                            <div className="flex gap-4 border border-white/10 p-4 rounded-md h-[240px]">
-                                <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square">
+                            <div className="flex gap-4 border border-white/10 p-4 rounded-xl h-[240px]">
+                                <div className="flex flex-col items-center justify-center gap-4 border rounded-xl border-white/10 aspect-square">
                                     {memoizedImageUrls[event.id] && (
                                         <Image
                                             src={memoizedImageUrls[event.id]}
@@ -115,7 +115,7 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
                                             objectFit="cover"
                                         />
                                     ) || (
-                                            <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                            <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
                                                 <p className="text-center font-medium">No image available 😔</p>
                                             </div>
                                         )}

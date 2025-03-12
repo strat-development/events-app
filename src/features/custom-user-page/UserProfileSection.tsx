@@ -151,7 +151,7 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                     {memoizedUserData.data?.map((user) => (
                         <div className="flex flex-col gap-4 w-full"
                             key={user.id}>
-                            <div className="flex flex-col relative items-center aspect-square gap-4 w-full border border-white/10 rounded-md">
+                            <div className="flex flex-col relative items-center aspect-square gap-4 w-full border border-white/10 rounded-xl">
                                 {imageUrls.length > 0 && imageUrls.some(image => image.publicUrl) ? (
                                     imageUrls.map((image, index) =>
                                         image.publicUrl ? (
@@ -161,12 +161,12 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                                 alt="Profile picture"
                                                 width={2000}
                                                 height={2000}
-                                                className="rounded-md"
+                                                className="rounded-xl"
                                             />
                                         ) : null
                                     )
                                 ) : (
-                                    <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-md bg-white/5">
+                                    <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-xl bg-white/5">
                                         <IconGhost2Filled className="w-24 h-24 text-white/70" strokeWidth={1} />
                                         <p className="text-white/50 text-lg">No profile picture</p>
                                     </div>
@@ -177,7 +177,7 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                 )}
 
                                 <div className="flex flex-col gap-4 absolute bottom-0 w-full pl-2 pb-2">
-                                    <div className="absolute inset-0 bg-black/30 blur-sm"></div>
+                                    <div className="absolute inset-0 [#131414]/30 blur-sm"></div>
                                     <div className="relative flex flex-col gap-1">
                                         <h2 className="text-xl font-bold tracking-wider">{user.full_name}</h2>
                                         <p className="text-lg text-white/70">{user.email}</p>

@@ -81,7 +81,7 @@
 
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(135deg, #050505, #070707);
+    background: #131314;
     background-blend-mode: overlay;
     background-size: cover;
   }

@@ -132,19 +132,19 @@ export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
                 <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
                     {memoizedOwnedGroups?.map((group) => (
                         <Link key={group.id} href={`/group-page/${group.id}`}>
-                            <div key={group.id} className="border rounded-md border-white/10 min-[1200px]:w-fit">
+                            <div key={group.id} className="border rounded-xl border-white/10 min-[1200px]:w-fit">
                                 <div className="flex w-full gap-4 p-4 h-[124px]">
-                                    <div className="flex flex-col items-center aspect-square justify-center gap-4 border rounded-md border-white/10">
+                                    <div className="flex flex-col items-center aspect-square justify-center gap-4 border rounded-xl border-white/10">
                                         {memoizedImageUrls[group.id] ? (
                                             <Image
-                                                className="rounded-md"
+                                                className="rounded-xl"
                                                 src={memoizedImageUrls[group.id]}
                                                 alt={`Group ${group.group_name}`}
                                                 width={1920}
                                                 height={1080}
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-md bg-white/5">
+                                            <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-xl bg-white/5">
                                                 <p className="text-white/50 text-lg">No picture available 😔</p>
                                             </div>
                                         )}
@@ -167,19 +167,19 @@ export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
                 <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
                     {memoizedMemberGroups?.map((group) => (
                         <Link key={group.id} href={`/group-page/${group.id}`}>
-                            <div key={group.id} className="border rounded-md border-white/10 min-[1200px]:w-fit">
+                            <div key={group.id} className="border rounded-xl border-white/10 min-[1200px]:w-fit">
                                 <div className="flex w-full gap-4 p-4 h-[124px]">
-                                    <div className="flex flex-col aspect-square items-center justify-center gap-4 border rounded-md border-white/10">
+                                    <div className="flex flex-col aspect-square items-center justify-center gap-4 border rounded-xl border-white/10">
                                         {memoizedImageUrls[group.id] ? (
                                             <Image
-                                                className="rounded-md"
+                                                className="rounded-xl"
                                                 src={memoizedImageUrls[group.id]}
                                                 alt={`Group ${group.group_name}`}
                                                 width={1920}
                                                 height={1080}
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-md bg-white/5">
+                                            <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-xl bg-white/5">
                                                 <p className="text-white/50 text-lg">No picture available 😔</p>
                                             </div>
                                         )}

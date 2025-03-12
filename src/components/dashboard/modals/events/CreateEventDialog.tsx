@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -17,7 +17,8 @@ import { FileUpload } from "@/components/ui/file-upload"
 import { GroupDescriptionModalStep } from "@/features/create-group-modal/GroupDescriptionModalStep"
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Plus } from "lucide-react"
+import { Plus, X } from "lucide-react"
+import * as DialogPrimitive from "@radix-ui/react-dialog"
 
 interface CreateEventDialogProps {
     ownerId: string
@@ -32,7 +33,8 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [eventTitle, setEventTitle] = useState("")
     const { editorContent, setEditorContent } = useGroupDataContext()
-    const [eventDate, setEventDate] = useState("")
+    const [eventStartDate, setEventStartDate] = useState("")
+    const [eventEndDate, setEventEndDate] = useState("")
     const [eventAddress, setEventAddress] = useState("")
     const [eventTicketPrice, setEventTicketPrice] = useState<number | null>(null);
     const [spotsLimit, setSpotsLimit] = useState<number | null>(null);
@@ -43,12 +45,10 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
     const [files, setFiles] = useState<File[]>([]);
     const [eventImageUrl, setEventImageUrl] = useState<string>("")
 
-    const [modalStepCount, setModalStepCount] = useState(1)
-
     const clearStates = useCallback(() => {
         setEventTitle("")
         setEditorContent("")
-        setEventDate("")
+        setEventStartDate("")
         setEventAddress("")
         setEventTicketPrice(0)
         setSpotsLimit(0)
@@ -214,7 +214,7 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
             }}>
                 <DialogTrigger asChild>
                     <Button
-                        className="flex flex-col items-center justify-center w-[280px] h-[440px] rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
+                        className="flex flex-col items-center justify-center w-[280px] h-[440px] rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
                         onClick={() => fetchGroups.refetch()}
                         variant="ghost">
                         <div className="flex flex-col items-center">
@@ -225,199 +225,190 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                         </div>
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Create Event</DialogTitle>
-                        <DialogDescription>
-                            Fill in the details below to create a new event.
-                        </DialogDescription>
-                    </DialogHeader>
+                <DialogContent className="flex w-full max-w-[100vw] h-screen rounded-none bg-transparent">
+                    <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start max-h-[80vh] overflow-y-auto justify-center w-full gap-16 mt-24">
+                        <DialogPrimitive.Close className="absolute right-96 rounded-xl opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                            <X className="h-4 w-4 text-white/70" />
+                            <span className="sr-only">Close</span>
+                        </DialogPrimitive.Close>
+                        <FileUpload className="max-[900px]:mt-96"
+                            onChange={(selectedFiles) => {
+                                setFiles(selectedFiles);
+                            }}
+                        />
+                        <div className="flex flex-col gap-4">
+                            <Select
+                                value={selectedGroup}
+                                onValueChange={(value: string) => setSelectedGroup(value)}>
+                                <SelectTrigger>
+                                    <SelectValue className="placeholder:text-white/60"
+                                        placeholder="Select Event Group" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {fetchedGroupsData.map((group) => (
+                                        <SelectItem key={group.id} value={group.id}>
+                                            {group.group_name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Input className="placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
+                                placeholder="Event Title"
+                                value={eventTitle}
+                                onChange={(e) => setEventTitle(e.target.value)}
+                            />
 
-                    <div className="flex flex-col gap-4">
-                        {modalStepCount === 1 && (
-                            <>
-                                <Input className="placeholder:text-white/60"
-                                    placeholder="Event Title"
-                                    value={eventTitle}
-                                    onChange={(e) => setEventTitle(e.target.value)}
-                                />
-                                <Select
-                                    value={selectedGroup}
-                                    onValueChange={(value: string) => setSelectedGroup(value)}>
-                                    <SelectTrigger>
-                                        <SelectValue className="placeholder:text-white/60"
-                                            placeholder="Select Event Group" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {fetchedGroupsData.map((group) => (
-                                            <SelectItem key={group.id} value={group.id}>
-                                                {group.group_name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Button className="w-fit" onClick={() => setModalStepCount(2)}>Next Step</Button>
-                            </>
-                        )}
-
-                        {modalStepCount === 2 && (
-                            <>
-                                <Input className="w-fit text-white/70"
-                                    type="datetime-local"
-                                    value={eventDate}
-                                    min={new Date().toISOString().slice(0, 16)}
-                                    onChange={(e) => setEventDate(e.target.value)}
-                                />
-                                <GroupDescriptionModalStep />
-
-                                <div className="flex justify-between gap-4">
-                                    <Button className="w-fit" onClick={() => setModalStepCount(1)}>Previous Step</Button>
-                                    <Button className="w-fit" onClick={() => setModalStepCount(3)}>Next Step</Button>
+                            <div className="flex flex-col gap-2 w-full items-end justify-center">
+                                <div className="flex items-center w-full justify-between bg-white/5 p-2 rounded-xl">
+                                    <span className="text-white/50">Start Date</span>
+                                    <Input className="w-fit text-white/70 bg-white/5"
+                                        type="datetime-local"
+                                        value={eventStartDate}
+                                        min={new Date().toISOString().slice(0, 16)}
+                                        onChange={(e) => setEventStartDate(e.target.value)}
+                                    />
                                 </div>
-                            </>
-                        )}
 
-                        {modalStepCount === 3 && (
-                            <>
+
+                                <div className="flex items-center w-full justify-between bg-white/5 p-2 rounded-xl">
+                                    <span className="text-white/50">End Date</span>
+                                    <Input className="w-fit text-white/70 bg-white/5"
+                                        type="datetime-local"
+                                        value={eventEndDate}
+                                        min={eventStartDate}
+                                        onChange={(e) => setEventEndDate(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <GroupDescriptionModalStep />
+
+                            <Input
+                                className="placeholder:text-white/60"
+                                placeholder="Event Address (City, Street, Country)"
+                                value={eventAddress}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setEventAddress(value);
+                                }}
+                            />
+                            <div className="flex gap-4">
                                 <Input
                                     className="placeholder:text-white/60"
-                                    placeholder="Event Address (City, Street, Country)"
-                                    value={eventAddress}
+                                    placeholder="Ticket Price"
+                                    value={eventTicketPrice === null ? "" : eventTicketPrice}
+                                    disabled={isFreeTicket}
                                     onChange={(e) => {
-                                        const value = e.target.value;
-                                        setEventAddress(value);
+                                        let value = e.target.value;
+                                        let number = Number(value);
+
+                                        if (isNaN(number) || number < 0) {
+                                            toast({
+                                                variant: "destructive",
+                                                title: "Invalid Input",
+                                                description: "Please enter a valid non-negative number.",
+                                            });
+                                            return;
+                                        }
+
+                                        if (number > 9999) {
+                                            number = 9999;
+                                            toast({
+                                                title: "Limit Reached",
+                                                description: "Maximum ticket price is 9999.",
+                                            });
+                                        }
+
+                                        setEventTicketPrice(number);
                                     }}
                                 />
-                                <div className="flex gap-4">
-                                    <Input
-                                        className="placeholder:text-white/60"
-                                        placeholder="Ticket Price"
-                                        value={eventTicketPrice === null ? "" : eventTicketPrice}
-                                        disabled={isFreeTicket}
-                                        onChange={(e) => {
-                                            let value = e.target.value;
-                                            let number = Number(value);
-
-                                            if (isNaN(number) || number < 0) {
-                                                toast({
-                                                    variant: "destructive",
-                                                    title: "Invalid Input",
-                                                    description: "Please enter a valid non-negative number.",
-                                                });
-                                                return;
-                                            }
-
-                                            if (number > 9999) {
-                                                number = 9999;
-                                                toast({
-                                                    title: "Limit Reached",
-                                                    description: "Maximum ticket price is 9999.",
-                                                });
-                                            }
-
-                                            setEventTicketPrice(number);
-                                        }}
+                                <div className="flex w-full items-center gap-2">
+                                    <Checkbox
+                                        checked={isFreeTicket}
+                                        id="free-tickets"
+                                        onClick={() => setIsFreeTicket((prev) => !prev)}
                                     />
-                                    <div className="flex w-full items-center gap-2">
-                                        <Checkbox
-                                            checked={isFreeTicket}
-                                            id="free-tickets"
-                                            onClick={() => setIsFreeTicket((prev) => !prev)}
-                                        />
-                                        <label className="text-white/70" htmlFor="free-tickets">
-                                            Free Tickets
-                                        </label>
-                                    </div>
+                                    <label className="text-white/70" htmlFor="free-tickets">
+                                        Free Tickets
+                                    </label>
                                 </div>
+                            </div>
 
-                                <div className="flex gap-4">
-                                    <Input
-                                        className="placeholder:text-white/60"
-                                        placeholder="Spots Limit"
-                                        value={spotsLimit === null ? "" : spotsLimit}
-                                        disabled={isUnlimitedSpots}
-                                        onChange={(e) => {
-                                            let value = e.target.value;
-                                            let number = Number(value);
+                            <div className="flex gap-4">
+                                <Input
+                                    className="placeholder:text-white/60"
+                                    placeholder="Spots Limit"
+                                    value={spotsLimit === null ? "" : spotsLimit}
+                                    disabled={isUnlimitedSpots}
+                                    onChange={(e) => {
+                                        let value = e.target.value;
+                                        let number = Number(value);
 
-                                            if (isNaN(number) || number < 0) {
-                                                toast({
-                                                    variant: "destructive",
-                                                    title: "Invalid Input",
-                                                    description: "Please enter a valid non-negative number.",
-                                                });
-                                                return;
-                                            }
+                                        if (isNaN(number) || number < 0) {
+                                            toast({
+                                                variant: "destructive",
+                                                title: "Invalid Input",
+                                                description: "Please enter a valid non-negative number.",
+                                            });
+                                            return;
+                                        }
 
-                                            if (number > 9999) {
-                                                number = 9999;
-                                                toast({
-                                                    title: "Limit Reached",
-                                                    description: "Maximum spots limit is 9999.",
-                                                });
-                                            }
+                                        if (number > 9999) {
+                                            number = 9999;
+                                            toast({
+                                                title: "Limit Reached",
+                                                description: "Maximum spots limit is 9999.",
+                                            });
+                                        }
 
-                                            setSpotsLimit(number);
-                                        }}
-                                    />
-                                    <div className="flex w-full items-center gap-2">
-                                        <Checkbox
-                                            checked={isUnlimitedSpots}
-                                            id="no-limit"
-                                            onClick={() => setIsUnlimitedSpots((prev) => !prev)}
-                                        />
-                                        <label className="text-white/70" htmlFor="no-limit">
-                                            No Limit
-                                        </label>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between gap-4">
-                                    <Button className="w-fit" onClick={() => setModalStepCount(2)}>Previous Step</Button>
-                                    <Button className="w-fit" onClick={() => setModalStepCount(4)}>Next Step</Button>
-                                </div>
-                            </>
-                        )}
-
-                        {modalStepCount === 4 && (
-                            <>
-                                <FileUpload
-                                    onChange={(selectedFiles) => {
-                                        setFiles(selectedFiles);
+                                        setSpotsLimit(number);
                                     }}
                                 />
-                                <div className="flex justify-between gap-4">
-                                    <Button className="w-fit" onClick={() => setModalStepCount(3)}>Previous Step</Button>
-                                    {eventTitle && editorContent && eventAddress && selectedGroup && eventDate && files.length > 0 && (
-                                        <HoverBorderGradient
-                                            onClick={() => {
-                                                if (!eventTitle || !editorContent || !eventAddress || !selectedGroup || !eventDate || !files) {
-                                                    toast({
-                                                        variant: "destructive",
-                                                        title: "Invalid Fields",
-                                                        description: "Please fill all the required fields.",
-                                                    });
-                                                    return;
-                                                } else {
-                                                    createEvent.mutate({
-                                                        event_title: eventTitle,
-                                                        event_description: editorContent,
-                                                        starts_at: eventDate,
-                                                        event_address: eventAddress,
-                                                        created_by: userId,
-                                                        event_group: selectedGroup,
-                                                        event_topics: groupTopics,
-                                                        ticket_price: isFreeTicket ? 999999999 : eventTicketPrice,
-                                                        attendees_limit: isUnlimitedSpots ? 999999999 : spotsLimit,
-                                                    } as unknown as EventData);
-                                                }
-                                            }}
-                                        >
-                                            Create Event
-                                        </HoverBorderGradient>
-                                    )}
+                                <div className="flex w-full items-center gap-2">
+                                    <Checkbox
+                                        checked={isUnlimitedSpots}
+                                        id="no-limit"
+                                        onClick={() => setIsUnlimitedSpots((prev) => !prev)}
+                                    />
+                                    <label className="text-white/70" htmlFor="no-limit">
+                                        No Limit
+                                    </label>
                                 </div>
-                            </>
-                        )}
+                            </div>
+
+                            <div className="flex justify-between gap-4">
+                                {eventTitle && editorContent && eventAddress && selectedGroup && eventStartDate && eventEndDate && files.length > 0 && (
+                                    <HoverBorderGradient className="w-full"
+                                        onClick={() => {
+                                            if (!eventTitle || !editorContent || !eventAddress || !selectedGroup || !eventStartDate || eventEndDate || !files) {
+                                                toast({
+                                                    variant: "destructive",
+                                                    title: "Invalid Fields",
+                                                    description: "Please fill all the required fields.",
+                                                });
+                                                return;
+                                            } else {
+                                                createEvent.mutate({
+                                                    event_title: eventTitle,
+                                                    event_description: editorContent,
+                                                    starts_at: eventStartDate,
+                                                    ends_at: eventEndDate,
+                                                    event_address: eventAddress,
+                                                    created_by: userId,
+                                                    event_group: selectedGroup,
+                                                    event_topics: groupTopics,
+                                                    ticket_price: isFreeTicket ? 999999999 : eventTicketPrice,
+                                                    attendees_limit: isUnlimitedSpots ? 999999999 : spotsLimit,
+                                                } as unknown as EventData);
+                                            }
+                                        }}
+                                    >
+                                        Create Event
+                                    </HoverBorderGradient>
+                                )}
+                            </div>
+                        </div>
+
                     </div>
                 </DialogContent>
             </Dialog>

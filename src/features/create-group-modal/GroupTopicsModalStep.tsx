@@ -62,12 +62,12 @@ export const GroupTopicsModalStep = () => {
                             <SelectValue placeholder="Select interest group" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Groups</SelectItem>
+                            <SelectItem 
+                            value="all">All Groups</SelectItem>
                             {interestsData?.["interest-groups"].map((group) => (
                                 <SelectItem
                                     value={group["group-name"]}
-                                    key={group["group-name"]}
-                                >
+                                    key={group["group-name"]}>
                                     {group["group-name"]}
                                 </SelectItem>
                             ))}
@@ -87,7 +87,7 @@ export const GroupTopicsModalStep = () => {
                 </div>
             </div>
             <div className="flex flex-col gap-4">
-                <div className="flex flex-wrap gap-4 max-h-[124px] overflow-y-auto">
+                <div className="flex flex-wrap gap-4">
                     {displayedInterests.map((interest) => (
                         <Button
                             key={interest.name}

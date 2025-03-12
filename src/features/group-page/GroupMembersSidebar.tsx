@@ -81,7 +81,7 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
                     <div className='flex flex-wrap gap-4'>
                         {memoizedGroupMembers?.slice(0, 11).map((member) => (
                             <Link href={`/user-profile/${member.users?.id}`} key={member.users?.id}>
-                                <div className='flex flex-col items-center border border-white/10 p-4 rounded-md text-center w-[144px] h-full'>
+                                <div className='flex flex-col items-center border border-white/10 p-4 rounded-xl text-center w-[144px] h-full'>
                                     {member.users?.id && memoizedProfileImages[member.users.id] ? (
                                         <Image
                                             className="rounded-full"
@@ -101,7 +101,7 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
                         ))}
                         {memoizedGroupMembers && memoizedGroupMembers.length > 11 && (
                             <Link href={`/group-members/${groupId}`}>
-                                <div className="flex flex-col relative gap-2 items-center border border-white/10 p-4 rounded-md text-center w-[144px] h-full">
+                                <div className="flex flex-col relative gap-2 items-center border border-white/10 p-4 rounded-xl text-center w-[144px] h-full">
                                     <Image className="rounded-full blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                                         src={memoizedProfileImages[membersId[0]]} width={50} height={50} alt="" />
                                     <span className='text-white/70 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full text-xl tracking-wider font-bold'>+{memoizedGroupMembers.length - 11} more</span>

@@ -91,9 +91,9 @@ export const FileUpload = ({
                     onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
                     className="hidden"
                 />
-                <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]">
+                {/* <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]">
                     <GridPattern />
-                </div>
+                </div> */}
                 <div className="flex flex-col items-center justify-center">
                     <p className="relative z-20 font-sans font-bold text-neutral-300 text-base">
                         Upload file
@@ -108,7 +108,7 @@ export const FileUpload = ({
                                     key={"file" + idx}
                                     layoutId={idx === 0 ? "file-upload" : "file-upload-" + idx}
                                     className={cn(
-                                        "relative overflow-hidden z-40 bg-neutral-900 flex flex-col items-start justify-start md:h-24 p-4 mt-4 w-full mx-auto rounded-md",
+                                        "relative overflow-hidden z-40 bg-[#131414] flex flex-col items-start justify-start md:h-24 p-4 mt-4 w-full mx-auto rounded-2xl",
                                         "shadow-sm"
                                     )}
                                 >
@@ -125,7 +125,7 @@ export const FileUpload = ({
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             layout
-                                            className="rounded-lg px-2 py-1 w-fit flex-shrink-0 text-sm bg-neutral-800 text-white shadow-input"
+                                            className="rounded-2xl px-2 py-1 w-fit flex-shrink-0 text-sm bg-neutral-800 text-white shadow-input"
                                         >
                                             {(file.size / (1024 * 1024)).toFixed(2)} MB
                                         </motion.p>
@@ -136,7 +136,7 @@ export const FileUpload = ({
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             layout
-                                            className="px-1 py-0.5 rounded-md bg-neutral-800 "
+                                            className="px-1 py-0.5 rounded-xl bg-neutral-800 "
                                         >
                                             {file.type}
                                         </motion.p>
@@ -162,7 +162,7 @@ export const FileUpload = ({
                                     damping: 20,
                                 }}
                                 className={cn(
-                                    "relative group-hover/file:shadow-2xl z-40 bg-neutral-900 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md",
+                                    "relative group-hover/file:shadow-2xl z-40 bg-neutral-900 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-xl",
                                     "shadow-[0px_10px_50px_rgba(0,0,0,0.1)]"
                                 )}
                             >
@@ -184,7 +184,7 @@ export const FileUpload = ({
                         {!files.length && (
                             <motion.div
                                 variants={secondaryVariant}
-                                className="absolute opacity-0 border border-dashed border-sky-400 inset-0 z-30 bg-transparent flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md"
+                                className="absolute opacity-0 border border-dashed border-sky-400 inset-0 z-30 bg-transparent flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-xl"
                             ></motion.div>
                         )}
                     </div>

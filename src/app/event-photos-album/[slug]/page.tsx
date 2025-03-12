@@ -34,14 +34,6 @@ export default function EventPhotosAlbumPage({
         }
     }, [loading, userId, router]);
 
-    if (loading) {
-        return (
-            <div className="h-screen w-full flex items-center justify-center">
-                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
-            </div>
-        )
-    }
-
     const { data: albumsData, error: albumsError } = useQuery(
         ['picture-albums', eventId],
         async () => {
@@ -109,6 +101,14 @@ export default function EventPhotosAlbumPage({
         setCurrentPage(page)
     }
 
+    if (loading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center">
+                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
+            </div>
+        )
+    }
+
     return (
         <>
             <div className="flex flex-col gap-8 items-center max-w-[1200px] w-full justify-self-center">
@@ -124,7 +124,7 @@ export default function EventPhotosAlbumPage({
                                             <Image
                                                 src={imageUrl.publicUrl || ""}
                                                 alt={`Image ${index}`}
-                                                className="max-w-[280px] aspect-square w-full border border-white/10 rounded-md"
+                                                className="max-w-[280px] aspect-square w-full border border-white/10 rounded-xl"
                                                 height={1920}
                                                 width={1080}
                                             />

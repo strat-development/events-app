@@ -223,11 +223,11 @@ export default function EventPhotosAlbumPage({
                                             className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
                                             {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
                                                 <div key={index}
-                                                    className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-2 outline-blue-500 rounded-md' : ''}`}>
+                                                    className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-2 outline-blue-500 rounded-xl' : ''}`}>
                                                     <Image
                                                         src={imageUrl.publicUrl ?? ''}
                                                         alt={`Image ${index}`}
-                                                        className="max-w-[280px] aspect-square w-full border border-white/10 rounded-md"
+                                                        className="max-w-[280px] aspect-square w-full border border-white/10 rounded-xl"
                                                         height={1920}
                                                         width={1080}
                                                     />

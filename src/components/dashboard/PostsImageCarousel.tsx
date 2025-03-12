@@ -44,7 +44,7 @@ export function PostsImageCarousel({ imageUrls, imageCount }: PostsImageCarousel
                 {Array.from({ length: imageCount }).map((_, index) => (
                     <CarouselItem key={index}>
                         <Card>
-                            <CardContent className="flex items-center aspect-video max-w-[1200px] w-full h-full overflow-hidden rounded-md">
+                            <CardContent className="flex items-center aspect-video max-w-[1200px] w-full h-full overflow-hidden rounded-xl">
                                 {failedImageIndexes.has(index) ? (
                                     <div className="flex items-center justify-center max-w-[1200px] w-full h-full bg-white/5 text-white/70">
                                         <span>Image failed to load</span>

@@ -74,14 +74,14 @@ export function HoverBorderGradient({
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
       className={cn(
-        "relative flex rounded-lg border content-center bg-black/20 hover:bg-black/10 transition duration-500 dark:bg-white/20 items-center flex-col flex-nowrap gap-10 h-min justify-center overflow-visible p-px decoration-clone w-fit",
+        "relative flex rounded-xl border content-center bg-[#131414]/20 hover:[#131414]/10 transition duration-500 items-center flex-col flex-nowrap gap-10 h-min justify-center overflow-visible p-px decoration-clone w-fit",
         containerClassName
       )}
       {...props}
     >
       <div
         className={cn(
-          "w-auto text-white z-10 bg-black px-4 py-1 rounded-lg",
+          "w-auto text-white z-10 bg-[#131414] px-4 py-1 rounded-xl",
           className
         )}
       >
@@ -89,7 +89,7 @@ export function HoverBorderGradient({
       </div>
       <motion.div
         className={cn(
-          "flex-none inset-0 overflow-hidden absolute z-0 rounded-lg"
+          "flex-none inset-0 overflow-hidden absolute z-0 rounded-xl"
         )}
         style={{
           filter: "blur(2px)",
@@ -103,7 +103,7 @@ export function HoverBorderGradient({
         }}
         transition={{ ease: "linear", duration: duration ?? 1 }}
       />
-      <div className="bg-black absolute z-1 flex-none inset-[2px] rounded-lg" />
+      <div className="bg-[#131414] absolute z-1 flex-none inset-[2px] rounded-xl" />
     </Tag>
   );
 }

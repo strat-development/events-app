@@ -76,7 +76,7 @@ export function AlbumsImageCarousel({ imageUrls, eventId, groupId, album, imageC
                                         </div>
                                     ) : (
                                         <Image
-                                            className="rounded-md"
+                                            className="rounded-xl"
                                             src={imageUrl}
                                             alt={`Image ${index}`}
                                             width={2000}

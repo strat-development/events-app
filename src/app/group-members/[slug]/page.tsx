@@ -141,8 +141,8 @@ export default function GroupMembersPage({
             <div className="flex flex-wrap gap-8 max-[640px]:justify-center">
                 {memoizedGroupMembersData.data?.map((member) => (
                     <div key={member.users?.id}
-                        className="flex flex-col gap-4 border border-white/10 p-4 rounded-md max-w-[196px] w-full">
-                        <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-square">
+                        className="flex flex-col gap-4 border border-white/10 p-4 rounded-xl max-w-[196px] w-full">
+                        <div className="flex flex-col items-center justify-center gap-4 border rounded-xl border-white/10 aspect-square">
                             {member.users?.id && memoizedProfileImages && memoizedProfileImages[member.users.id] ? (
                                 <Image
                                     src={memoizedProfileImages[member.users.id]}
@@ -150,10 +150,10 @@ export default function GroupMembersPage({
                                     width={2000}
                                     height={2000}
                                     objectFit="cover"
-                                    className='rounded-md'
+                                    className='rounded-xl'
                                 />
                             ) : (
-                                <div className="flex w-full h-full flex-col gap-2 items-center text-center justify-center rounded-md bg-white/5">
+                                <div className="flex w-full h-full flex-col gap-2 items-center text-center justify-center rounded-xl bg-white/5">
                                     <IconGhost2Filled className="w-16 h-16 text-white/70" strokeWidth={1} />
                                     <p className="text-white/50 text-sm">Profile picture not available</p>
                                 </div>

@@ -100,9 +100,9 @@ export const UserGroupsSection = () => {
         <div className="flex gap-8 max-w-[440px] w-full min-[1200px]:w-fit overflow-y-auto max-h-[416px]">
             {memoizedGroupsData?.map((group) => (
                 <Link key={group.id} href={`/group-page/${group.id}`}>
-                    <div key={group.id} className="border rounded-md border-white/10 w-full">
+                    <div key={group.id} className="border rounded-xl border-white/10 w-full">
                         <div className="flex w-full gap-4 p-4 h-[116px]">
-                            <div className="flex flex-col items-center justify-center gap-4 border rounded-md border-white/10 aspect-video w-[160px] h-fit">
+                            <div className="flex flex-col items-center justify-center gap-4 border rounded-xl border-white/10 aspect-video w-[160px] h-fit">
                                 {memoizedImageUrls.length > 0 && (
                                     memoizedImageUrls.map((url) => (
                                         <Image
@@ -112,11 +112,11 @@ export const UserGroupsSection = () => {
                                             width={2000}
                                             height={2000}
                                             objectFit="cover"
-                                            className="rounded-md aspect-video w-full h-full"
+                                            className="rounded-xl aspect-video w-full h-full"
                                         />
                                     ))
                                 ) || (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
                                             <p className="text-center font-medium">No image available 😔</p>
                                         </div>
                                     )}

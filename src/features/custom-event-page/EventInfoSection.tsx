@@ -203,7 +203,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                             {memoizedEventAttendeesData.data?.slice(0, 3).map((attendee) => (
                                 <Link href={`/user-profile/${attendee.users?.id}`} key={attendee.users?.id}>
                                     <div key={attendee.users?.id}
-                                        className='flex flex-col items-center border border-white/10 p-4 rounded-md text-center w-[144px] h-full'>
+                                        className='flex flex-col items-center border border-white/10 p-4 rounded-xl text-center w-[144px] h-full'>
                                         {attendee.users?.id && memoizedProfileImages[attendee.users.id] && (
                                             <Image className="rounded-full"
                                                 src={memoizedProfileImages[attendee.users?.id]} width={50} height={50} alt="" />
@@ -224,7 +224,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
 
                         {memoizedEventAttendeesData.data && memoizedEventAttendeesData.data.length > 3 && (
                             <Link href={`/event-attendees/${eventId}`}>
-                                <div className="flex flex-col relative gap-2 items-center border border-white/10 p-4 rounded-md text-center w-[144px] h-full">
+                                <div className="flex flex-col relative gap-2 items-center border border-white/10 p-4 rounded-xl text-center w-[144px] h-full">
                                     <Image className="rounded-full blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                                         src={memoizedProfileImages[attendeesId[0]]} width={50} height={50} alt="" />
                                     <span className='text-white/70 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full text-xl tracking-wider font-bold'>+{memoizedEventAttendeesData.data.length} more</span>

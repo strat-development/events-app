@@ -15,7 +15,7 @@ export const DeletedEventTemplate: React.FC<Readonly<DeletedEventTemplateProps>>
         <table width="100%" cellPadding="0" cellSpacing="0" style={{ margin: 0, padding: 0 }}>
             <tr>
                 <td align="center" style={{ padding: '20px' }}>
-                    <table width="600" cellPadding="0" cellSpacing="0" style={{ maxWidth: '100%', background: 'linear-gradient(135deg, #050505, #070707)', borderRadius: '16px', boxShadow: '0 24px 16px rgba(0, 0, 0, 0.7)' }}>
+                    <table width="600" cellPadding="0" cellSpacing="0" style={{ maxWidth: '100%', background: '#131414)', borderRadius: '16px', boxShadow: '0 24px 16px rgba(0, 0, 0, 0.7)' }}>
                         <tr>
                             <td align="center" style={{ padding: '24px' }}>
                                 <h1 style={{ color: 'rgba(255, 255, 255, 0.7)', letterSpacing: '.2rem', fontSize: '24px' }}>Hello, <span style={{ color: '#a78bfa', fontWeight: 'bold' }}>{fullName}</span>!</h1>

@@ -209,7 +209,7 @@ export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) =
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger className="w-full" asChild>
-                    <Button className="flex flex-col items-center justify-center w-full h-[280px] rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
+                    <Button className="flex flex-col items-center justify-center w-full h-[280px] rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
                         variant="ghost">
                         <div className="flex flex-col items-center">
                             <div className="text-6xl text-white/70">

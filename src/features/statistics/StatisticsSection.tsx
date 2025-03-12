@@ -160,7 +160,7 @@ export const StatisticsSection = () => {
 
                                     const data = payload[0].payload;
                                     return (
-                                        <div className="p-2 bg-current shadow-md border border-white/10 rounded-md text-sm">
+                                        <div className="p-2 bg-current shadow-md border border-white/10 rounded-xl text-sm">
                                             <p className="text-white font-semibold">{data.month}</p>
                                             {data.events.length ? (
                                                 <ul className="mt-1">

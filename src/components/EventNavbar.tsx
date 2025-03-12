@@ -180,7 +180,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
 
     return (
         <>
-            <div className="py-4 flex justify-center items-center w-full border-t-2 border-t-white/10 bg-gradient-to-br from-[#050505] to-[#070707]">
+            <div className="py-4 flex justify-center items-center w-full border-t-2 border-t-white/10 bg-gradient-to-br bg-[#131414]">
                 <div className="flex max-w-[1200px] w-full self-center justify-end min-[640px]:justify-between items-center">
                     {memoizedEventData?.map((event) => (
                         <>

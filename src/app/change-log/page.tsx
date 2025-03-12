@@ -22,7 +22,7 @@ export default async function ChangeLogPage() {
 
                     <div className="flex flex-col gap-4 min-[768px]:w-[70%]">
                         {post.logImage?.url && (
-                            <Image className="rounded-md"
+                            <Image className="rounded-xl"
                                 src={post.logImage?.url || ""} alt={post.logTitle || ""} width={2000} height={2000} />
                         ) || (
                                 <></>

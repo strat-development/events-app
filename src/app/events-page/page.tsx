@@ -155,8 +155,8 @@ export default function EventsPage() {
             <div className="max-w-[1200px] w-full justify-self-center pt-24 flex flex-col gap-4">
                 <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                     {currentItems.map((event) => (
-                        <div key={event.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">
-                            <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                        <div key={event.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
+                            <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
                                 {memoizedImageUrls[event.id] && (
                                     <Image
                                         src={memoizedImageUrls[event.id]}
@@ -166,7 +166,7 @@ export default function EventsPage() {
                                         objectFit="cover"
                                     />
                                 ) || (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
                                             <p className="text-center font-medium">No image available 😔</p>
                                         </div>
                                     )}
@@ -186,7 +186,7 @@ export default function EventsPage() {
                                         )}
                                     </div>
                                 </div>
-                                <Button className="rounded-md mt-2 w-fit text-sm"
+                                <Button className="rounded-xl mt-2 w-fit text-sm"
                                     onClick={() => router.push(`/event-page/${event?.id}`)}>View event</Button>
                             </div>
                         </div>

@@ -21,7 +21,8 @@ import { HoverBorderGradient } from '@/components/ui/hover-border-gradient';
 import { FileUpload } from '@/components/ui/file-upload';
 import { supabaseAdmin } from '@/lib/admin';
 import { GroupData } from '@/types/types';
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
+import * as DialogPrimitive from "@radix-ui/react-dialog"
 
 export const CreateGroupDialog = () => {
     const supabase = createClientComponentClient<Database>();
@@ -159,88 +160,66 @@ export const CreateGroupDialog = () => {
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
                     <Button
-                        className="flex flex-col items-center justify-center w-[280px] h-[384px] rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
+                        className="flex flex-col items-center justify-center w-[280px] h-[440px] rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
                         variant="ghost">
                         <div className="flex flex-col items-center">
                             <div className="text-6xl text-white/70">
                                 <Plus size={128} />
                             </div>
-                            <p className="text-xl tracking-wide text-white/50 font-medium">Create group</p>
+                            <p className="text-xl tracking-wide text-white/50 font-medium">Create new group</p>
                         </div>
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Create Group</DialogTitle>
-                        <DialogDescription>
-                            Fill in the details below to create a new group.
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="flex flex-col gap-4">
-                        {modalStepCount === 1 && (
-                            <>
+                <DialogContent className="flex w-full max-w-[100vw] h-screen rounded-none bg-transparent">
+                    <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start max-h-[80vh] overflow-y-auto justify-center w-full gap-16 mt-24">
+                        <DialogPrimitive.Close className="absolute top-0 right-0 min-[1200px]:right-24 rounded-xl opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                            <X className="h-4 w-4 text-white/70" />
+                            <span className="sr-only">Close</span>
+                        </DialogPrimitive.Close>
+                        <FileUpload className="max-[900px]:mt-96"
+                            onChange={(selectedFiles) => {
+                                setFiles(selectedFiles);
+                            }}
+                        />
+                        <div className="flex flex-col gap-4 max-w-[480px]">
+                            <Input
+                                className="placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
+                                placeholder="Group Name"
+                                value={groupName}
+                                onChange={(e) => setGroupName(e.target.value)}
+                            />
+                            <div className='flex max-[900px]:flex-col gap-4'>
                                 <Input
-                                    placeholder="Group Name"
-                                    value={groupName}
-                                    onChange={(e) => setGroupName(e.target.value)}
-                                />
-                                <Input
+                                    className="placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
                                     placeholder="Group City"
                                     value={groupCity}
                                     onChange={(e) => setGroupCity(e.target.value)}
                                 />
                                 <Input
+                                    className="placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
                                     placeholder="Group Country"
                                     value={groupCountry}
                                     onChange={(e) => setGroupCountry(e.target.value)}
                                 />
-                                <Button className='w-fit' onClick={() => setModalStepCount(2)}>Next step</Button>
-                            </>
-                        )}
-
-                        {modalStepCount === 2 && (
-                            <>
-                                <GroupTopicsModalStep />
-                                <div className="flex justify-between gap-4">
-                                    <Button className='w-fit' onClick={() => setModalStepCount(1)}>Previous step</Button>
-                                    <Button className='w-fit' onClick={() => setModalStepCount(3)}>Next step</Button>
-                                </div>
-                            </>
-                        )}
-
-                        {modalStepCount === 3 && (
-                            <>
-                                <GroupDescriptionModalStep />
-                                <div className="flex justify-between gap-4">
-                                    <Button className='w-fit' onClick={() => setModalStepCount(2)}>Previous step</Button>
-                                    <Button className='w-fit' onClick={() => setModalStepCount(4)}>Next step</Button>
-                                </div>
-                            </>
-                        )}
-                        {modalStepCount === 4 && (
-                            <>
-                                <FileUpload
-                                    onChange={(selectedFiles) => {
-                                        setFiles(selectedFiles);
-                                    }}
-                                />
-                                <div className="flex justify-between gap-4">
-                                    <Button className='w-fit' onClick={() => setModalStepCount(2)}>Previous step</Button>
-                                    {selectedInterests.length > 0 && editorContent.length > 0 && groupCity.length > 0 && groupCountry.length > 0 && groupName.length > 0 && files.length == 1 && (
-                                        <HoverBorderGradient
-                                            onClick={() => {
-                                                createGroupMutation.mutateAsync();
-                                            }}>
-                                            Create group
-                                        </HoverBorderGradient>
-                                    )}
-                                </div>
-                            </>
-                        )}
+                            </div>
+                            <GroupDescriptionModalStep />
+                            <GroupTopicsModalStep />
+                            <div className="flex justify-between gap-4">
+                                {groupName && editorContent && groupCity && groupCountry && selectedInterests.length > 0 && files.length > 0 && (
+                                    <HoverBorderGradient className="w-full"
+                                        onClick={() => {
+                                            createGroupMutation.mutateAsync();
+                                        }}
+                                    >
+                                        Create Group
+                                    </HoverBorderGradient>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </DialogContent>
             </Dialog>
         </>
     );
 };
+

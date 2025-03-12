@@ -93,11 +93,11 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
     const memoizedGroupImages = useMemo(() => imageUrls, [imageUrls])
 
     return (
-        <div className="w-full sticky top-24 flex flex-col gap-4 border border-white/10 p-4 rounded-md">
+        <div className="w-full sticky top-24 flex flex-col gap-4 border border-white/10 p-4 rounded-xl">
             <Link href={`/group-page/${groupId}`}>
                 <div className='flex gap-4 items-start w-full'>
                     {memoizedGroupImages?.map((image) => (
-                        <Image className="max-w-[72px] rounded-md"
+                        <Image className="max-w-[72px] rounded-xl"
                             key={image.publicUrl}
                             src={image.publicUrl}
                             alt=""

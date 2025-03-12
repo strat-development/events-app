@@ -162,7 +162,7 @@ export const EventCard = () => {
                             <div className="flex flex-col justify-self-center items-center w-full gap-8 mt-24">
                                 <h2 className="text-white/70 text-center text-2xl font-semibold tracking-wide">You have no upcoming events to attend.</h2>
                                 <Button
-                                    className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
+                                    className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
                                     onClick={() => router.push('/home')}
                                     variant="ghost">
                                     <div className="flex flex-col items-center gap-8">
@@ -177,18 +177,18 @@ export const EventCard = () => {
                         )}
 
                         {currentAttendingItems?.map((event) => (
-                            <div key={event.events?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">
-                                <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                            <div key={event.events?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
+                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
                                     {event.events?.id && memoizedImageUrls[event.events?.id] ? (
                                         <Image
                                             src={memoizedImageUrls[event.events?.id]}
                                             alt={event.events?.event_title || ""}
                                             width={200}
                                             height={200}
-                                            className="object-cover rounded-md w-full max-h-[240px]"
+                                            className="object-cover rounded-xl w-full max-h-[240px]"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-md">
+                                        <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-xl">
                                             <p className="text-center font-medium">No image available 😔</p>
                                         </div>
                                     )}
@@ -207,7 +207,7 @@ export const EventCard = () => {
                                             )}
                                         </div>
                                     </div>
-                                    <Button className="rounded-md mt-2 w-fit text-sm"
+                                    <Button className="rounded-xl mt-2 w-fit text-sm"
                                         onClick={() => router.push(`/event-page/${event.events?.id}`)}>View event</Button>
                                 </div>
                             </div>
@@ -222,19 +222,19 @@ export const EventCard = () => {
                         <CreateEventDialog ownerId={ownerId} />
 
                         {currentHostItems?.map((event) => (
-                            <div key={event.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-md border-white/10 p-4">
+                            <div key={event.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
 
-                                <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
                                     {event.id && imageUrls[event.id] ? (
                                         <Image
                                             src={imageUrls[event.id]}
                                             alt={event.event_title || ""}
                                             width={200}
                                             height={200}
-                                            className="object-cover rounded-md w-full max-h-[240px]"
+                                            className="object-cover rounded-xl w-full max-h-[240px]"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
                                             <p className="text-center font-medium">No image available 😔</p>
                                         </div>
                                     )}
@@ -255,7 +255,7 @@ export const EventCard = () => {
                                     </div>
                                     <div className="flex justify-between items-center gap-4 mt-2">
                                         <div className="flex gap-4">
-                                            <Button className="rounded-md w-fit text-sm text-white/70" 
+                                            <Button className="rounded-xl w-fit text-sm text-white/70" 
                                                 variant={"outline"}
                                                 onClick={() => router.push(`/dashboard/event-page/${event.id}`)}>View event</Button>
                                             <EditEventDialog eventId={event.id} />

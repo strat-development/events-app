@@ -18,7 +18,7 @@ import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { ShareDialog } from "../qr-code-generator/ShareDialog"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useViewContext } from "@/providers/pageViewProvider"
 
 interface GroupHeroProps {
@@ -43,6 +43,8 @@ export const GroupHero = ({
     const [groupMembersData, setGroupMembersData] = useState<GroupMembersData[]>()
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
     const { setView } = useViewContext()
+    const isGroupAlbum = pathname.includes("group-photos-album")
+    const router = useRouter()
 
     useQuery(['groups'], async () => {
         const { data, error } = await supabase
@@ -246,7 +248,7 @@ export const GroupHero = ({
                         <div className="flex gap-4 max-w-[600px] w-full">
                             <div className="flex flex-col gap-4">
                                 {memoizedImageUrls.map((image) => (
-                                    <Image className="min-[768px]:aspect-video rounded-md object-contain border border-white/10"
+                                    <Image className="min-[768px]:aspect-video rounded-xl object-contain border border-white/10"
                                         key={image.publicUrl}
                                         src={image.publicUrl}
                                         alt=""
@@ -360,21 +362,43 @@ export const GroupHero = ({
 
                 <div className="py-4 sticky top-24 flex justify-between max-w-[1200px] w-full justify-self-center">
                     <div className="flex gap-4">
-                        <Button variant="ghost"
-                            className="text-white/70"
-                            onClick={() => setView("about")}>
-                            About
-                        </Button>
-                        <Button variant="ghost"
-                            className="text-white/70"
-                            onClick={() => setView("photos")}>
-                            Photos
-                        </Button>
-                        <Button variant="ghost"
-                            className="text-white/70"
-                            onClick={() => setView("posts")}>
-                            Posts
-                        </Button>
+                        {isGroupAlbum && (
+                            <>
+                                <Button variant="ghost"
+                                    className="text-white/70"
+                                    onClick={() => router.push(`/group-page/${groupId}`)}>
+                                    About
+                                </Button>
+                                <Button variant="ghost"
+                                    className="text-white/70"
+                                    onClick={() => router.push(`/group-page/${groupId}`)}>
+                                    Photos
+                                </Button>
+                                <Button variant="ghost"
+                                    className="text-white/70"
+                                    onClick={() => router.push(`/group-page/${groupId}`)}>
+                                    Posts
+                                </Button>
+                            </>
+                        ) || (
+                                <>
+                                    <Button variant="ghost"
+                                        className="text-white/70"
+                                        onClick={() => setView("about")}>
+                                        About
+                                    </Button>
+                                    <Button variant="ghost"
+                                        className="text-white/70"
+                                        onClick={() => setView("photos")}>
+                                        Photos
+                                    </Button>
+                                    <Button variant="ghost"
+                                        className="text-white/70"
+                                        onClick={() => setView("posts")}>
+                                        Posts
+                                    </Button>
+                                </>
+                            )}
                     </div>
 
                     {userId && (

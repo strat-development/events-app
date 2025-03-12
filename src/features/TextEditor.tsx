@@ -36,7 +36,7 @@ export const TextEditor = ({
     content: editorContent,
     editorProps: {
       attributes: {
-        class: 'rounded-md border min-h-[200px] p-2'
+        class: 'rounded-xl border min-h-[200px] p-2'
       }
     },
     onUpdate: ({ editor }) => {

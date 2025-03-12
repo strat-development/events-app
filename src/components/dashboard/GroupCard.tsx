@@ -159,7 +159,7 @@ export const GroupCard = () => {
                             <div className="flex flex-col justify-self-center w-full items-center gap-8 mt-24">
                                 <h2 className="text-white/70 text-center text-2xl font-semibold tracking-wide">You are not a member of any group </h2>
                                 <Button
-                                    className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-md bg-transparent hover:bg-white/5 transition-all duration-300"
+                                    className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
                                     onClick={() => router.push('/home')}
                                     variant="ghost">
                                     <div className="flex flex-col items-center gap-8">
@@ -174,18 +174,18 @@ export const GroupCard = () => {
                         )}
 
                         {currentAttendingItems?.map((group) => (
-                            <div key={group.groups?.id} className="flex flex-col gap-2 w-[280px] h-[384px] border rounded-md border-white/10 p-4">
-                                <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                            <div key={group.groups?.id} className="flex flex-col gap-2 w-[280px] h-[384px] border rounded-xl border-white/10 p-4">
+                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
                                     {group.groups?.id && memoizedImageUrls[group.groups?.id] ? (
                                         <Image
                                             src={memoizedImageUrls[group.groups?.id]}
                                             alt={group.groups?.group_name || ""}
                                             width={200}
                                             height={200}
-                                            className="object-cover rounded-md w-full max-h-[240px]"
+                                            className="object-cover rounded-xl w-full max-h-[240px]"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
                                             <p className="text-center font-medium">No image available 😔</p>
                                         </div>
                                     )}
@@ -197,7 +197,7 @@ export const GroupCard = () => {
                                         <p className="text-sm text-white/60">{group.groups?.group_city}, {group.groups?.group_country}</p>
 
                                     </div>
-                                    <Button className="rounded-md mt-2 w-fit text-sm"
+                                    <Button className="rounded-xl mt-2 w-fit text-sm"
                                         onClick={() => router.push(`/group-page/${group.groups?.id}`)}>View group</Button>
                                 </div>
                             </div>
@@ -212,18 +212,18 @@ export const GroupCard = () => {
                         <CreateGroupDialog />
 
                         {currentHostItems?.map((group) => (
-                            <div key={group.id} className="flex flex-col gap-2 w-[280px] h-[384px] border rounded-md border-white/10 p-4">
-                                <div className="flex items-center justify-center border rounded-md border-white/10 w-full aspect-square">
+                            <div key={group.id} className="flex flex-col gap-2 w-[280px] h-[384px] border rounded-xl border-white/10 p-4">
+                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
                                     {group.id && imageUrls[group.id] ? (
                                         <Image
                                             src={imageUrls[group.id]}
                                             alt={group.group_name || ""}
                                             width={200}
                                             height={200}
-                                            className="object-cover rounded-md w-full max-h-[240px]"
+                                            className="object-cover rounded-xl w-full max-h-[240px]"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-md">
+                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
                                             <p className="text-center font-medium">No image available 😔</p>
                                         </div>
                                     )}
@@ -235,7 +235,7 @@ export const GroupCard = () => {
                                     </div>
                                     <div className="flex justify-between gap-4 items-center w-full">
                                         <div className="flex items-center gap-2">
-                                            <Button className="rounded-md mt-2 w-fit text-sm"
+                                            <Button className="rounded-xl mt-2 w-fit text-sm"
                                                 onClick={() => router.push(`/dashboard/group-page/${group.id}`)}>View group</Button>
                                             <EditGroupDialog groupId={group.id} />
                                         </div>
