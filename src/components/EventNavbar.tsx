@@ -180,12 +180,12 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
 
     return (
         <>
-            <div className="py-4 flex justify-center items-center w-full border-t-2 border-t-white/10 bg-gradient-to-br bg-[#131414]">
+            <div className="py-4 flex justify-center items-center w-full border-t-2 border-t-white/10 bg-[#131414]">
                 <div className="flex max-w-[1200px] w-full self-center justify-end min-[640px]:justify-between items-center">
                     {memoizedEventData?.map((event) => (
                         <>
                             <div className="flex flex-col max-[640px]:hidden">
-                                <p className="text-lg font-medium text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                <p className="text-lg font-medium text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')} - {format(parseISO(event.ends_at as string), 'HH:mm')}</p>
                                 <p className="text-white/50">{event.event_address}</p>
                             </div>
                             <div className="flex gap-4">

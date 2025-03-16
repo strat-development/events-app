@@ -1,9 +1,12 @@
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { Database } from "@/types/supabase";
+import { GroupData } from "@/types/types";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
+import { GroupSidebar } from "@/components/GroupSidebar";
 
 interface UserGroupsSectionProps {
     userId: string;
@@ -14,6 +17,9 @@ export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
     const [ownedGroups, setOwnedGroups] = useState<any[]>([]);
     const [memberGroups, setMemberGroups] = useState<any[]>([]);
     const [imageUrls, setImageUrls] = useState<{ [groupId: string]: string }>({});
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState<GroupData | null>(null);
+    const [selectedGroupImageUrl, setSelectedGroupImageUrl] = useState<string | null>(null);
 
     const fetchOwnedGroups = useQuery(
         'ownedGroups',
@@ -124,15 +130,21 @@ export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
 
     return (
-        <div className="flex flex-col gap-4 w-full">
+        <>
             <div className="flex flex-col gap-4 w-full">
-                {memoizedOwnedGroups.length > 0 && (
-                    <h2 className='text-xl tracking-wider font-semibold w-fit'>Owned Groups</h2>
-                )}
-                <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
-                    {memoizedOwnedGroups?.map((group) => (
-                        <Link key={group.id} href={`/group-page/${group.id}`}>
-                            <div key={group.id} className="border rounded-xl border-white/10 min-[1200px]:w-fit">
+                <div className="flex flex-col gap-4 w-full">
+                    {memoizedOwnedGroups.length > 0 && (
+                        <h2 className='text-xl tracking-wider font-semibold w-fit'>Owned Groups</h2>
+                    )}
+                    <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-auto min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
+                        {memoizedOwnedGroups?.map((group) => (
+                            <div onClick={() => {
+                                setIsSidebarOpen(true);
+                                setSelectedGroup(group);
+                                setSelectedGroupImageUrl(memoizedImageUrls[group.id]);
+                            }}
+                                key={group.id}
+                                className="border cursor-pointer rounded-xl border-white/10 min-[1200px]:w-fit">
                                 <div className="flex w-full gap-4 p-4 h-[124px]">
                                     <div className="flex flex-col items-center aspect-square justify-center gap-4 border rounded-xl border-white/10">
                                         {memoizedImageUrls[group.id] ? (
@@ -155,19 +167,22 @@ export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
                                     </div>
                                 </div>
                             </div>
-                        </Link>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
 
-            <div className="flex flex-col gap-4 w-full">
-                {memoizedMemberGroups.length > 0 && (
-                    <h2 className='text-xl tracking-wider font-semibold w-fit'>Member Groups</h2>
-                )}
-                <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-scroll min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
-                    {memoizedMemberGroups?.map((group) => (
-                        <Link key={group.id} href={`/group-page/${group.id}`}>
-                            <div key={group.id} className="border rounded-xl border-white/10 min-[1200px]:w-fit">
+                <div className="flex flex-col gap-4 w-full">
+                    {memoizedMemberGroups.length > 0 && (
+                        <h2 className='text-xl tracking-wider font-semibold w-fit'>Member Groups</h2>
+                    )}
+                    <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-auto min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
+                        {memoizedMemberGroups?.map((group) => (
+                            <div onClick={() => {
+                                setIsSidebarOpen(true);
+                                setSelectedGroup(group);
+                                setSelectedGroupImageUrl(memoizedImageUrls[group.id]);
+                            }}
+                                key={group.id} className="border cursor-pointer rounded-xl border-white/10 min-[1200px]:w-fit">
                                 <div className="flex w-full gap-4 p-4 h-[124px]">
                                     <div className="flex flex-col aspect-square items-center justify-center gap-4 border rounded-xl border-white/10">
                                         {memoizedImageUrls[group.id] ? (
@@ -190,10 +205,17 @@ export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
                                     </div>
                                 </div>
                             </div>
-                        </Link>
-                    ))}
+                        ))}
                 </div>
             </div>
-        </div>
+        </div >
+
+            <SidebarProvider>
+                {isSidebarOpen && <GroupSidebar imageUrl={selectedGroupImageUrl}
+                    selectedGroup={selectedGroup}
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)} />}
+            </SidebarProvider>
+        </>
     );
 };

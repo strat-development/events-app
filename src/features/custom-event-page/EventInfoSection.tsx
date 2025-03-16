@@ -3,18 +3,21 @@
 import { Button } from "@/components/ui/button"
 import { Database } from "@/types/supabase"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { TextEditor } from "../TextEditor"
 import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
-import Link from "next/link"
 import Image from "next/image"
 import { IconGhost2Filled } from "@tabler/icons-react"
 import { usePathname } from "next/navigation"
 import { Edit, Save, X } from "lucide-react"
+import { EventAttendeesDialog } from "@/components/dashboard/modals/events/EventAttendeesDialog"
+import { UserProfileSidebar } from "../../components/UserProfileSidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { EventData, UserData } from "@/types/types"
 
 interface EventInfoSectionProps {
     eventId: string
@@ -32,11 +35,17 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const { userId } = useUserContext()
     const { eventCreatorId } = useGroupOwnerContext()
     const pathname = usePathname()
+    const [isOpen, setIsOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+    const [selectedUserImageUrl, setSelectedUserImageUrl] = useState<string | null>(null);
+    const [attendeesData, setAttendeesData] = useState<UserData[]>([]);
+    const [eventData, setEventData] = useState<EventData | null>(null);
 
     useQuery(['events-description'], async () => {
         const { data, error } = await supabase
             .from("events")
-            .select("event_description, event_group, created_by")
+            .select("*")
             .eq("id", eventId)
 
         if (error) {
@@ -46,6 +55,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
         if (data) {
             setEventDescription(data[0].event_description as string)
             setEventHostId(data[0].created_by as string)
+            setEventData(data[0])
         }
     },
         {
@@ -69,7 +79,8 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
             }
 
             if (data) {
-                setAttendeesId(data.map((attendee) => attendee.users?.id as string))
+                setAttendeesId(data.map((attendee) => attendee?.users?.id as string))
+                setAttendeesData(data.map(attendee => attendee.users) as UserData[])
             }
 
 
@@ -140,7 +151,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
         cacheTime: 10 * 60 * 1000,
     });
 
-    const memoizedEventAttendeesData = useMemo(() => eventAttendees, [eventAttendees])
+    const memoizedEventAttendeesData = useMemo(() => attendeesData, [attendeesData])
     const memoizedProfileImages = useMemo(() => profileImageUrls, [profileImageUrls])
 
     return (
@@ -189,8 +200,8 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                     {pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !isSetToEdit &&
                         <div className="flex gap-4">
                             <Button variant="ghost"
-                                className="w-fit text-white/70" 
-                            onClick={() => setIsSetToEdit(true)}>
+                                className="w-fit text-white/70"
+                                onClick={() => setIsSetToEdit(true)}>
                                 <Edit size={20} />
                             </Button>
                         </div>
@@ -200,41 +211,52 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                     <h2 className='text-2xl font-bold tracking-wider'>Event attendees</h2>
                     <div className="flex gap-4 w-full overflow-x-auto">
                         <div className='flex gap-4'>
-                            {memoizedEventAttendeesData.data?.slice(0, 3).map((attendee) => (
-                                <Link href={`/user-profile/${attendee.users?.id}`} key={attendee.users?.id}>
-                                    <div key={attendee.users?.id}
+                            {memoizedEventAttendeesData?.slice(0, 3).map((attendee) => (
+                                <div className="cursor-pointer"
+                                    onClick={() => {
+                                        setIsSidebarOpen(true)
+                                        setIsOpen(true)
+                                        setSelectedUser(attendee as UserData)
+                                        setSelectedUserImageUrl(attendee ? memoizedProfileImages[attendee.id] : null)
+                                    }}
+                                    key={attendee?.id}>
+                                    <div key={attendee?.id}
                                         className='flex flex-col items-center border border-white/10 p-4 rounded-xl text-center w-[144px] h-full'>
-                                        {attendee.users?.id && memoizedProfileImages[attendee.users.id] && (
+                                        {attendee?.id && memoizedProfileImages[attendee.id] && (
                                             <Image className="rounded-full"
-                                                src={memoizedProfileImages[attendee.users?.id]} width={50} height={50} alt="" />
+                                                src={memoizedProfileImages[attendee?.id]} width={50} height={50} alt="" />
                                         ) || (
                                                 <div className="flex h-[50px] w-[50px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
                                                     <IconGhost2Filled className="w-6 h-6 text-white/70"
                                                         strokeWidth={1} />
                                                 </div>
                                             )}
-                                        <span className='font-medium w-full'>{attendee.users?.full_name}</span>
-                                        {attendee.users?.id === eventHostId && (
+                                        <span className='font-medium w-full'>{attendee?.full_name}</span>
+                                        {attendee?.id === eventHostId && (
                                             <span className='text-sm text-red-500'>Host</span>
                                         )}
                                     </div>
-                                </Link>
+                                </div>
                             ))}
                         </div>
 
-                        {memoizedEventAttendeesData.data && memoizedEventAttendeesData.data.length > 3 && (
-                            <Link href={`/event-attendees/${eventId}`}>
-                                <div className="flex flex-col relative gap-2 items-center border border-white/10 p-4 rounded-xl text-center w-[144px] h-full">
-                                    <Image className="rounded-full blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-                                        src={memoizedProfileImages[attendeesId[0]]} width={50} height={50} alt="" />
-                                    <span className='text-white/70 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full text-xl tracking-wider font-bold'>+{memoizedEventAttendeesData.data.length} more</span>
-                                </div>
-                            </Link>
+                        {memoizedEventAttendeesData && memoizedEventAttendeesData.length > 3 && (
+                            <EventAttendeesDialog attendeesData={memoizedEventAttendeesData}
+                                eventData={eventData}
+                                imageUrls={memoizedProfileImages} />
                         )}
                     </div>
                 </div>
             </div>
 
+            <SidebarProvider>
+                {isSidebarOpen && (
+                    <UserProfileSidebar isOpen={isOpen}
+                        onClose={() => setIsSidebarOpen(false)}
+                        selectedUser={selectedUser}
+                        imageUrl={selectedUserImageUrl} />
+                )}
+            </SidebarProvider>
             <Toaster />
         </>
     )

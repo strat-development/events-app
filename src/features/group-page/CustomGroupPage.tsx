@@ -20,7 +20,7 @@ export const CustomGroupPage = ({
             <div className="flex flex-col mt-24 max-w-[1200px] w-full justify-self-center">
                 <GroupHero groupId={groupId} />
                 <div className="flex flex-wrap w-full justify-between gap-8 relative">
-                    <div className="flex flex-col w-[70%]">
+                    <div className="flex w-full flex-col min-[1140px]:w-[70%]">
                         {view === "about" && (
                             <GroupInfoSection groupId={groupId} />
                         ) || view === "photos" && (

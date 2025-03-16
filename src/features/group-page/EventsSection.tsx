@@ -1,13 +1,13 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { EventSidebar } from "@/components/EventSidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
 import { Database } from "@/types/supabase"
 import { EventData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { format, parseISO } from "date-fns"
 import { Ticket } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { useQuery } from "react-query"
@@ -23,6 +23,9 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
     const [imageUrls, setImageUrls] = useState<{ [eventId: string]: string }>({});
     const router = useRouter();
     const pathname = usePathname();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
+    const [selectedEventImageUrl, setSelectedEventImageUrl] = useState<string | null>(null);
 
     const events = useQuery(['upcoming-events'], async () => {
         const { data, error } = await supabase
@@ -99,7 +102,13 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
                 <div className='flex flex-col gap-4 mt-8 w-full'>
                     <h2 className='text-2xl tracking-wider font-bold'>Upcoming events</h2>
                     {memoizedEvents?.map((event: EventData) => (
-                        <div key={event.id} className="flex flex-col w-full gap-8">
+                        <div onClick={() => {
+                            setIsSidebarOpen(true);
+                            setSelectedEvent(event);
+                            setSelectedEventImageUrl(memoizedImageUrls[event.id]);
+                        }}
+                            key={event.id}
+                            className="flex flex-col cursor-pointer w-full gap-8">
                             <div className="flex flex-col gap-2">
                                 <h2 className="text-xl font-semibold text-white/70 tracking-wider">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd')}</h2>
                                 <hr />
@@ -121,38 +130,34 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
                                         )}
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <h1 className="text-2xl font-bold tracking-wider line-clamp-2">{event.event_title}</h1>
+                                    <h1 className="text-2xl font-bold tracking-wider line-clamp-2 text-white/70">{event.event_title}</h1>
                                     <div className="flex flex-col gap-1">
-                                        <p className="text-lg text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                        <div className="flex gap-1">
+                                            <p className="text-lg text-white/50 font-medium">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')} - {format(parseISO(event.ends_at as string), 'HH:mm')}</p>
+                                        </div>
+
                                         <p className="text-white/60">{event.event_address}</p>
-                                        <div className="flex gap-2 mt-1">
-                                            <Ticket className="h-6 w-6" />
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <Ticket size={20} />
                                             {event?.ticket_price !== null && event.ticket_price > 10000 ? (
-                                                <p className="text-sm text-white/60">FREE</p>
+                                                <p className="text-sm text-white/60 font-bold">FREE</p>
                                             ) : (
                                                 <p className="text-sm text-white/60">{event?.ticket_price}$</p>
                                             )}
                                         </div>
                                     </div>
-                                    {pathname.includes("dashboard") && (
-                                        <div className="flex gap-4">
-                                            <Button onClick={() => router.push(`/dashboard/event-page/${event.id}`)}>
-                                                View event
-                                            </Button>
-                                        </div>
-                                    ) || (
-                                            <div className="flex gap-4">
-                                                <Button onClick={() => router.push(`/event-page/${event.id}`)}>
-                                                    View event
-                                                </Button>
-                                            </div>
-                                        )}
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
             )}
+            <SidebarProvider>
+                {isSidebarOpen && <EventSidebar imageUrl={selectedEventImageUrl}
+                    selectedEvent={selectedEvent}
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)} />}
+            </SidebarProvider>
         </>
     )
 }

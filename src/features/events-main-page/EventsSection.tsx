@@ -14,9 +14,10 @@ import { UserGroupsSection } from "./UserGroupsSection";
 import { CalendarDialog } from "@/components/CalendarDialog";
 import { Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
 import { GroupPostsSection } from "../group-page/GroupPostsSection";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { EventSidebar } from "@/components/EventSidebar";
 
 
 export const EventsSection = () => {
@@ -28,10 +29,12 @@ export const EventsSection = () => {
     const eventIds = Object.values(events).flat().map((event) => event.id);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
-    const router = useRouter();
     const [view, setView] = useState<"events" | "groups">("events");
     const [groupId, setGroupId] = useState<string[]>([]);
-    
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
+    const [selectedEventImageUrl, setSelectedEventImageUrl] = useState<string | null>(null);
+
     const getGroupId = useQuery(
         'group-id',
         async () => {
@@ -130,6 +133,7 @@ export const EventsSection = () => {
             if (error) {
                 throw error;
             }
+
             return data || [];
         },
         {
@@ -201,7 +205,13 @@ export const EventsSection = () => {
                     </div>
                     {view === "events" && (
                         currentItems.map((event: EventData) => (
-                            <div key={event.id} className="flex flex-col w-full gap-8">
+                            <div onClick={() => {
+                                setIsSidebarOpen(true);
+                                setSelectedEvent(event);
+                                setSelectedEventImageUrl(memoizedImageUrls[event.id]);
+                            }}
+                                key={event.id}
+                                className="flex flex-col cursor-pointer w-full gap-8">
                                 <div className="flex flex-col gap-2">
                                     <h2 className="text-xl font-semibold text-white/70 tracking-wider">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd')}</h2>
                                     <hr />
@@ -236,8 +246,6 @@ export const EventsSection = () => {
                                                     )}
                                             </div>
                                         </div>
-                                        <Button className="rounded-xl mt-2 w-fit"
-                                            onClick={() => router.push(`/event-page/${event.id}`)}>View event</Button>
                                     </div>
                                 </div>
                             </div>
@@ -276,6 +284,13 @@ export const EventsSection = () => {
                     )}
                 </div>
             </div>
+            
+            <SidebarProvider>
+                {isSidebarOpen && <EventSidebar imageUrl={selectedEventImageUrl}
+                    selectedEvent={selectedEvent}
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)} />}
+            </SidebarProvider>
         </>
     );
 };

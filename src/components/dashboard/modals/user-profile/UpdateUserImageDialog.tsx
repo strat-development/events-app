@@ -64,8 +64,7 @@ export const UpdateUserImageDialog = () => {
 
             setIsOpen(false);
         }
-    },
-    );
+    });
 
     const uploadFiles = async (files: File[]) => {
         const uploadPromises = files.map((file) => {
@@ -135,16 +134,17 @@ export const UpdateUserImageDialog = () => {
                         <ImageUp size={20} />
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[425px]">
+                <DialogContent className="max-w-[425px] justify-center bg-transparent border-none">
                     <FileUpload
                         onChange={(selectedFiles) => {
                             setFiles(selectedFiles);
                         }}
                     />
-
                     <DialogFooter>
-                        <HoverBorderGradient onClick={() => {
-                            if (files.length > 0) {
+                        {files.length > 0 &&
+                            <HoverBorderGradient className="w-full" 
+                            onClick={() => {
+
                                 uploadFiles(files)
                                     .then((paths) => {
                                         return addProfilePicture.mutateAsync(paths), {
@@ -168,15 +168,8 @@ export const UpdateUserImageDialog = () => {
                                         }
                                     })
                                     .catch((error) => console.error('Error uploading files:', error));
-                            } else {
-                                toast({
-                                    title: "Error",
-                                    description: "No image selected",
-                                    variant: "destructive",
-                                });
-                            }
+                            }}>Update image</HoverBorderGradient>
                         }
-                        }>Update image</HoverBorderGradient>
                     </DialogFooter>
                 </DialogContent>
             </Dialog >

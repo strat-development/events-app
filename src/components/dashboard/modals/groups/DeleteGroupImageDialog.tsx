@@ -68,7 +68,7 @@ export const DeleteGroupPictureDialog = ({ images }: DeleteGroupPictureDialogPro
                         <span className="text-white">Delete image</span><Trash size={20} /> 
                         </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[240px]">
+                <DialogContent className="max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Delete picture</DialogTitle>
                         <DialogDescription className="text-white/70">

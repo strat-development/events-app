@@ -14,7 +14,7 @@ export async function POST(request: Request) {
         const result = await resend.emails.send({
             from: 'huddle@huddle.net.pl',
             to: email,
-            subject: 'Event Edited',
+            subject: `${groupName} Event Attending`,
             react: AttendingEventTemplate({
                 fullName: userFullName,
                 group_name: groupName,

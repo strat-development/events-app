@@ -14,6 +14,8 @@ import { Database } from "@/types/supabase";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { Input } from "@/components/ui/input";
+import { Plus, X } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 export const CreatePostDialog = () => {
     const { userId } = useUserContext();
@@ -131,7 +133,6 @@ export const CreatePostDialog = () => {
         }
     };
 
-
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -142,47 +143,48 @@ export const CreatePostDialog = () => {
                         Create Post
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[425px] pt-12 overflow-x-hidden">
-                    <div className="flex flex-col gap-4">
-                        {modalStepCount === 1 && (
-                            <div className="flex flex-col gap-4 items-center justify-center">
-                                <Input onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="Title" />
-                                <TextEditor
-                                    {...{
-                                        editorContent: editorContent,
-                                        onChange: setEditorContent,
-                                    }}
-                                />
-                                <Button className="w-full" onClick={() => setModalStepCount(2)}>
-                                    Next step
-                                </Button>
+                <DialogContent className="flex w-full max-w-[100vw] h-screen rounded-none bg-transparent">
+                    <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start max-h-[80vh] overflow-y-auto justify-center w-full gap-16 mt-24">
+                        <FileUpload className="max-[900px]:mt-48"
+                            onChange={(selectedFiles) => {
+                                setFiles(selectedFiles);
+                            }}
+                        />
+                        <div className="flex flex-col gap-4 max-w-[480px]">
+                            <Input
+                                className="placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
+                                placeholder="Post Title"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                            />
+                            <TextEditor
+                                {...{
+                                    editorContent: editorContent,
+                                    onChange: setEditorContent,
+                                }}
+                            />
+                            <div className="flex justify-between gap-4">
+                                {title && editorContent && (
+                                    <HoverBorderGradient className="w-full"
+                                        onClick={() => {
+                                            if (!title || !editorContent) {
+                                                toast({
+                                                    variant: "destructive",
+                                                    title: "Invalid Fields",
+                                                    description: "Please fill all the required fields.",
+                                                });
+                                                return;
+                                            } else {
+                                                createPost.mutate();
+                                            }
+                                        }}
+                                    >
+                                        Create Post
+                                    </HoverBorderGradient>
+                                )}
                             </div>
-                        )}
-
-                        {modalStepCount === 2 && (
-                            <div className="flex flex-col gap-4 items-center justify-center">
-                                <FileUpload
-                                    className="max-h-[350px] overflow-y-auto overflow-x-hidden"
-                                    onChange={(selectedFiles) => {
-                                        setFiles(selectedFiles);
-                                    }}
-                                />
-
-                                <Button className="w-full" onClick={() => setModalStepCount(1)}>
-                                    Previous step
-                                </Button>
-                            </div>
-                        )}
+                        </div>
                     </div>
-
-                    <DialogFooter>
-                        {editorContent.length > 0 && (
-                            <HoverBorderGradient onClick={() => createPost.mutate()}>
-                                Create Post
-                            </HoverBorderGradient>
-                        )}
-                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 

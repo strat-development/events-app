@@ -1,9 +1,12 @@
+import { GroupMembersDialog } from "@/components/dashboard/modals/groups/GroupMembersDialog"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { UserProfileSidebar } from "@/components/UserProfileSidebar"
 import { Database } from "@/types/supabase"
+import { GroupData, UserData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { IconGhost2Filled } from "@tabler/icons-react"
 import Image from "next/image"
-import Link from "next/link"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { useQuery } from "react-query"
 
 interface GroupMembersSidebarProps {
@@ -14,6 +17,12 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
     const supabase = createClientComponentClient<Database>()
     const [membersId, setMembersId] = useState<string[]>([])
     const [profileImageUrls, setProfileImageUrls] = useState<Record<string, string>>({})
+    const [isOpen, setIsOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+    const [selectedUserImageUrl, setSelectedUserImageUrl] = useState<string | null>(null);
+    const [groupData, setGroupData] = useState<GroupData | null>(null);
+    const [membersData, setMembersData] = useState<UserData[]>([]);
 
     const groupMembers = useQuery(
         ['group-members-data'],
@@ -30,13 +39,39 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
 
             if (data) {
                 setMembersId(data.map((member) => member.users?.id as string))
+                setMembersData(data.map((member) => member.users as UserData))
             }
+
             return data
         },
         {
             enabled: !!groupId,
             cacheTime: 10 * 60 * 1000,
         })
+
+    const fetchGroupData = useQuery(
+        ['group-data'],
+        async () => {
+            const { data, error } = await supabase
+                .from("groups")
+                .select(`*`)
+                .eq("id", groupId)
+
+            if (error) {
+                throw new Error(error.message)
+            }
+
+            if (data) {
+                setGroupData(data[0])
+            }
+
+            return data
+        },
+        {
+            enabled: !!groupId,
+            cacheTime: 10 * 60 * 1000,
+        })
+
 
     const { data: profileImages } = useQuery(
         ['profile-pictures', membersId],
@@ -70,7 +105,7 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
         }
     )
 
-    const memoizedGroupMembers = useMemo(() => groupMembers.data, [groupMembers.data])
+    const memoizedGroupMembers = useMemo(() => membersData, [membersData])
     const memoizedProfileImages = useMemo(() => profileImageUrls, [profileImageUrls])
 
     return (
@@ -78,39 +113,50 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
             <div className="flex flex-col gap-4 sticky top-24">
                 <h2 className='text-2xl tracking-wider font-bold'>Group members</h2>
                 <div className="flex items-start gap-4">
-                    <div className='flex flex-wrap gap-4'>
-                        {memoizedGroupMembers?.slice(0, 11).map((member) => (
-                            <Link href={`/user-profile/${member.users?.id}`} key={member.users?.id}>
-                                <div className='flex flex-col items-center border border-white/10 p-4 rounded-xl text-center w-[144px] h-full'>
-                                    {member.users?.id && memoizedProfileImages[member.users.id] ? (
-                                        <Image
-                                            className="rounded-full"
-                                            src={memoizedProfileImages[member.users.id]}
-                                            width={50}
-                                            height={50}
-                                            alt="Profile image"
-                                        />
-                                    ) : (
-                                        <div className="flex h-[50px] w-[50px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
-                                            <IconGhost2Filled className="w-6 h-6 text-white/70" strokeWidth={1} />
-                                        </div>
-                                    )}
-                                    <span className='font-medium w-full text-white/70 truncate'>{member.users?.full_name}</span>
-                                </div>
-                            </Link>
+                    <div className='flex gap-4'>
+                        {memoizedGroupMembers.slice(0, 4).map((member) => (
+                            <div className='flex flex-col cursor-pointer items-center border border-white/10 p-4 rounded-xl text-center w-[144px] h-full'
+                                onClick={() => {
+                                    setIsSidebarOpen(true);
+                                    setIsOpen(true);
+                                    setSelectedUser(member as UserData);
+                                    setSelectedUserImageUrl(member ? memoizedProfileImages[member.id] : null);
+                                }}>
+                                {member?.id && memoizedProfileImages[member.id] ? (
+                                    <Image
+                                        className="rounded-full"
+                                        src={memoizedProfileImages[member.id]}
+                                        width={48}
+                                        height={48}
+                                        alt="Profile image"
+                                    />
+                                ) : (
+                                    <div className="flex h-[50px] w-[50px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
+                                        <IconGhost2Filled className="w-6 h-6 text-white/70" strokeWidth={1} />
+                                    </div>
+                                )}
+                                <span className='font-medium w-full text-white/70 truncate'>{member?.full_name}</span>
+                            </div>
                         ))}
-                        {memoizedGroupMembers && memoizedGroupMembers.length > 11 && (
-                            <Link href={`/group-members/${groupId}`}>
-                                <div className="flex flex-col relative gap-2 items-center border border-white/10 p-4 rounded-xl text-center w-[144px] h-full">
-                                    <Image className="rounded-full blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-                                        src={memoizedProfileImages[membersId[0]]} width={50} height={50} alt="" />
-                                    <span className='text-white/70 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full text-xl tracking-wider font-bold'>+{memoizedGroupMembers.length - 11} more</span>
-                                </div>
-                            </Link>
+                        {memoizedGroupMembers && memoizedGroupMembers.length > 1 && (
+                            <GroupMembersDialog membersData={memoizedGroupMembers}
+                                groupData={groupData}
+                                imageUrls={memoizedProfileImages} />
                         )}
                     </div>
                 </div>
-            </div>
+            </div >
+
+
+
+            <SidebarProvider>
+                {isSidebarOpen && (
+                    <UserProfileSidebar isOpen={isOpen}
+                        onClose={() => setIsSidebarOpen(false)}
+                        selectedUser={selectedUser}
+                        imageUrl={selectedUserImageUrl} />
+                )}
+            </SidebarProvider>
         </>
     )
 }

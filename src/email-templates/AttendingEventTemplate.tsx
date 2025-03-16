@@ -23,7 +23,9 @@ export const AttendingEventTemplate: React.FC<Readonly<AttendingEventTemplatePro
                         <tr>
                             <td align="center" style={{ padding: '24px' }}>
                                 <h1 style={{ color: 'rgba(255, 255, 255, 0.7)', letterSpacing: '.2rem', fontSize: '24px' }}>Hello, <span style={{ color: '#fff', fontWeight: 'bold' }}>{fullName}</span>!</h1>
-                                <p style={{ color: 'rgba(255, 255, 255, 0.5)', letterSpacing: '.1rem', margin: '8px 0', fontSize: '16px' }}>This is a reminder that your event with <span style={{ fontSize: '20px', color: '#fff', fontWeight: '600' }}>{group_name}</span> is happening soon.</p>
+                                <p style={{ color: 'rgba(255, 255, 255, 0.5)', letterSpacing: '.1rem', margin: '8px 0', fontSize: '16px' }}>
+                                    You are now attending the event hosted by <span style={{ fontSize: '20px', color: '#fff', fontWeight: '600' }}>{group_name}</span>.
+                                </p>
                                 <br />
                                 <br />
                                 <table width="100%" cellPadding="0" cellSpacing="0">

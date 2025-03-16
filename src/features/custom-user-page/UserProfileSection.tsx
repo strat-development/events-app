@@ -177,7 +177,7 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                 )}
 
                                 <div className="flex flex-col gap-4 absolute bottom-0 w-full pl-2 pb-2">
-                                    <div className="absolute inset-0 [#131414]/30 blur-sm"></div>
+                                    <div className="absolute inset-0 bg-[#000]/20 blur-sm"></div>
                                     <div className="relative flex flex-col gap-1">
                                         <h2 className="text-xl font-bold tracking-wider">{user.full_name}</h2>
                                         <p className="text-lg text-white/70">{user.email}</p>

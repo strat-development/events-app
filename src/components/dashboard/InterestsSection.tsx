@@ -11,20 +11,9 @@ import { Button } from "../ui/button"
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider"
 import { Save } from "lucide-react"
 
-interface UserData {
-    user_interests: string[]
-    id: string
-}
-
 interface Interest {
     name: string
 }
-
-interface InterestGroup {
-    "group-name": string
-    interests: Interest[]
-}
-
 
 export const InterestsSection = () => {
     const supabase = createClientComponentClient<Database>()
@@ -61,7 +50,6 @@ export const InterestsSection = () => {
         enabled: !!userId,
         cacheTime: 10 * 60 * 1000,
     })
-
 
 
     const handleInterestClick = (interest: string) => {

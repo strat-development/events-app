@@ -198,7 +198,10 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
 
                                 </div>
                                 <div className="flex flex-col gap-1 min-[900px]:hidden">
-                                    <p className="text-lg text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                    <div className="flex gap-1">
+                                        <p className="text-lg text-white/70 font-medium">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')} - {format(parseISO(event.ends_at as string), 'HH:mm')}</p>
+                                    </div>
+
                                     <p className="text-white/60">{event.event_address}</p>
                                 </div>
                                 <div className="min-[900px]:hidden">

@@ -15,6 +15,9 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Toaster } from "@/components/ui/toaster";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { useRouter } from "next/navigation";
+import { FileUpload } from "@/components/ui/file-upload";
+import { supabaseAdmin } from "@/lib/admin";
+import { Building2 } from "lucide-react";
 
 interface Interest {
     name: string
@@ -49,6 +52,35 @@ export const UserDataModal = () => {
     const [searchQuery, setSearchQuery] = useState<string>("")
     const [userInterests, setUserInterests] = useState<string[]>([])
     const [displayedInterests, setDisplayedInterests] = useState<Interest[]>([]);
+    const [files, setFiles] = useState<File[]>([]);
+    const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
+    const [emailError, setEmailError] = useState<string | null>(null);
+
+    const validateEmail = (email: string): boolean => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    };
+
+
+
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const emailValue = e.target.value;
+        setEmail(emailValue);
+
+        if (!validateEmail(emailValue)) {
+            setEmailError("Please enter a valid email address.");
+        } else {
+            setEmailError(null);
+        }
+    };
+
+    const handleBlur = () => {
+        if (!validateEmail(email)) {
+            setEmailError("Please enter a valid email address.");
+        } else {
+            setEmailError(null);
+        }
+    };
 
     const addUserData = useMutation(
         async (newUserData: UserData[]) => {
@@ -163,56 +195,223 @@ export const UserDataModal = () => {
         shuffleInterests();
     }, [interestsData, selectedGroup, searchQuery]);
 
+    const addProfilePicture = useMutation(
+        async (paths: string[]) => {
+            const { data: currentData, error: currentError } = await supabase
+                .from('profile-pictures')
+                .select('image_url')
+                .eq('user_id', userId)
+                .single();
+
+            if (currentError) {
+                throw currentError;
+            }
+
+            if (currentData && currentData.image_url) {
+                const { error: deleteError } = await supabaseAdmin
+                    .storage
+                    .from('profile-pictures')
+                    .remove([currentData.image_url]);
+
+                if (deleteError) {
+                    throw deleteError;
+                }
+            }
+
+            const results = await Promise.all(paths.map(async (path) => {
+                const { data, error } = await supabase
+                    .from('profile-pictures')
+                    .update({
+                        user_id: userId,
+                        image_url: path
+                    })
+                    .eq('user_id', userId);
+
+                if (error) {
+                    throw error;
+                }
+                return data;
+            }));
+
+            return results;
+        }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries(['profile-pictures', userId]);
+        }
+    });
+
+    const uploadFiles = async (files: File[]) => {
+        const uploadPromises = files.map((file) => {
+            const path = `${file.name}${Math.random()}.${file.name.split('.').pop()}`;
+            return { promise: supabaseAdmin.storage.from('profile-pictures').upload(path, file), path };
+        });
+
+        const responses = await Promise.all(uploadPromises.map(({ promise }) => promise));
+
+        responses.forEach((response, index) => {
+            if (response.error) {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: `Error uploading file ${files[index].name}`
+                })
+            } else {
+                toast({
+                    title: "Success",
+                    description: `File ${files[index].name} uploaded successfully`
+                })
+            }
+        });
+
+        return uploadPromises.map(({ path }) => path);
+    }
+
+    const { data: images, isLoading } = useQuery(
+        ['profile-pictures', userId],
+        async () => {
+            const { data, error } = await supabase
+                .from('profile-pictures')
+                .select('*')
+                .eq('user_id', userId)
+            if (error) {
+                throw error;
+            }
+            return data || [];
+        },
+        {
+            enabled: !!userId,
+            cacheTime: 10 * 60 * 1000,
+        }
+    );
+
+    useEffect(() => {
+        if (images) {
+            Promise.all(images.map(async (image) => {
+                const { data: publicURL } = await supabase.storage
+                    .from('profile-pictures')
+                    .getPublicUrl(image.image_url)
+
+                return { publicUrl: publicURL.publicUrl };
+
+            }))
+                .then((publicUrls) => setImageUrls(publicUrls))
+                .catch(console.error);
+        }
+    }, [images]);
+
+    const handleSubmit = () => {
+        if (!validateEmail(email)) {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Please enter a valid email address.",
+            });
+            return;
+        }
+
+        if (!fullName || !email || !city || !country) {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Please fill out all fields",
+            });
+            return;
+        } else {
+            addUserData.mutateAsync([{
+                full_name: fullName,
+                email: email,
+                city: city,
+                country: country,
+                user_role: "User",
+                id: userId
+            }] as UserData[]);
+
+            if (userId) {
+                addInterests.mutateAsync({
+                    user_interests: selectedInterests,
+                    id: userId
+                } as UserInterestsData, {
+                    onSuccess: () => {
+                        queryClient.invalidateQueries("userInterests");
+                        queryClient.invalidateQueries("users");
+                    }
+                });
+            }
+
+            if (files.length > 0) {
+                uploadFiles(files)
+                    .then((paths) => {
+                        return addProfilePicture.mutateAsync(paths), {
+                            onSuccess: () => {
+                                toast({
+                                    title: "Success",
+                                    description: "Image updated successfully",
+                                });
+
+                                queryClient.invalidateQueries(['profile-pictures', userId]);
+
+                            },
+                            onError: () => {
+                                toast({
+                                    title: "Error",
+                                    description: "Error updating image",
+                                    variant: "destructive",
+                                });
+                            }
+                        }
+                    })
+                    .catch((error) => console.error('Error uploading files:', error));
+            }
+        }
+    };
+
     return (
         <>
             <Dialog open={!userInterests && !userRole}>
-                <DialogContent className="max-w-[480px] flex flex-col items-center p-8">
-                    <Tabs onValueChange={tabValue => setTabValue(tabValue)} value={tabValue}
-                        className="max-w-[480px] w-full">
-                        <TabsList className="flex w-full">
-                            {!userRole && (
-                                <TabsTrigger className="w-full"
-                                    value="user-data">User data</TabsTrigger>
-                            )}
-                            {!userInterests && (
-                                <TabsTrigger className="w-full"
-                                    value="user-interests">Interests</TabsTrigger>
-                            )}
-                        </TabsList>
-
-                        {!userRole && (
-                            <TabsContent className="flex flex-col gap-4"
-                                value="user-data">
-                                <Input id="fullName"
+                <DialogContent className="flex w-full max-w-[100vw] h-screen rounded-none bg-transparent">
+                    <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start max-h-[80vh] overflow-y-auto justify-center w-full gap-16 mt-24">
+                        <FileUpload
+                            onChange={(selectedFiles) => {
+                                setFiles(selectedFiles);
+                            }}
+                        />
+                        <div className="flex flex-col gap-4 max-w-[480px]">
+                            <div className="flex flex-col gap-2 items-start justify-center">
+                                <Input className="p-0 placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
+                                    id="fullName"
                                     placeholder="Full Name"
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
                                 />
-                                <Input id="email"
+                                <Input
+                                    className="p-0 placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
+                                    id="email"
                                     placeholder="Email"
+                                    type="email"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={handleEmailChange}
+                                    onBlur={handleBlur}
                                 />
-                                <Input id="city"
-                                    placeholder="City"
-                                    value={city}
-                                    onChange={(e) => setCity(e.target.value)}
-                                />
-                                <Input id="country"
-                                    placeholder="Country"
-                                    value={country}
-                                    onChange={(e) => setCountry(e.target.value)}
-                                />
-                                <Button id="nextBtn"
-                                    onClick={() => setTabValue("user-interests")}>
-                                    Next
-                                </Button>
-                            </TabsContent>
-                        )}
+                                {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
+                                <div className="flex max-[900px]:flex-col gap-4">
+                                    <Input className="p-0 placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
+                                        id="city"
+                                        placeholder="City"
+                                        value={city}
+                                        onChange={(e) => setCity(e.target.value)}
+                                    />
 
-                        {!userInterests && (
-                            <TabsContent className="flex flex-col gap-4"
-                                value="user-interests">
+                                    <Input className="p-0 placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
+                                        id="country"
+                                        placeholder="Country"
+                                        value={country}
+                                        onChange={(e) => setCountry(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+
+                            <div className="flex flex-col">
                                 <div className="flex gap-8 items-center">
                                     <div className="mb-4 flex flex-col gap-1">
                                         <label htmlFor="group-select" className="block font-medium text-white/70">Select Group:</label>
@@ -250,7 +449,7 @@ export const UserDataModal = () => {
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-4">
-                                    <div className="flex flex-wrap gap-4 max-h-[124px] overflow-y-auto">
+                                    <div className="flex flex-wrap gap-4 overflow-y-auto">
                                         {displayedInterests.map((interest) => (
                                             <Button
                                                 key={interest.name}
@@ -283,56 +482,14 @@ export const UserDataModal = () => {
                                         </>
                                     )}
                                 </div>
-
-                                <Button
-                                    variant="outline"
-                                    onClick={() => {
-                                        setTabValue("user-data")
-                                    }}>
-                                    Back
-                                </Button>
-                            </TabsContent>
-                        )}
-                    </Tabs>
-
-                    {fullName && email && city && country && selectedInterests.length > 0 && userId && (
-                        <HoverBorderGradient onClick={() => {
-                            if (!fullName || !email || !city || !country) {
-                                toast({
-                                    variant: "destructive",
-                                    title: "Error",
-                                    description: "Please fill out all fields"
-                                });
-                                return;
-                            } else {
-                                addUserData.mutateAsync([{
-                                    full_name: fullName,
-                                    email: email,
-                                    city: city,
-                                    country: country,
-                                    user_role: "User",
-                                    id: userId
-                                }] as UserData[]);
-
-                                {
-                                    if (userId) {
-                                        addInterests.mutateAsync({
-                                            user_interests: selectedInterests,
-                                            id: userId
-                                        } as UserInterestsData, {
-                                            onSuccess: () => {
-                                                queryClient.invalidateQueries("userInterests");
-                                                queryClient.invalidateQueries("users");
-                                            }
-                                        })
-                                    }
-                                }
-
-                                setTabValue("user-interests");
-                            }
-                        }}>Create User</HoverBorderGradient>
-                    )}
-                </DialogContent>
+                            </div>
+                            {fullName && email && city && country && selectedInterests.length > 0 && userId && (
+                                <HoverBorderGradient 
+                                onClick={handleSubmit}>Create User</HoverBorderGradient>
+                            )}
+                        </div>
+                    </div>
+                </DialogContent >
             </Dialog >
 
             <Toaster />

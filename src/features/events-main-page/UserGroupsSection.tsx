@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { GroupSidebar } from "@/components/GroupSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
+import { GroupData } from "@/types/types";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
@@ -13,6 +13,10 @@ export const UserGroupsSection = () => {
     const { userId } = useUserContext();
     const [groupId, setGroupId] = useState<string[]>([]);
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState<GroupData | null>(null);
+    const [selectedGroupImageUrl, setSelectedGroupImageUrl] = useState<string | null>(null);
+    const [groupData, setGroupData] = useState<GroupData[]>([]);
 
     const fetchGroupId = useQuery(
         'groupIds',
@@ -50,6 +54,10 @@ export const UserGroupsSection = () => {
             if (error) {
                 console.error('Error fetching groups:', error);
                 throw new Error(error.message);
+            }
+
+            if (data) {
+                setGroupData(data);
             }
 
             return data;
@@ -93,14 +101,21 @@ export const UserGroupsSection = () => {
         }
     }, [images]);
 
-    const memoizedGroupsData = useMemo(() => fetchGroups.data, [fetchGroups.data]);
+    const memoizedGroupsData = useMemo(() => groupData, [groupData]);
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
 
     return (
-        <div className="flex gap-8 max-w-[440px] w-full min-[1200px]:w-fit overflow-y-auto max-h-[416px]">
-            {memoizedGroupsData?.map((group) => (
-                <Link key={group.id} href={`/group-page/${group.id}`}>
-                    <div key={group.id} className="border rounded-xl border-white/10 w-full">
+        <>
+            <div className="flex gap-8 max-w-[440px] w-full min-[1200px]:w-fit overflow-y-auto max-h-[416px]">
+                {memoizedGroupsData?.map((group) => (
+                    <div onClick={() => {
+                        setIsSidebarOpen(true);
+                        setSelectedGroup(group);
+                        const selectedImage = memoizedImageUrls.find(url => url.publicUrl.includes(group.id));
+                        setSelectedGroupImageUrl(selectedImage ? selectedImage.publicUrl : null);
+                    }}
+                        key={group.id}
+                        className="border cursor-pointer rounded-xl border-white/10 w-full">
                         <div className="flex w-full gap-4 p-4 h-[116px]">
                             <div className="flex flex-col items-center justify-center gap-4 border rounded-xl border-white/10 aspect-video w-[160px] h-fit">
                                 {memoizedImageUrls.length > 0 && (
@@ -127,8 +142,16 @@ export const UserGroupsSection = () => {
                             </div>
                         </div>
                     </div>
-                </Link>
-            ))}
-        </div>
+                ))
+                }
+            </div>
+
+            <SidebarProvider>
+                {isSidebarOpen && <GroupSidebar imageUrl={selectedGroupImageUrl}
+                    selectedGroup={selectedGroup}
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)} />}
+            </SidebarProvider>
+        </>
     );
 }

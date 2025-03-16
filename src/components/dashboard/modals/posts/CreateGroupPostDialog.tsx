@@ -14,6 +14,7 @@ import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { Input } from "@/components/ui/input";
 import { Plus, Save } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 interface CreateGroupPostDialogProps {
     groupId: string;
@@ -27,9 +28,9 @@ export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) =
     const [editorContent, setEditorContent] = useState("");
     const [title, setTitle] = useState("");
     const [files, setFiles] = useState<File[]>([]);
-    const [fullName, setFullName] = useState<string[]>([])
-    const [groupName, setGroupName] = useState<string>("")
-    const [email, setEmail] = useState<string[]>([])
+    const [fullName, setFullName] = useState<string[]>([]);
+    const [groupName, setGroupName] = useState<string>("");
+    const [email, setEmail] = useState<string[]>([]);
 
     const groupData = useQuery(
         ["group", groupId],
@@ -37,25 +38,26 @@ export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) =
             const { data, error } = await supabase
                 .from("groups")
                 .select("group_name")
-                .eq('id', groupId)
+                .eq('id', groupId);
 
             if (error) {
-                console.error("Error fetching group data:", error.message)
-                throw new Error(error.message)
+                console.error("Error fetching group data:", error.message);
+                throw new Error(error.message);
             }
 
             if (data) {
-                setGroupName(data[0].group_name || "")
+                setGroupName(data[0].group_name || "");
             }
 
-            return data
+            return data;
         },
         {
             enabled: isOpen,
             refetchOnWindowFocus: false,
             refetchOnMount: false,
             refetchOnReconnect: false,
-        })
+        }
+    );
 
     const membersData = useQuery(
         ["group-members", groupId],
@@ -63,24 +65,23 @@ export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) =
             const { data, error } = await supabase
                 .from("group-members")
                 .select(`users (id, full_name, email)`)
-                .eq("group_id", groupId)
-
+                .eq("group_id", groupId);
 
             if (error) {
-                console.error("Error fetching attendees data:", error.message)
-                throw new Error(error.message)
+                console.error("Error fetching attendees data:", error.message);
+                throw new Error(error.message);
             }
 
             if (data) {
-                setEmail(data.map((member) => member.users ? member.users.email as string : ""))
-                setFullName(data.map((member) => member.users ? member.users.full_name as string : ""))
+                setEmail(data.map((member) => member.users ? member.users.email as string : ""));
+                setFullName(data.map((member) => member.users ? member.users.full_name as string : ""));
             }
         }, {
         enabled: isOpen,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
         refetchOnReconnect: false,
-    })
+    });
 
     const createPost = useMutation(
         async () => {
@@ -204,64 +205,63 @@ export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) =
         }
     };
 
-
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger className="w-full" asChild>
-                    <Button className="flex flex-col items-center justify-center w-full h-[280px] rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
+                <DialogTrigger asChild>
+                    <Button
+                        className="flex flex-col items-center justify-center w-[280px] h-[440px] rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
                         variant="ghost">
                         <div className="flex flex-col items-center">
                             <div className="text-6xl text-white/70">
                                 <Plus size={128} />
                             </div>
-                            <p className="text-xl tracking-wide text-white/50 font-medium">Create post</p>
+                            <p className="text-xl tracking-wide text-white/50 font-medium">Create new post</p>
                         </div>
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[425px] pt-12 overflow-x-hidden">
-                    <div className="flex flex-col gap-4">
-                        {modalStepCount === 1 && (
-                            <div className="flex flex-col gap-4 items-center justify-center">
-                                <Input onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="Title" />
-                                <TextEditor
-                                    {...{
-                                        editorContent: editorContent,
-                                        onChange: setEditorContent,
-                                    }}
-                                />
-                                <Button className="w-full" onClick={() => setModalStepCount(2)}>
-                                    Next step
-                                </Button>
+                <DialogContent className="flex w-full max-w-[100vw] h-screen rounded-none bg-transparent">
+                    <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start max-h-[80vh] overflow-y-auto justify-center w-full gap-16 mt-24">
+                        <FileUpload className="max-[900px]:mt-48"
+                            onChange={(selectedFiles) => {
+                                setFiles(selectedFiles);
+                            }}
+                        />
+                        <div className="flex flex-col gap-4 max-w-[480px]">
+                            <Input
+                                className="placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
+                                placeholder="Post Title"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                            />
+                            <TextEditor
+                                {...{
+                                    editorContent: editorContent,
+                                    onChange: setEditorContent,
+                                }}
+                            />
+                            <div className="flex justify-between gap-4">
+                                {title && editorContent && (
+                                    <HoverBorderGradient className="w-full"
+                                        onClick={() => {
+                                            if (!title || !editorContent) {
+                                                toast({
+                                                    variant: "destructive",
+                                                    title: "Invalid Fields",
+                                                    description: "Please fill all the required fields.",
+                                                });
+                                                return;
+                                            } else {
+                                                createPost.mutate();
+                                            }
+                                        }}
+                                    >
+                                        Create Post
+                                    </HoverBorderGradient>
+                                )}
                             </div>
-                        )}
-
-                        {modalStepCount === 2 && (
-                            <div className="flex flex-col gap-4 items-center justify-center">
-                                <FileUpload
-                                    className="max-h-[350px] overflow-y-auto overflow-x-hidden"
-                                    onChange={(selectedFiles) => {
-                                        setFiles(selectedFiles);
-                                    }}
-                                />
-
-                                <Button className="w-full" onClick={() => setModalStepCount(1)}>
-                                    Previous step
-                                </Button>
-                            </div>
-                        )}
+                        </div>
                     </div>
-
-                    <DialogFooter>
-                        {editorContent.length > 0 && files.length > 0 && title !== "" && (
-                            <Button className="text-blue-500"
-                            variant="ghost" 
-                            onClick={() => createPost.mutate()}>
-                                <Save size={20} />
-                            </Button>
-                        )}
-                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 

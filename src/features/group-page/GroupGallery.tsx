@@ -87,8 +87,6 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
         setCurrentPage(page)
     }
 
-    console.log(currentItems.map((album) => album.publicUrls.length))
-
     return (
         <>
             <div className="flex flex-col w-full gap-8 justify-center">

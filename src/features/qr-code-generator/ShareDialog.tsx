@@ -1,6 +1,6 @@
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import { Flag, Share } from "lucide-react";
+import { Share } from "lucide-react";
 import { useState, Suspense, lazy } from "react";
 import { Button } from "@/components/ui/button";
 

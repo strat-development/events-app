@@ -1,6 +1,8 @@
 import { EventReportDialog } from "@/components/dashboard/modals/contact/EventReportDialog"
+import { GroupSidebar } from "@/components/GroupSidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
 import { Database } from "@/types/supabase"
-import { EventData } from "@/types/types"
+import { EventData, GroupData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { format, parseISO } from "date-fns"
 import { Clock, MapPin } from "lucide-react"
@@ -18,6 +20,9 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([])
     const [eventData, setEventData] = useState<EventData[]>()
     const groupId = eventData?.[0].event_group
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState<GroupData | null>(null);
+    const [selectedGroupImageUrl, setSelectedGroupImageUrl] = useState<string | null>(null);
 
     useQuery(['event-data'], async () => {
         const { data, error } = await supabase
@@ -42,7 +47,7 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
         async () => {
             const { data, error } = await supabase
                 .from("groups")
-                .select("group_name, group_country, group_city")
+                .select("*")
                 .eq("id", groupId as string)
 
             if (error) {
@@ -57,7 +62,7 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
         })
 
     const { data: images, isLoading } = useQuery(
-        ['group-pictures', groupId],
+        ['group-picture', groupId],
         async () => {
             const { data, error } = await supabase
                 .from('group-pictures')
@@ -93,9 +98,14 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
     const memoizedGroupImages = useMemo(() => imageUrls, [imageUrls])
 
     return (
-        <div className="w-full sticky top-24 flex flex-col gap-4 border border-white/10 p-4 rounded-xl">
-            <Link href={`/group-page/${groupId}`}>
-                <div className='flex gap-4 items-start w-full'>
+        <>
+            <div className="w-full sticky top-24 flex flex-col gap-4 border border-white/10 p-4 rounded-xl">
+                <div onClick={() => {
+                    setIsSidebarOpen(true);
+                    setSelectedGroup(memoizedGroupInfo.data?.[0] || null);
+                    setSelectedGroupImageUrl(memoizedGroupImages[0]?.publicUrl || null);
+                }}
+                    className='flex cursor-pointer gap-4 items-start w-full'>
                     {memoizedGroupImages?.map((image) => (
                         <Image className="max-w-[72px] rounded-xl"
                             key={image.publicUrl}
@@ -110,28 +120,34 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
                         <p className="text-white/70">{memoizedGroupInfo.data?.[0].group_country}, {memoizedGroupInfo.data?.[0].group_city}</p>
                     </div>
                 </div>
-            </Link>
 
-            {eventData?.map((event, index) => (
-                <div key={index}
-                    className="flex flex-col gap-2">
-                    <div className="flex gap-2 items-center">
-                        <Clock className="text-white/70"
-                            size={18}
-                            strokeWidth={1} />
-                        <p className="text-lg font-medium">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                {eventData?.map((event, index) => (
+                    <div key={index}
+                        className="flex flex-col gap-2">
+                        <div className="flex gap-2 items-center">
+                            <Clock className="text-white/70"
+                                size={18}
+                                strokeWidth={1} />
+                            <p className="text-lg font-medium">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                            <MapPin className="text-white/70"
+                                size={18}
+                                strokeWidth={1} />
+                            <p className="text-white/70">{event.event_address}</p>
+                        </div>
                     </div>
-                    <div className="flex gap-2 items-center">
-                        <MapPin className="text-white/70"
-                            size={18}
-                            strokeWidth={1} />
-                        <p className="text-white/70">{event.event_address}</p>
-                    </div>
-                </div>
-            ))}
+                ))}
 
-            <EventReportDialog eventId={eventId} />
+                <EventReportDialog eventId={eventId} />
+            </div>
 
-        </div>
+            <SidebarProvider>
+                {isSidebarOpen && <GroupSidebar imageUrl={selectedGroupImageUrl}
+                    selectedGroup={selectedGroup}
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)} />}
+            </SidebarProvider>
+        </>
     )
 }

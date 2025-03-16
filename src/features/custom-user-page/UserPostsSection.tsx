@@ -8,7 +8,7 @@ import { format, parseISO } from "date-fns";
 import { DeletePostDialog } from "../../components/dashboard/modals/posts/DeletePostDialog";
 import { PostReportDialog } from "@/components/dashboard/modals/contact/PostReportDialog";
 import { AddComment } from "./AddComment";
-import { PostsData } from "@/types/types";
+import { PostsData, UserData } from "@/types/types";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { IconDotsVertical } from "@tabler/icons-react";
@@ -19,6 +19,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import _ from 'lodash';
 import { PostViewModal } from "../group-page/PostViewModal";
+import { UserProfileSidebar } from "@/components/UserProfileSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 interface UserPostsSectionProps {
     userId: string;
@@ -31,6 +33,10 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
     const [commentId, setCommentId] = useState<string[]>([]);
     const pathname = usePathname();
     const prevCommentedUserId = useRef();
+    const [isOpen, setIsOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+    const [selectedUserImageUrl, setSelectedUserImageUrl] = useState<string | null>(null);
 
     const fetchPostData = useQuery(
         'posts',
@@ -81,7 +87,7 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
         async () => {
             const { data, error } = await supabase
                 .from("post-comments")
-                .select(`users (id, full_name)`)
+                .select(`users (*)`)
                 .in('id', commentId || []);
 
             if (error) {
@@ -172,16 +178,20 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
                                         className="flex justify-between items-start gap-8">
                                         <div className="flex items-start gap-4">
                                             <div className="flex gap-4 items-start">
-                                                <Link href={`/user-profile/${comment.user_id}`} key={comment.user_id}>
-                                                    <div className="flex gap-2">
-                                                        <Image
-                                                            src={profileImageUrls.find((url) => url.userId === comment.user_id)?.publicUrl || "/default-avatar.png"}
-                                                            width={36}
-                                                            height={36}
-                                                            alt="" className="rounded-full border border-white/10"
-                                                            priority />
-                                                    </div>
-                                                </Link>
+                                                <div className="cursor-pointer flex gap-2"
+                                                    onClick={() => {
+                                                        setIsSidebarOpen(true);
+                                                        setIsOpen(true);
+                                                        setSelectedUser(commentedUser.data?.find((user) => user.users?.id === comment.user_id)?.users || null);
+                                                        setSelectedUserImageUrl(profileImageUrls.find((url) => url.userId === comment.user_id)?.publicUrl || null);
+                                                    }}>
+                                                    <Image
+                                                        src={profileImageUrls.find((url) => url.userId === comment.user_id)?.publicUrl || "/default-avatar.png"}
+                                                        width={36}
+                                                        height={36}
+                                                        alt="" className="rounded-full border border-white/10"
+                                                        priority />
+                                                </div>
                                                 <div className="flex flex-col gap-1">
                                                     <div className="flex gap-2 items-center">
                                                         <p className="text-white">{commentedUser.data?.find((user) => user.users?.id)?.users?.full_name}</p>
@@ -211,7 +221,7 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
                                 ))}
 
                                 {commentCount > 3 && (
-                                    <PostViewModal
+                                    <PostViewModal selectedUser={selectedUser}
                                         post={post as any}
                                         comments={data || [] as any}
                                         profileImageUrls={profileImageUrls}
@@ -227,6 +237,15 @@ export const UserPostsSection = ({ userId }: UserPostsSectionProps) => {
                     )
                 })}
             </div>
+
+            <SidebarProvider>
+                {isSidebarOpen && (
+                    <UserProfileSidebar isOpen={isOpen}
+                        onClose={() => setIsSidebarOpen(false)}
+                        selectedUser={selectedUser}
+                        imageUrl={selectedUserImageUrl} />
+                )}
+            </SidebarProvider>
         </>
     )
 }

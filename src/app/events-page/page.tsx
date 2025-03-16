@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useCityContext } from "@/providers/cityContextProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
@@ -15,6 +14,8 @@ import { useQuery } from "react-query";
 import stringSimilarity from "string-similarity";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination";
 import GridLoader from "react-spinners/GridLoader";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { EventSidebar } from "@/components/EventSidebar";
 
 export default function EventsPage() {
     const supabase = createClientComponentClient<Database>();
@@ -28,20 +29,15 @@ export default function EventsPage() {
     const itemsPerPage = 20;
     const router = useRouter();
     const searchParams = useSearchParams();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
+    const [selectedEventImageUrl, setSelectedEventImageUrl] = useState<string | null>(null);
 
     useEffect(() => {
         if (!loading && userId === null) {
             router.push('/');
         }
     }, [loading, userId, router]);
-
-    if (loading) {
-        return (
-            <div className="h-screen w-full flex items-center justify-center">
-                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
-            </div>
-        )
-    }
 
     useEffect(() => {
         const searchParam = searchParams.get('search');
@@ -150,12 +146,26 @@ export default function EventsPage() {
         setCurrentPage(page);
     };
 
+    if (loading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center">
+                <GridLoader className="opacity-50" color="#fff" size={24} margin={2} />
+            </div>
+        )
+    }
+
     return (
         <>
             <div className="max-w-[1200px] w-full justify-self-center pt-24 flex flex-col gap-4">
                 <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                     {currentItems.map((event) => (
-                        <div key={event.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
+                        <div onClick={() => {
+                            setIsSidebarOpen(true);
+                            setSelectedEvent(event);
+                            setSelectedEventImageUrl(memoizedImageUrls[event.id]);
+                        }}
+                            key={event.id}
+                            className="flex flex-col cursor-pointer gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
                             <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
                                 {memoizedImageUrls[event.id] && (
                                     <Image
@@ -186,8 +196,6 @@ export default function EventsPage() {
                                         )}
                                     </div>
                                 </div>
-                                <Button className="rounded-xl mt-2 w-fit text-sm"
-                                    onClick={() => router.push(`/event-page/${event?.id}`)}>View event</Button>
                             </div>
                         </div>
                     ))}
@@ -220,6 +228,12 @@ export default function EventsPage() {
                     </PaginationContent>
                 </Pagination>
             </div>
+            <SidebarProvider>
+                {isSidebarOpen && <EventSidebar imageUrl={selectedEventImageUrl}
+                    selectedEvent={selectedEvent}
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)} />}
+            </SidebarProvider>
         </>
     );
 }

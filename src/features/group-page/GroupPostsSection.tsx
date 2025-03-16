@@ -4,7 +4,7 @@ import { useQuery } from "react-query";
 import { useEffect, useRef, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { PostReportDialog } from "@/components/dashboard/modals/contact/PostReportDialog";
-import { GroupPostsData } from "@/types/types";
+import { GroupPostsData, UserData } from "@/types/types";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { IconDotsVertical } from "@tabler/icons-react";
@@ -20,6 +20,8 @@ import { AddGroupComment } from "./AddGroupComment";
 import _ from 'lodash';
 import { PostViewModal } from "./PostViewModal";
 import { useUserContext } from "@/providers/UserContextProvider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { UserProfileSidebar } from "@/components/UserProfileSidebar";
 
 interface GroupPostsSectionProps {
     groupId: string;
@@ -33,6 +35,10 @@ export const GroupPostsSection = ({ groupId }: GroupPostsSectionProps) => {
     const pathname = usePathname();
     const prevCommentedGroupId = useRef();
     const { userId } = useUserContext()
+    const [isOpen, setIsOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+    const [selectedUserImageUrl, setSelectedUserImageUrl] = useState<string | null>(null);
 
     const fetchPostData = useQuery(
         'posts',
@@ -83,7 +89,7 @@ export const GroupPostsSection = ({ groupId }: GroupPostsSectionProps) => {
         async () => {
             const { data, error } = await supabase
                 .from("group-posts-comments")
-                .select(`users (id, full_name)`)
+                .select(`users (*)`)
                 .in('id', commentId || []);
 
             if (error) {
@@ -174,18 +180,22 @@ export const GroupPostsSection = ({ groupId }: GroupPostsSectionProps) => {
                                     <div key={comment.id} className="flex justify-between items-start gap-8">
                                         <div className="flex items-start gap-4">
                                             <div className="flex gap-4 items-start">
-                                                <Link href={`/user-profile/${comment.user_id}`} key={comment.user_id}>
-                                                    <div className="flex gap-2">
-                                                        <Image
-                                                            src={profileImageUrls.find((url) => url.userId === comment.user_id)?.publicUrl || "/default-avatar.png"}
-                                                            width={36}
-                                                            height={36}
-                                                            alt=""
-                                                            className="rounded-full border border-white/10"
-                                                            priority
-                                                        />
-                                                    </div>
-                                                </Link>
+                                                <div className="cursor-pointer flex gap-2"
+                                                    onClick={() => {
+                                                        setIsSidebarOpen(true);
+                                                        setIsOpen(true);
+                                                        setSelectedUser(commentedUser.data?.find((user) => user.users?.id === comment.user_id)?.users || null);
+                                                        setSelectedUserImageUrl(profileImageUrls.find((url) => url.userId === comment.user_id)?.publicUrl || null);
+                                                    }}>
+                                                    <Image
+                                                        src={profileImageUrls.find((url) => url.userId === comment.user_id)?.publicUrl || "/default-avatar.png"}
+                                                        width={36}
+                                                        height={36}
+                                                        alt=""
+                                                        className="rounded-full border border-white/10"
+                                                        priority
+                                                    />
+                                                </div>
                                                 <div className="flex flex-col gap-1">
                                                     <div className="flex gap-2 items-center">
                                                         <p className="text-white">
@@ -218,7 +228,7 @@ export const GroupPostsSection = ({ groupId }: GroupPostsSectionProps) => {
                                 ))}
 
                                 {commentCount > 3 && (
-                                    <PostViewModal
+                                    <PostViewModal selectedUser={selectedUser}
                                         post={post as any}
                                         comments={data || [] as any}
                                         profileImageUrls={profileImageUrls}
@@ -233,6 +243,15 @@ export const GroupPostsSection = ({ groupId }: GroupPostsSectionProps) => {
                     );
                 })}
             </div>
+
+            <SidebarProvider>
+                {isSidebarOpen && (
+                    <UserProfileSidebar isOpen={isOpen}
+                        onClose={() => setIsSidebarOpen(false)}
+                        selectedUser={selectedUser}
+                        imageUrl={selectedUserImageUrl} />
+                )}
+            </SidebarProvider>
         </>
     )
 }

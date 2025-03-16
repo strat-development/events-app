@@ -207,7 +207,8 @@ export const EventCard = () => {
                                             )}
                                         </div>
                                     </div>
-                                    <Button className="rounded-xl mt-2 w-fit text-sm"
+                                    <Button className="rounded-xl w-fit text-sm text-white/70"
+                                        variant={"outline"}
                                         onClick={() => router.push(`/event-page/${event.events?.id}`)}>View event</Button>
                                 </div>
                             </div>
@@ -255,7 +256,7 @@ export const EventCard = () => {
                                     </div>
                                     <div className="flex justify-between items-center gap-4 mt-2">
                                         <div className="flex gap-4">
-                                            <Button className="rounded-xl w-fit text-sm text-white/70" 
+                                            <Button className="rounded-xl w-fit text-sm text-white/70"
                                                 variant={"outline"}
                                                 onClick={() => router.push(`/dashboard/event-page/${event.id}`)}>View event</Button>
                                             <EditEventDialog eventId={event.id} />

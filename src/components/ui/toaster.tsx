@@ -14,7 +14,7 @@ export function Toaster() {
   return (
     <ToastProvider>
       {toasts.map(({ id, title, description, action, ...props }) => (
-        <Toast key={id} className="z-[1000000]" {...props}> 
+        <Toast key={id} className="z-[999999999999999]" {...props}> 
           <div className="grid gap-1">
             {title && <ToastTitle>{title}</ToastTitle>}
             {description && <ToastDescription>{description}</ToastDescription>}
@@ -23,7 +23,7 @@ export function Toaster() {
           <ToastClose />
         </Toast>
       ))}
-      <ToastViewport className="z-[1000000] fixed bottom-4 right-4" />
+      <ToastViewport className="z-[99999999999999] fixed bottom-4 right-4" />
     </ToastProvider>
   )
 }

@@ -58,9 +58,9 @@ export const DeleteGroupDialog = ({ groupId }: DeleteGroupDialogProps) => {
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger asChild>
-                    <Trash size={20} className="text-red-500" />
-                </DialogTrigger>
+                <Button variant="destructive">
+                    <Trash size={20} />
+                </Button>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle className="text-white/70">Delete Group</DialogTitle>

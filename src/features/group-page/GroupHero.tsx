@@ -245,7 +245,7 @@ export const GroupHero = ({
             <div className="flex flex-col gap-4 max-w-[1200px] w-full">
                 {memoizedGroupData?.map((group) => (
                     <div key={group.id} className="w-full flex flex-wrap gap-8">
-                        <div className="flex gap-4 max-w-[600px] w-full">
+                        <div className="flex gap-4 min-[900px]:max-w-[600px] w-full">
                             <div className="flex flex-col gap-4">
                                 {memoizedImageUrls.map((image) => (
                                     <Image className="min-[768px]:aspect-video rounded-xl object-contain border border-white/10"

@@ -197,7 +197,8 @@ export const GroupCard = () => {
                                         <p className="text-sm text-white/60">{group.groups?.group_city}, {group.groups?.group_country}</p>
 
                                     </div>
-                                    <Button className="rounded-xl mt-2 w-fit text-sm"
+                                    <Button className="rounded-xl mt-2 w-fit text-sm text-white/70"
+                                        variant={"outline"}
                                         onClick={() => router.push(`/group-page/${group.groups?.id}`)}>View group</Button>
                                 </div>
                             </div>
@@ -234,8 +235,9 @@ export const GroupCard = () => {
                                         <p className="text-sm text-white/60">{group.group_city}, {group.group_country}</p>
                                     </div>
                                     <div className="flex justify-between gap-4 items-center w-full">
-                                        <div className="flex items-center gap-2">
-                                            <Button className="rounded-xl mt-2 w-fit text-sm"
+                                        <div className="flex mt-2 items-center gap-2">
+                                            <Button className="rounded-xl w-fit text-sm text-white/70"
+                                                variant={"outline"}
                                                 onClick={() => router.push(`/dashboard/group-page/${group.id}`)}>View group</Button>
                                             <EditGroupDialog groupId={group.id} />
                                         </div>

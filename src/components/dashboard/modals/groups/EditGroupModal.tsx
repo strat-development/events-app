@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,20 +11,23 @@ import { toast } from "@/components/ui/use-toast";
 import { GroupTopicsModalStep } from "@/features/create-group-modal/GroupTopicsModalStep";
 import { GroupDescriptionModalStep } from "@/features/create-group-modal/GroupDescriptionModalStep";
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider";
-import { Modal } from "@/features/Modal";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
-import { Edit, Save } from "lucide-react";
+import { FileUpload } from "@/components/ui/file-upload";
+import { supabaseAdmin } from "@/lib/admin";
+import { Edit } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { X } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 interface EditGroupDialogProps {
     groupId: string;
 }
 
 export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
-    const supabase = createClientComponentClient<Database>()
-    const queryClient = useQueryClient()
-
-    const [isOpen, setIsOpen] = useState(false)
-    const [modalStepCount, setModalStepCount] = useState(1)
+    const supabase = createClientComponentClient<Database>();
+    const queryClient = useQueryClient();
+    const [isOpen, setIsOpen] = useState(false);
+    const [files, setFiles] = useState<File[]>([]);
     const { groupName,
         setGroupName,
         groupCity,
@@ -35,7 +38,7 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
         setEditorContent,
         selectedInterests,
         setSelectedInterests
-    } = useGroupDataContext()
+    } = useGroupDataContext();
 
     const formattedInterests = { interests: selectedInterests.map((interest) => ({ name: interest })) };
 
@@ -49,11 +52,18 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
                 group_description: editorContent,
                 group_topics: formattedInterests,
             })
-            .eq('id', groupId)
+            .eq('id', groupId);
 
         if (error) {
-            throw error
+            throw error;
         }
+
+        if (files.length > 0) {
+            const paths = await uploadFiles(files);
+            await addGroupPicture.mutateAsync(paths);
+        }
+
+        return data;
     },
         {
             onSuccess: () => {
@@ -64,12 +74,12 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
                 });
 
                 setIsOpen(false);
-                setModalStepCount(1);
                 setGroupName("");
                 setGroupCity("");
                 setGroupCountry("");
                 setEditorContent("");
                 setSelectedInterests([]);
+                setFiles([]);
             },
 
             onError: () => {
@@ -79,90 +89,132 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
                     description: "There was an error editing the group"
                 });
             }
-        })
+        });
 
+    const addGroupPicture = useMutation(
+        async (paths: string[]) => {
+            const results = await Promise.all(paths.map(async (path) => {
+                const { data, error } = await supabase
+                    .from('group-pictures')
+                    .upsert({
+                        group_id: groupId,
+                        hero_picture_url: path
+                    }, { onConflict: 'group_id' });
 
-    const bodyContent = (
-        <div className="flex flex-col gap-4">
-            {modalStepCount === 1 && (
-                <>
-                    <div className="flex flex-col gap-4">
-                        <Input
-                            placeholder="Group Name"
-                            value={groupName}
-                            onChange={(e) => setGroupName(e.target.value)}
-                        />
-                        <Input
-                            placeholder="Group City"
-                            value={groupCity}
-                            onChange={(e) => setGroupCity(e.target.value)}
-                        />
-                        <Input
-                            placeholder="Group Country"
-                            value={groupCountry}
-                            onChange={(e) => setGroupCountry(e.target.value)}
-                        />
-                    </div>
+                if (error) {
+                    throw error;
+                }
+                return data;
+            }));
 
-                    <Button onClick={() => {
-                        setModalStepCount(2)
-                    }}>Next step</Button>
-                </>
-            )}
+            return results;
+        },
+    );
 
-            {modalStepCount === 2 && (
-                <>
-                    <div className="flex flex-col gap-4">
-                        <GroupTopicsModalStep />
-                        <div className="flex gap-4">
-                            <Button onClick={() => setModalStepCount(1)}>Previous step</Button>
-                            <Button onClick={() => setModalStepCount(3)}>Next step</Button>
-                        </div>
+    const uploadFiles = async (files: File[]) => {
+        const uploadPromises = files.map((file) => {
+            const path = `${file.name}${Math.random()}.${file.name.split('.').pop()}`;
+            return { promise: supabaseAdmin.storage.from('group-pictures').upload(path, file), path };
+        });
 
-                    </div>
-                </>
-            )}
+        const responses = await Promise.all(uploadPromises.map(({ promise }) => promise));
 
-            {modalStepCount === 3 && (
-                <div className="flex flex-col gap-4">
-                    <GroupDescriptionModalStep />
+        responses.forEach((response, index) => {
+            if (response.error) {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: `Error uploading file ${files[index].name}`
+                });
+            } else {
+                toast({
+                    title: "Success",
+                    description: `File ${files[index].name} uploaded successfully`
+                });
+            }
+        });
 
-                    <div className="flex">
-                        <Button onClick={() => {
-                            setModalStepCount(2)
-                        }}>Previous step</Button>
-                        {selectedInterests.length > 0 && editorContent.length > 0 && groupCity.length > 0 && groupCountry.length > 0 && groupName.length > 0 && (
-                            <Button variant="ghost"
-                                className="text-blue-500"
-                                onClick={() => {
-                                    editGroupMutation.mutateAsync()
-                                    setIsOpen(false)
-                                }}><Save size={20} />
-                            </Button>
-                        )}
-                    </div>
+        return uploadPromises.map(({ path }) => path);
+    };
 
-                </div>
-            )}
-        </div >
-    )
+    const { data: images, isLoading } = useQuery(
+        ['group-pictures', groupId],
+        async () => {
+            const { data, error } = await supabase
+                .from('group-pictures')
+                .select('*')
+                .eq('group_id', groupId);
+            if (error) {
+                throw error;
+            }
+            return data || [];
+        },
+        {
+            enabled: !!groupId,
+            cacheTime: 10 * 60 * 1000,
+        }
+    );
 
     return (
         <>
-            <div className="flex flex-col gap-4">
-                <Button variant="ghost"
-                    className="text-white/70"
-                    onClick={() => setIsOpen(true)}>
-                    <Edit size={20} />
-                </Button>
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="outline">
+                        <Edit className="text-white/70" size={20} strokeWidth={1} />
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="flex w-full max-w-[100vw] h-screen rounded-none bg-transparent">
+                    <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start max-h-[80vh] overflow-y-auto justify-center w-full gap-16 mt-24">
+                        <FileUpload className="max-[900px]:mt-96"
+                            onChange={(selectedFiles) => {
+                                setFiles(selectedFiles);
+                            }}
+                        />
+                        <div className="flex flex-col gap-4 max-w-[480px]">
+                            <div className="flex flex-col gap-4">
+                                <div className="flex flex-col gap-4">
+                                    <Input
+                                        className="p-0 placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
+                                        placeholder="Group Name"
+                                        value={groupName}
+                                        onChange={(e) => setGroupName(e.target.value)}
+                                    />
+                                    <div className='flex max-[900px]:flex-col gap-4'>
+                                        <Input
+                                            className="p-0 placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
+                                            placeholder="Group City"
+                                            value={groupCity}
+                                            onChange={(e) => setGroupCity(e.target.value)}
+                                        />
+                                        <Input
+                                            className="p-0 placeholder:text-white/60 bg-transparent border-none text-2xl outline-none"
+                                            placeholder="Group Country"
+                                            value={groupCountry}
+                                            onChange={(e) => setGroupCountry(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                                <GroupTopicsModalStep />
+                                <div className="flex flex-col gap-4">
+                                    <GroupDescriptionModalStep />
 
-                <Modal title="Create Group"
-                    body={bodyContent}
-                    isOpen={isOpen}
-                    onClose={() => setIsOpen(false)}
-                    onChange={setIsOpen}
-                />
-            </div>
+                                    {selectedInterests.length > 0 && editorContent.length > 0 && groupCity.length > 0 && groupCountry.length > 0 && groupName.length > 0 && (
+                                        <HoverBorderGradient
+                                            className="w-full"
+                                            onClick={() => {
+                                                editGroupMutation.mutateAsync();
+                                                setIsOpen(false);
+                                            }}
+                                        >
+                                            Update Group
+                                        </HoverBorderGradient>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             <Toaster />
         </>
