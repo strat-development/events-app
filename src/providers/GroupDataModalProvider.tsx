@@ -45,6 +45,10 @@ export default function GroupDataModalProvider({ children }: { children: React.R
     const [groupCity, setGroupCity] = useState<string>("")
     const [groupCountry, setGroupCountry] = useState<string>("")
     const [editorContent, setEditorContent] = useState<string>("")
+    const updateEditorContent = (newContent: string) => {
+        console.log("Updating editor content:", newContent);
+        setEditorContent(newContent);
+    };
 
     useQuery("interests", async () => {
         const { data, error } = await supabase
@@ -80,7 +84,7 @@ export default function GroupDataModalProvider({ children }: { children: React.R
             selectedGroup,
             setSelectedGroup,
             editorContent,
-            setEditorContent
+            setEditorContent: updateEditorContent
         }}>
             {children}
         </GroupDataContext.Provider>

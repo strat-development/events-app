@@ -1,5 +1,5 @@
 query GetChangeLog {
-  changeLogPosts {
+  changeLogPosts(orderBy: logCreatedAt_DESC) {
     logCreatedAt
     logTitle
     changeLogDescription {

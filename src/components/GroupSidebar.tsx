@@ -4,7 +4,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 import { GroupData } from "@/types/types";
 import Image from "next/image";
-import { ArrowUpRight, ChevronsRight, Files, MapPin } from "lucide-react";
+import { ArrowUpRight, ChevronsRight, Files, Languages, MapPin } from "lucide-react";
 import { Button } from "./ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import { format, parseISO } from "date-fns";
@@ -31,6 +31,8 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
     const groupId = selectedGroup?.id
     const pathname = usePathname();
     const [member, setMemberData] = useState<string[]>([])
+    const [translatedGroupDescription, setTranslatedGroupDescription] = useState<string>()
+    const [showTranslatedDescription, setShowTranslatedDescription] = useState(false)
 
     const joinGroupMutation = useMutation(
         async () => {
@@ -63,6 +65,26 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
             }
         }
     );
+
+    const translateRequest = async (description: string) => {
+        try {
+            const response = await fetch("/api/text-translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ description }),
+            });
+
+            if (!response.ok) throw new Error("Translation request failed");
+
+            const data = await response.json();
+            setTranslatedGroupDescription(data.translatedText);
+            setShowTranslatedDescription(true);
+
+            return data.translatedText;
+        } catch (error) {
+            console.error("Error in translateRequest:", error);
+        }
+    };
 
     const fetchAttendee = useQuery(['attendee'], async () => {
         const { data, error } = await supabase
@@ -237,7 +259,29 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
                                 <p className="text-white/70 font-semibold">About</p>
                                 <hr />
                             </div>
-                            <div dangerouslySetInnerHTML={{ __html: selectedGroup?.group_description || "" }}></div>
+                            {!translatedGroupDescription && (
+                                <Button className="w-fit text-white/70 self-end"
+                                    variant="ghost"
+                                    onClick={() => {
+                                        translateRequest(selectedGroup?.group_description as string)
+                                    }}>
+                                    <Languages size={20} />
+                                </Button>
+                            ) || (
+                                    <Button
+                                        className="w-fit flex gap-2 text-white/70"
+                                        variant="ghost"
+                                        onClick={() => setShowTranslatedDescription(!setShowTranslatedDescription)}
+                                    >
+                                        <Languages size={20} /> {showTranslatedDescription ? "Show Original" : "Show Translation"}
+                                    </Button>
+                                )}
+
+                            {showTranslatedDescription === false && (
+                                <div dangerouslySetInnerHTML={{ __html: selectedGroup?.group_description as string }}></div>
+                            ) || (
+                                    <div dangerouslySetInnerHTML={{ __html: translatedGroupDescription as string }}></div>
+                                )}
                         </div>
                     </div>
                 </DialogPrimitive.Content>

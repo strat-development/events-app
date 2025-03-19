@@ -8,16 +8,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { GroupTopicsModalStep } from "@/features/create-group-modal/GroupTopicsModalStep";
-import { GroupDescriptionModalStep } from "@/features/create-group-modal/GroupDescriptionModalStep";
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { FileUpload } from "@/components/ui/file-upload";
 import { supabaseAdmin } from "@/lib/admin";
 import { Edit } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { X } from "lucide-react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { TextEditor } from "@/features/TextEditor";
+import { GroupTopicsModalStep } from "@/features/create-group-modal/GroupTopicsModalStep";
+import { GenerateDescriptionDialog } from "../events/GenerateDescriptionDialog";
 
 interface EditGroupDialogProps {
     groupId: string;
@@ -196,7 +195,15 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
                                 </div>
                                 <GroupTopicsModalStep />
                                 <div className="flex flex-col gap-4">
-                                    <GroupDescriptionModalStep />
+                                    <div className="flex flex-col gap-4 items-end max-w-[400px]">
+                                        <TextEditor {
+                                            ...{
+                                                editorContent: editorContent,
+                                                onChange: setEditorContent
+                                            }
+                                        } />
+                                        <GenerateDescriptionDialog />
+                                    </div>
 
                                     {selectedInterests.length > 0 && editorContent.length > 0 && groupCity.length > 0 && groupCountry.length > 0 && groupName.length > 0 && (
                                         <HoverBorderGradient

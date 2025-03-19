@@ -1,15 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { GroupDescriptionModalStep } from '@/features/create-group-modal/GroupDescriptionModalStep';
 import { GroupTopicsModalStep } from '@/features/create-group-modal/GroupTopicsModalStep';
 import { useState } from 'react';
 import {
     Dialog,
     DialogTrigger,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
 } from '@/components/ui/dialog';
 import { useGroupDataContext } from '@/providers/GroupDataModalProvider';
 import { useUserContext } from '@/providers/UserContextProvider';
@@ -23,11 +19,12 @@ import { supabaseAdmin } from '@/lib/admin';
 import { GroupData } from '@/types/types';
 import { Plus, X } from 'lucide-react';
 import * as DialogPrimitive from "@radix-ui/react-dialog"
+import { TextEditor } from '@/features/TextEditor';
+import { GenerateDescriptionDialog } from '../events/GenerateDescriptionDialog';
 
 export const CreateGroupDialog = () => {
     const supabase = createClientComponentClient<Database>();
     const [isOpen, setIsOpen] = useState(false);
-    const [modalStepCount, setModalStepCount] = useState(1);
     const [files, setFiles] = useState<File[]>([]);
     const { groupName,
         setGroupName,
@@ -94,7 +91,6 @@ export const CreateGroupDialog = () => {
             }
 
             setIsOpen(false);
-            setModalStepCount(1);
             setGroupName("");
             setGroupCity("");
             setGroupCountry("");
@@ -202,7 +198,15 @@ export const CreateGroupDialog = () => {
                                     onChange={(e) => setGroupCountry(e.target.value)}
                                 />
                             </div>
-                            <GroupDescriptionModalStep />
+                            <div className="flex flex-col gap-4 items-end max-w-[400px]">
+                                <TextEditor {
+                                    ...{
+                                        editorContent: editorContent,
+                                        onChange: setEditorContent
+                                    }
+                                } />
+                                <GenerateDescriptionDialog />
+                            </div>
                             <GroupTopicsModalStep />
                             <div className="flex justify-between gap-4">
                                 {groupName && editorContent && groupCity && groupCountry && selectedInterests.length > 0 && files.length > 0 && (

@@ -4,7 +4,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 import { EventData } from "@/types/types";
 import Image from "next/image";
-import { ArrowUpRight, ChevronsRight, Files, MapPin } from "lucide-react";
+import { ArrowUpRight, ChevronsRight, Files, Languages, MapPin } from "lucide-react";
 import { Button } from "./ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import { format, parseISO } from "date-fns";
@@ -32,6 +32,8 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
     const [groupName, setGroupName] = useState<string>("")
     const pathname = usePathname();
     const [attendeeData, setAttendeeData] = useState<string[]>([])
+    const [translatedEventDescription, setTranslatedEventDescription] = useState<string>()
+    const [showTranslatedDescription, setShowTranslatedDescription] = useState(false)
 
     const groupData = useQuery(
         ["group", groupId],
@@ -57,6 +59,26 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
             refetchOnMount: false,
             refetchOnReconnect: false,
         })
+
+    const translateRequest = async (description: string) => {
+        try {
+            const response = await fetch("/api/text-translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ description }),
+            });
+
+            if (!response.ok) throw new Error("Translation request failed");
+
+            const data = await response.json();
+            setTranslatedEventDescription(data.translatedText);
+            setShowTranslatedDescription(true);
+
+            return data.translatedText;
+        } catch (error) {
+            console.error("Error in translateRequest:", error);
+        }
+    };
 
     const addAttendee = useMutation(async () => {
         const { data, error } = await supabase
@@ -266,7 +288,29 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
                                 <p className="text-white/70 font-semibold">About</p>
                                 <hr />
                             </div>
-                            <div dangerouslySetInnerHTML={{ __html: selectedEvent?.event_description || "" }}></div>
+                            {!translatedEventDescription && (
+                                <Button className="w-fit self-end text-white/70"
+                                    variant="ghost"
+                                    onClick={() => {
+                                        translateRequest(selectedEvent?.event_description as string)
+                                    }}>
+                                    <Languages size={20} />
+                                </Button>
+                            ) || (
+                                    <Button
+                                        className="w-fit flex gap-2 text-white/70"
+                                        variant="ghost"
+                                        onClick={() => setShowTranslatedDescription(!setShowTranslatedDescription)}
+                                    >
+                                        <Languages size={20} /> {showTranslatedDescription ? "Show Original" : "Show Translation"}
+                                    </Button>
+                                )}
+
+                            {showTranslatedDescription === false && (
+                                <div dangerouslySetInnerHTML={{ __html: selectedEvent?.event_description as string }}></div>
+                            ) || (
+                                    <div dangerouslySetInnerHTML={{ __html: translatedEventDescription as string }}></div>
+                                )}
                         </div>
                         <div className="w-full flex flex-col gap-4">
                             <div className="flex flex-col gap-2">

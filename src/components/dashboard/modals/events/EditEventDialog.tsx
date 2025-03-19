@@ -12,11 +12,11 @@ import { toast } from "@/components/ui/use-toast";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Edit } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { GroupDescriptionModalStep } from "@/features/create-group-modal/GroupDescriptionModalStep";
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider";
 import { FileUpload } from "@/components/ui/file-upload";
 import { supabaseAdmin } from "@/lib/admin";
-import { useUserContext } from "@/providers/UserContextProvider";
+import { TextEditor } from "@/features/TextEditor";
+import { GenerateDescriptionDialog } from "./GenerateDescriptionDialog";
 
 interface EditEventDialogProps {
     eventId: string;
@@ -38,9 +38,6 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
     const [selectedGroup, setSelectedGroup] = useState("");
     const [groupTopics, setGroupTopics] = useState([]);
     const [files, setFiles] = useState<File[]>([]);
-    const [eventImageUrl, setEventImageUrl] = useState<string>("");
-    const [fetchedGroupsData, setFetchedGroupsData] = useState<any[]>([]);
-    const { userId } = useUserContext();
     const [email, setEmail] = useState<string[]>([]);
     const [fullName, setFullName] = useState<string[]>([]);
     const [groupId, setGroupId] = useState<string>("");
@@ -83,31 +80,7 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
         setSpotsLimit(0);
         setSelectedGroup("");
         setFiles([]);
-        setEventImageUrl("");
     }, []);
-
-    const fetchGroups = useQuery(
-        ['groups'],
-        async () => {
-            const { data, error } = await supabase
-                .from("groups")
-                .select("group_name, id")
-                .eq("group_owner", userId ?? "");
-            if (error) {
-                throw error;
-            }
-
-            if (data) {
-                setFetchedGroupsData(data);
-            }
-
-            return data;
-        },
-        {
-            enabled: !!userId,
-            cacheTime: 10 * 60 * 1000,
-        }
-    );
 
     useEffect(() => {
         const fetchGroupTopics = async () => {
@@ -364,7 +337,15 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
                                 </div>
                             </div>
 
-                            <GroupDescriptionModalStep />
+                            <div className="flex flex-col gap-4 items-end max-w-[400px]">
+                                <TextEditor {
+                                    ...{
+                                        editorContent: editorContent,
+                                        onChange: setEditorContent
+                                    }
+                                } />
+                                <GenerateDescriptionDialog />
+                            </div>
 
                             <Input
                                 className="placeholder:text-white/60"

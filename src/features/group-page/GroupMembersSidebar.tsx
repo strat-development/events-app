@@ -110,7 +110,7 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
 
     return (
         <>
-            <div className="flex flex-col gap-4 sticky top-24">
+            <div className="flex flex-col gap-4 sticky top-24 w-fit min-[1140px]:w-[25%]">
                 <h2 className='text-2xl tracking-wider font-bold'>Group members</h2>
                 <div className="flex items-start gap-4">
                     <div className='flex gap-4'>

@@ -30,9 +30,7 @@ export const CustomGroupPage = ({
                             )}
                         <EventsSection groupId={groupId} />
                     </div>
-                    <div className="relative">
-                        <GroupMembersSidebar groupId={groupId} />
-                    </div>
+                    <GroupMembersSidebar groupId={groupId} />
                 </div>
             </div>
         </>

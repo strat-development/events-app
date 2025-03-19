@@ -11,7 +11,8 @@ import { toast } from "@/components/ui/use-toast"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { usePathname } from "next/navigation"
-import { Edit, Save, X } from "lucide-react"
+import { Edit, Languages, Save, X } from "lucide-react"
+import { GenerateDescriptionDialog } from "@/components/dashboard/modals/events/GenerateDescriptionDialog"
 
 interface GroupInfoSectionProps {
     groupId: string
@@ -20,6 +21,8 @@ interface GroupInfoSectionProps {
 export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
     const supabase = createClientComponentClient<Database>()
     const [groupDescription, setGroupDescription] = useState<string>()
+    const [translatedGroupDescription, setTranslatedGroupDescription] = useState<string>()
+    const [showTranslatedDescription, setShowTranslatedDescription] = useState(false)
     const [isExpanded, setIsExpanded] = useState(false)
     const [isSetToEdit, setIsSetToEdit] = useState(false)
     const queryClient = useQueryClient()
@@ -44,6 +47,26 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
         {
             cacheTime: 10 * 60 * 1000,
         })
+
+    const translateRequest = async (description: string) => {
+        try {
+            const response = await fetch("/api/text-translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ description }),
+            });
+
+            if (!response.ok) throw new Error("Translation request failed");
+
+            const data = await response.json();
+            setTranslatedGroupDescription(data.translatedText);
+            setShowTranslatedDescription(true);
+
+            return data.translatedText;
+        } catch (error) {
+            console.error("Error in translateRequest:", error);
+        }
+    };
 
     const editGroupDescriptionMutation = useMutation(
         async (newGroupDescription: string) => {
@@ -103,9 +126,29 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                     <div className='relative'>
                         {isSetToEdit === false && (
                             <>
-                                <div
-                                    dangerouslySetInnerHTML={{ __html: groupDescription as string }}
-                                    className={`overflow-hidden ${isExpanded ? 'max-h-full' : 'max-h-24'} ${!isExpanded && 'blur-effect'}`}></div>
+                                {!translatedGroupDescription && (
+                                    <Button className="w-fit text-white/70 self-end"
+                                        variant="ghost"
+                                        onClick={() => {
+                                            translateRequest(groupDescription as string)
+                                        }}>
+                                        <Languages size={20} />
+                                    </Button>
+                                ) || (
+                                        <Button
+                                            className="w-fit flex gap-2 text-white/70"
+                                            variant="ghost"
+                                            onClick={() => setShowTranslatedDescription(!setShowTranslatedDescription)}
+                                        >
+                                            <Languages size={20} /> {showTranslatedDescription ? "Show Original" : "Show Translation"}
+                                        </Button>
+                                    )}
+
+                                {showTranslatedDescription === false && (
+                                    <div dangerouslySetInnerHTML={{ __html: groupDescription as string }}></div>
+                                ) || (
+                                        <div dangerouslySetInnerHTML={{ __html: translatedGroupDescription as string }}></div>
+                                    )}
                                 <button
                                     onClick={() => setIsExpanded(!isExpanded)}
                                     className='text-blue-500'>
@@ -115,10 +158,15 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                         ) || (
 
                                 <div className="flex flex-col gap-4">
-                                    <TextEditor
-                                        editorContent={groupDescription as string}
-                                        onChange={setGroupDescription}
-                                    />
+                                    <div className="flex flex-col gap-4 items-end max-w-[400px]">
+                                        <TextEditor {
+                                            ...{
+                                                editorContent: groupDescription as string,
+                                                onChange: setGroupDescription
+                                            }
+                                        } />
+                                        <GenerateDescriptionDialog />
+                                    </div>
                                     <div className="flex gap-4">
                                         <Button variant="ghost"
                                             className="w-fit text-blue-500"
@@ -141,8 +189,8 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                     {pathname.includes("/dashboard") && userId === ownerId && !isSetToEdit && (
                         <div className="flex gap-4">
                             <Button variant="ghost"
-                                className="w-fit text-white/70" 
-                            onClick={() => setIsSetToEdit(true)}>
+                                className="w-fit text-white/70"
+                                onClick={() => setIsSetToEdit(true)}>
                                 <Edit size={20} />
                             </Button>
                         </div>

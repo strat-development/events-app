@@ -4,16 +4,16 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 import { UserData } from "@/types/types";
 import Image from "next/image";
-import { ArrowUpRight, ChevronsRight, Files, MapPin } from "lucide-react";
+import { ArrowUpRight, ChevronsRight, Files, Languages, MapPin } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { format, parseISO } from "date-fns";
-import { useQuery, useQueryClient } from "react-query";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/supabase";
-import { useUserContext } from "@/providers/UserContextProvider";
-import { useState } from "react";
+import { useQuery } from "react-query";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { IconGhost2Filled } from "@tabler/icons-react";
+import { useUserContext } from "@/providers/UserContextProvider";
+import { Database } from "@/types/supabase";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface UserProfileSidebarProps {
     isOpen: boolean;
@@ -25,6 +25,53 @@ interface UserProfileSidebarProps {
 export const UserProfileSidebar = ({ isOpen, onClose, selectedUser, imageUrl }: UserProfileSidebarProps) => {
     const router = useRouter()
     const pathname = usePathname();
+    const [userInterests, setUserInterests] = useState<string[]>([])
+    const { userId } = useUserContext();
+    const supabase = createClientComponentClient<Database>()
+    const [translatedBio, setTranslatedBio] = useState<string>();
+    const [showTranslatedBio, setShowTranslatedBio] = useState(false);
+
+    useQuery("userInterests", async () => {
+        if (!userId) return
+        const { data, error } = await supabase
+            .from("users")
+            .select("user_interests")
+            .eq("id", userId)
+        if (error) {
+            throw error
+        }
+
+        if (data && data.length > 0) {
+            setUserInterests(data[0].user_interests as string[])
+        }
+
+        return data
+    }, {
+        enabled: !!userId,
+        cacheTime: 10 * 60 * 1000,
+    })
+
+    const translateRequest = async (description: string) => {
+        try {
+            const response = await fetch("/api/text-translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ description }),
+            });
+
+            if (!response.ok) throw new Error("Translation request failed");
+
+            const data = await response.json();
+            setTranslatedBio(data.translatedText);
+            setShowTranslatedBio(true);
+
+            return data.translatedText;
+        } catch (error) {
+            console.error("Error in translateRequest:", error);
+        }
+    };
+
+    const memoizedUserInterests = useMemo(() => userInterests, [userInterests])
 
     return (
         <DialogPrimitive.Root open={isOpen} onOpenChange={onClose}>
@@ -123,7 +170,39 @@ export const UserProfileSidebar = ({ isOpen, onClose, selectedUser, imageUrl }: 
                                 <p className="text-white/70 font-semibold">About</p>
                                 <hr />
                             </div>
-                            <div dangerouslySetInnerHTML={{ __html: selectedUser?.user_bio || "" }}></div>
+                            {!translatedBio && (
+                                <Button className="w-fit text-white/70 self-end"
+                                    variant="ghost"
+                                    onClick={() => {
+                                        translateRequest(selectedUser?.user_bio as string)
+                                    }}>
+                                    <Languages size={20} />
+                                </Button>
+                            ) || (
+                                    <Button
+                                        className="w-fit flex gap-2 text-white/70"
+                                        variant="ghost"
+                                        onClick={() => setShowTranslatedBio(!showTranslatedBio)}
+                                    >
+                                        <Languages size={20} /> {showTranslatedBio ? "Show Original" : "Show Translation"}
+                                    </Button>
+                                )}
+
+                            {showTranslatedBio === false && (
+                                <div dangerouslySetInnerHTML={{ __html: selectedUser?.user_bio as string }}></div>
+                            ) || (
+                                    <div dangerouslySetInnerHTML={{ __html: translatedBio as string }}></div>
+                                )}
+                            <div className="flex flex-wrap gap-4">
+                                {memoizedUserInterests && (
+                                    memoizedUserInterests.map((interest, index) => (
+                                        <div key={index}
+                                            className="border border-white/10 bg-gradient-to-br text-white/70 hover:text-white/80 text-sm py-1 px-2 transition duration-300 rounded-xl cursor-pointer hover:shadow-lg hover:shadow-white/5 max-w-[148px] w-fit">
+                                            <p className="tracking-wide font-medium truncate"
+                                                key={index}>{interest}</p>
+                                        </div>
+                                    )))}
+                            </div>
                         </div>
                     </div>
                 </DialogPrimitive.Content>

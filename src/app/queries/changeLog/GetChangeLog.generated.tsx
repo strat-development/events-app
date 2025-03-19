@@ -11,7 +11,7 @@ export type GetChangeLogQuery = { __typename?: 'Query', changeLogPosts: Array<{ 
 
 export const GetChangeLogDocument = gql`
     query GetChangeLog {
-  changeLogPosts {
+  changeLogPosts(orderBy: logCreatedAt_DESC) {
     logCreatedAt
     logTitle
     changeLogDescription {

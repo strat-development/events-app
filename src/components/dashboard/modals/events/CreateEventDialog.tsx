@@ -14,11 +14,11 @@ import { useMutation, useQuery, useQueryClient } from "react-query"
 import "../../../../styles/input.css"
 import { supabaseAdmin } from "@/lib/admin"
 import { FileUpload } from "@/components/ui/file-upload"
-import { GroupDescriptionModalStep } from "@/features/create-group-modal/GroupDescriptionModalStep"
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Plus, X } from "lucide-react"
-import * as DialogPrimitive from "@radix-ui/react-dialog"
+import { Plus } from "lucide-react"
+import { TextEditor } from "@/features/TextEditor"
+import { GenerateDescriptionDialog } from "./GenerateDescriptionDialog"
 
 interface CreateEventDialogProps {
     ownerId: string
@@ -29,7 +29,6 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
     const queryClient = useQueryClient()
     const { userId } = useUserContext()
     const [fetchedGroupsData, setFetchedGroupsData] = useState<GroupData[]>([])
-
     const [isOpen, setIsOpen] = useState(false)
     const [eventTitle, setEventTitle] = useState("")
     const { editorContent, setEditorContent } = useGroupDataContext()
@@ -43,7 +42,6 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
     const [selectedGroup, setSelectedGroup] = useState("")
     const [groupTopics, setGroupTopics] = useState([])
     const [files, setFiles] = useState<File[]>([]);
-    const [eventImageUrl, setEventImageUrl] = useState<string>("")
 
     const clearStates = useCallback(() => {
         setEventTitle("")
@@ -54,7 +52,6 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
         setSpotsLimit(0)
         setSelectedGroup("")
         setFiles([])
-        setEventImageUrl("")
     }, [])
 
     const fetchGroups = useQuery(
@@ -227,10 +224,6 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                 </DialogTrigger>
                 <DialogContent className="flex w-full max-w-[100vw] h-screen rounded-none bg-transparent">
                     <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start max-h-[80vh] overflow-y-auto justify-center w-full gap-16 mt-24">
-                        <DialogPrimitive.Close className="absolute right-96 rounded-xl opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-                            <X className="h-4 w-4 text-white/70" />
-                            <span className="sr-only">Close</span>
-                        </DialogPrimitive.Close>
                         <FileUpload className="max-[900px]:mt-96"
                             onChange={(selectedFiles) => {
                                 setFiles(selectedFiles);
@@ -281,7 +274,15 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                                 </div>
                             </div>
 
-                            <GroupDescriptionModalStep />
+                            <div className="flex flex-col gap-4 items-end max-w-[400px]">
+                                <TextEditor {
+                                    ...{
+                                        editorContent: editorContent,
+                                        onChange: setEditorContent
+                                    }
+                                } />
+                                <GenerateDescriptionDialog />
+                            </div>
 
                             <Input
                                 className="placeholder:text-white/60"

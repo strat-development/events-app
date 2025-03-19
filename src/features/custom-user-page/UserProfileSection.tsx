@@ -11,7 +11,7 @@ import { UserDataModal } from "../../components/dashboard/modals/user-profile/Us
 import { DeleteUserProfileImageDialog } from "../../components/dashboard/modals/user-profile/DeleteUserProfileImageDialog";
 import { EditSocialsDialog } from "../../components/dashboard/modals/user-profile/EditSocialsDialog";
 import { SocialMediaTypes } from "@/types/types";
-import { Facebook, Instagram, Save, Twitter, X } from "lucide-react";
+import { Facebook, Instagram, Languages, Save, Twitter, X } from "lucide-react";
 import Link from "next/link";
 import { TextEditor } from "@/features/TextEditor";
 import { Button } from "../../components/ui/button";
@@ -31,11 +31,33 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
     const pathname = usePathname();
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
     const [userBio, setUserBio] = useState<string>();
+    const [translatedBio, setTranslatedBio] = useState<string>();
+    const [showTranslatedBio, setShowTranslatedBio] = useState(false);
     const [isSetToEdit, setIsSetToEdit] = useState(false)
     const socialMediaIcons: Record<SocialMediaTypes, JSX.Element> = {
         Facebook: <Facebook className="text-white/70" size={24} />,
         Instagram: <Instagram className="text-white/70" size={24} />,
         X: <Twitter className="text-white/70" size={24} />,
+    };
+
+    const translateRequest = async (description: string) => {
+        try {
+            const response = await fetch("/api/text-translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ description }),
+            });
+
+            if (!response.ok) throw new Error("Translation request failed");
+
+            const data = await response.json();
+            setTranslatedBio(data.translatedText);
+            setShowTranslatedBio(true);
+
+            return data.translatedText;
+        } catch (error) {
+            console.error("Error in translateRequest:", error);
+        }
     };
 
     const { data: images, isLoading } = useQuery(
@@ -194,7 +216,32 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                             </div>
 
                             {isSetToEdit === false && (
-                                <div dangerouslySetInnerHTML={{ __html: user.user_bio as string }}></div>
+                                <>
+                                    {!translatedBio && (
+                                        <Button className="w-fit text-white/70 self-end"
+                                            variant="ghost"
+                                            onClick={() => {
+                                                translateRequest(user.user_bio as string)
+                                            }}>
+                                            <Languages size={20} />
+                                        </Button>
+                                    ) || (
+                                            <Button
+                                                className="w-fit flex gap-2 text-white/70"
+                                                variant="ghost"
+                                                onClick={() => setShowTranslatedBio(!showTranslatedBio)}
+                                            >
+                                               <Languages size={20} /> {showTranslatedBio ? "Show Original" : "Show Translation"}
+                                            </Button>
+                                        )}
+
+                                    {showTranslatedBio === false && (
+                                        <div dangerouslySetInnerHTML={{ __html: user.user_bio as string }}></div>
+                                    ) || (
+                                            <div dangerouslySetInnerHTML={{ __html: translatedBio as string }}></div>
+                                        )}
+
+                                </>
                             ) || (
                                     <div className="flex flex-col gap-4 ">
                                         <TextEditor

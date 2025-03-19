@@ -3199,36 +3199,6 @@ export type ScheduledReleaseWhereUniqueInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
 };
 
-export type SearchResult = {
-  __typename?: 'SearchResult';
-  id: Scalars['ID']['output'];
-  locale: Locale;
-  matchContext: SearchResultMatchContext;
-  model: SearchResultModel;
-  stage: Stage;
-  titleFields: Array<SearchResultTitleField>;
-};
-
-export type SearchResultMatchContext = {
-  __typename?: 'SearchResultMatchContext';
-  highlight: Scalars['String']['output'];
-};
-
-export type SearchResultModel = {
-  __typename?: 'SearchResultModel';
-  apiId: Scalars['String']['output'];
-};
-
-export type SearchResultTitleField = {
-  __typename?: 'SearchResultTitleField';
-  apiId: Scalars['String']['output'];
-  value: Scalars['String']['output'];
-};
-
-export type SearchWhereInput = {
-  term: Scalars['String']['input'];
-};
-
 /** Stage system enumeration */
 export enum Stage {
   /** The Draft is the default stage for all your content. */

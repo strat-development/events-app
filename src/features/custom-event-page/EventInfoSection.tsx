@@ -13,11 +13,12 @@ import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import Image from "next/image"
 import { IconGhost2Filled } from "@tabler/icons-react"
 import { usePathname } from "next/navigation"
-import { Edit, Save, X } from "lucide-react"
+import { Edit, Languages, Save, X } from "lucide-react"
 import { EventAttendeesDialog } from "@/components/dashboard/modals/events/EventAttendeesDialog"
 import { UserProfileSidebar } from "../../components/UserProfileSidebar"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { EventData, UserData } from "@/types/types"
+import { GenerateDescriptionDialog } from "@/components/dashboard/modals/events/GenerateDescriptionDialog"
 
 interface EventInfoSectionProps {
     eventId: string
@@ -26,6 +27,8 @@ interface EventInfoSectionProps {
 export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const supabase = createClientComponentClient<Database>()
     const [eventDescription, setEventDescription] = useState<string>()
+    const [translatedEventDescription, setTranslatedEventDescription] = useState<string>()
+    const [showTranslatedDescription, setShowTranslatedDescription] = useState(false)
     const [isExpanded, setIsExpanded] = useState(false)
     const [isSetToEdit, setIsSetToEdit] = useState(false)
     const [eventHostId, setEventHostId] = useState<string>()
@@ -61,6 +64,26 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
         {
             cacheTime: 10 * 60 * 1000,
         })
+
+    const translateRequest = async (description: string) => {
+        try {
+            const response = await fetch("/api/text-translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ description }),
+            });
+
+            if (!response.ok) throw new Error("Translation request failed");
+
+            const data = await response.json();
+            setTranslatedEventDescription(data.translatedText);
+            setShowTranslatedDescription(true);
+
+            return data.translatedText;
+        } catch (error) {
+            console.error("Error in translateRequest:", error);
+        }
+    };
 
     const eventAttendees = useQuery(
         ['attendees-data'],
@@ -162,9 +185,30 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                     <div className='relative'>
                         {isSetToEdit === false && (
                             <>
-                                <div
-                                    dangerouslySetInnerHTML={{ __html: eventDescription as string }}
-                                    className={`overflow-hidden ${isExpanded ? 'max-h-full' : 'max-h-24'} ${!isExpanded && 'blur-effect'}`}></div>
+                                {!translatedEventDescription && (
+                                    <Button className="w-fit text-white/70 self-end"
+                                        variant="ghost"
+                                        onClick={() => {
+                                            translateRequest(eventData?.event_description as string)
+                                        }}>
+                                        <Languages size={20} />
+                                    </Button>
+                                ) || (
+                                        <Button
+                                            className="w-fit flex gap-2 text-white/70"
+                                            variant="ghost"
+                                            onClick={() => setShowTranslatedDescription(!setShowTranslatedDescription)}
+                                        >
+                                            <Languages size={20} /> {showTranslatedDescription ? "Show Original" : "Show Translation"}
+                                        </Button>
+                                    )}
+
+                                {showTranslatedDescription === false && (
+                                    <div dangerouslySetInnerHTML={{ __html: eventData?.event_description as string }}></div>
+                                ) || (
+                                        <div dangerouslySetInnerHTML={{ __html: translatedEventDescription as string }}></div>
+                                    )}
+
                                 <button
                                     onClick={() => setIsExpanded(!isExpanded)}
                                     className='text-blue-500'>
@@ -173,10 +217,15 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                             </>
                         ) || (
                                 <div className="flex flex-col gap-4">
-                                    <TextEditor
-                                        editorContent={eventDescription as string}
-                                        onChange={setEventDescription}
-                                    />
+                                    <div className="flex flex-col gap-4 items-end max-w-[400px]">
+                                        <TextEditor {
+                                            ...{
+                                                editorContent: eventDescription as string,
+                                                onChange: setEventDescription
+                                            }
+                                        } />
+                                        <GenerateDescriptionDialog />
+                                    </div>
                                     <div className="flex gap-4">
                                         <Button variant="ghost"
                                             className="w-fit text-blue-500"
