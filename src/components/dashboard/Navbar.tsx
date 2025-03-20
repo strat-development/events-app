@@ -1,6 +1,6 @@
 "use client"
 
-import { ChartArea, Heart, LayoutDashboardIcon, PartyPopperIcon, SlidersHorizontal, Users } from "lucide-react"
+import { ChartArea, Heart, LayoutDashboardIcon, PartyPopperIcon, SlidersHorizontal, Ticket, Users } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -13,18 +13,23 @@ export const Navbar = () => {
                 <LayoutDashboardIcon strokeWidth={1}
                     size={24} />
             </Link>
-            <Link className={pathname === "/dashboard/events" ? "text-primary bg-white/10 rounded-full p-2" : "text-white/50 p-2"} 
-            href="/dashboard/events">
+            <Link className={pathname === "/dashboard/tickets" ? "text-primary bg-white/10 rounded-full p-2" : "text-white/50 p-2"}
+                href="/dashboard/tickets">
+                <Ticket strokeWidth={1}
+                    size={24} />
+            </Link>
+            <Link className={pathname === "/dashboard/events" ? "text-primary bg-white/10 rounded-full p-2" : "text-white/50 p-2"}
+                href="/dashboard/events">
                 <PartyPopperIcon strokeWidth={1}
                     size={24} />
             </Link>
-            <Link className={pathname === "/dashboard/group" ? "text-primary bg-white/10 rounded-full p-2" : "text-white/50 p-2"} 
-            href="/dashboard/group">
+            <Link className={pathname === "/dashboard/group" ? "text-primary bg-white/10 rounded-full p-2" : "text-white/50 p-2"}
+                href="/dashboard/group">
                 <Users strokeWidth={1}
                     size={24} />
             </Link>
-            <Link className={pathname === "/dashboard/interests" ? "text-primary bg-white/10 rounded-full p-2" : "text-white/50 p-2"} 
-            href="/dashboard/interests">
+            <Link className={pathname === "/dashboard/interests" ? "text-primary bg-white/10 rounded-full p-2" : "text-white/50 p-2"}
+                href="/dashboard/interests">
                 <Heart strokeWidth={1}
                     size={24} />
             </Link>

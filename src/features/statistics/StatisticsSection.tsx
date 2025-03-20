@@ -59,7 +59,7 @@ export const StatisticsSection = () => {
 
         const { data, error } = await supabase
             .from("event-attendees")
-            .select("event_id, attendee_id")
+            .select("event_id, user_id")
             .in("event_id", eventIds);
 
         if (error) {

@@ -75,7 +75,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
         const { data, error } = await supabase
             .from("event-attendees")
             .upsert({
-                attendee_id: userId,
+                user_id: userId,
                 event_id: eventId
             })
 
@@ -112,6 +112,49 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
         }
     })
 
+    const addTicket = useMutation(async () => {
+        const { data, error } = await supabase
+            .from("event-tickets")
+            .insert({
+                event_id: eventId,
+                user_id: userId,
+                user_fullname: userName,
+                user_email: userEmail,
+                event_starts_at: eventData?.map((event) => event.starts_at),
+                event_title: eventData?.map((event) => event.event_title),
+                event_address: eventData?.map((event) => event.event_address),
+                ticket_price: eventData?.map((event) => event.ticket_price)
+            })
+
+        if (error) {
+            throw error
+        }
+
+        return data
+    }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('ticket')
+        }
+    })
+
+    const removeTicket = useMutation(async () => {
+        const { data, error } = await supabase
+            .from("event-tickets")
+            .delete()
+            .eq("user_id", userId)
+            .eq("event_id", eventId || "")
+
+        if (error) {
+            throw error
+        }
+
+        return data
+    }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('ticket')
+        }
+    })
+
     const { data: attendeeCount, error: attendeeCountError } = useQuery(['attendee-count', eventId], async () => {
         const { count, error } = await supabase
             .from("event-attendees")
@@ -135,7 +178,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
         const { data, error } = await supabase
             .from("event-attendees")
             .select("*")
-            .eq("attendee_id", userId)
+            .eq("user_id", userId)
             .eq("event_id", eventId)
 
         if (error) {
@@ -157,7 +200,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
         const { data, error } = await supabase
             .from("event-attendees")
             .delete()
-            .eq("attendee_id", userId)
+            .eq("user_id", userId)
             .eq("event_id", eventId)
 
         if (error) {
@@ -208,6 +251,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                         className="text-red-500 h-fit"
                                         onClick={() => {
                                             removeAttendee.mutateAsync()
+                                            removeTicket.mutateAsync()
                                         }}>
                                         <LogOut size={20} />
                                     </Button>
@@ -222,6 +266,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                             variant="ghost"
                                             onClick={() => {
                                                 addAttendee.mutateAsync()
+                                                addTicket.mutateAsync()
                                             }}>
                                             <LogIn size={20} />
                                         </Button>

@@ -19,3 +19,7 @@ export type PostsData = Database["public"]["Tables"]["posts"]["Row"];
 export type GroupPostsData = Database["public"]["Tables"]["group-posts"]["Row"];
 
 export type CommentsData = Database["public"]["Tables"]["post-comments"]["Row"];
+
+export type TicketsData = Database["public"]["Tables"]["event-tickets"]["Row"];
+
+export type AttendeesData = Database["public"]["Tables"]["event-attendees"]["Row"];

@@ -31,7 +31,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
     const { eventCreatorId } = useGroupOwnerContext()
     const pathname = usePathname()
     const [eventData, setEventData] = useState<EventData[]>()
-    const groupId = eventData?.[0].event_group
+    const groupId = eventData?.map((event) => event.event_group).toString()   
     const [eventNameToEdit, setEventNameToEdit] = useState(false)
     const [newEventName, setNewEventName] = useState("")
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);

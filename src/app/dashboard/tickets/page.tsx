@@ -1,13 +1,13 @@
 "use client"
 
-import { EventSection } from "@/components/dashboard/EventSection";
-import { Navbar } from "@/components/dashboard/Navbar"
+import { Navbar } from "@/components/dashboard/Navbar";
+import { Ticketsection } from "@/components/dashboard/TicketsSection";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import GridLoader from "react-spinners/GridLoader";
 
-export default function EventPage() {
+export default function TicketsPage() {
     const { userId, loading } = useUserContext();
     const router = useRouter();
 
@@ -31,10 +31,10 @@ export default function EventPage() {
                 <Navbar />
                 {userId.length > 0 && (
                     <div className="justify-self-center overflow-x-hidden w-full">
-                        <EventSection />
+                        <Ticketsection />
                     </div>
                 )}
             </div>
         </>
-    );
+    )
 }

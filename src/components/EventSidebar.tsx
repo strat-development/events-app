@@ -2,7 +2,7 @@
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
-import { EventData } from "@/types/types";
+import { AttendeesData, EventData } from "@/types/types";
 import Image from "next/image";
 import { ArrowUpRight, ChevronsRight, Files, Languages, MapPin } from "lucide-react";
 import { Button } from "./ui/button";
@@ -31,7 +31,7 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
     const groupId = selectedEvent?.event_group
     const [groupName, setGroupName] = useState<string>("")
     const pathname = usePathname();
-    const [attendeeData, setAttendeeData] = useState<string[]>([])
+    const [attendeeData, setAttendeeData] = useState<AttendeesData[]>([])
     const [translatedEventDescription, setTranslatedEventDescription] = useState<string>()
     const [showTranslatedDescription, setShowTranslatedDescription] = useState(false)
 
@@ -84,7 +84,7 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
         const { data, error } = await supabase
             .from("event-attendees")
             .upsert({
-                attendee_id: userId,
+                user_id: userId,
                 event_id: selectedEvent?.id
             })
 
@@ -116,8 +116,33 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
 
             toast({
                 title: "You have successfully registered for this event",
-                description: "You can now attend this event",
+                description: "You can now attend this event, check your ticket on your dashboard",
             })
+        }
+    })
+
+    const addTicket = useMutation(async () => {
+        const { data, error } = await supabase
+            .from("event-tickets")
+            .insert({
+                event_id: selectedEvent?.id,
+                user_id: userId,
+                user_fullname: userName,
+                user_email: userEmail,
+                event_starts_at: selectedEvent?.starts_at,
+                event_title: selectedEvent?.event_title,
+                event_address: selectedEvent?.event_address,
+                ticket_price: selectedEvent?.ticket_price,
+            })
+
+        if (error) {
+            throw error
+        }
+
+        return data
+    }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('ticket')
         }
     })
 
@@ -125,7 +150,7 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
         const { data, error } = await supabase
             .from("event-attendees")
             .select("*")
-            .eq("attendee_id", userId)
+            .eq("user_id", userId)
             .eq("event_id", selectedEvent?.id || "")
 
         if (error) {
@@ -133,7 +158,7 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
         }
 
         if (data) {
-            setAttendeeData(data as unknown as string[])
+            setAttendeeData(data as AttendeesData[])
         }
 
         return data
@@ -147,7 +172,7 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
         const { data, error } = await supabase
             .from("event-attendees")
             .delete()
-            .eq("attendee_id", userId)
+            .eq("user_id", userId)
             .eq("event_id", selectedEvent?.id || "")
 
         if (error) {
@@ -163,6 +188,24 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
     }, {
         onSuccess: () => {
             queryClient.invalidateQueries('attendee')
+        }
+    })
+
+    const removeTicket = useMutation(async () => {
+        const { data, error } = await supabase
+            .from("event-tickets")
+            .delete()
+            .eq("user_id", userId)
+            .eq("event_id", selectedEvent?.id || "")
+
+        if (error) {
+            throw error
+        }
+
+        return data
+    }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('ticket')
         }
     })
 
@@ -268,19 +311,21 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
                                     <p className="font-semibold text-white/70 truncate">{userName}</p>
                                     <p className="font-semibold text-white/50 truncate">{userEmail}</p>
                                 </div>
-                                {!attendeeData && (
+                                {attendeeData.length === 0 ? (
                                     <Button className="mt-4" variant="default" onClick={() => {
                                         addAttendee.mutateAsync()
+                                        addTicket.mutateAsync()
                                     }}>
                                         Join event
                                     </Button>
-                                ) || (
-                                        <Button className="mt-4" variant="destructive" onClick={() => {
-                                            removeAttendee.mutateAsync()
-                                        }}>
-                                            Leave event
-                                        </Button>
-                                    )}
+                                ) : (
+                                    <Button className="mt-4" variant="destructive" onClick={() => {
+                                        removeAttendee.mutateAsync()
+                                        removeTicket.mutateAsync()
+                                    }}>
+                                        Leave event
+                                    </Button>
+                                )}
                             </div>
                         </div>
                         <div className="w-full flex flex-col gap-4">

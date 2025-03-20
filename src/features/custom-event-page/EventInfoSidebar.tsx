@@ -19,7 +19,7 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
     const supabase = createClientComponentClient<Database>()
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([])
     const [eventData, setEventData] = useState<EventData[]>()
-    const groupId = eventData?.[0].event_group
+    const groupId = eventData?.map((event) => event.event_group).toString() 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<GroupData | null>(null);
     const [selectedGroupImageUrl, setSelectedGroupImageUrl] = useState<string | null>(null);

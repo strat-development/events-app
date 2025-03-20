@@ -17,7 +17,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, Pagi
 import { EditEventDialog } from "./modals/events/EditEventDialog"
 
 
-export const EventCard = () => {
+export const EventSection = () => {
     const supabase = createClientComponentClient<Database>()
     const { eventCreatorId, ownerId } = useGroupOwnerContext();
     const { userId } = useUserContext();
@@ -37,7 +37,7 @@ export const EventCard = () => {
                         *
                     )
                 `)
-                .eq('attendee_id', userId);
+                .eq('user_id', userId);
 
             if (error) {
                 console.error("Error fetching events:", error.message);

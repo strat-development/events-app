@@ -7,7 +7,7 @@ import { TextEditor } from "@/features/TextEditor"
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider"
 import { Sparkles } from "lucide-react"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export const GenerateDescriptionDialog = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -15,37 +15,38 @@ export const GenerateDescriptionDialog = () => {
     const [mood, setMood] = useState("");
     const [length, setLength] = useState("");
     const [language, setLanguage] = useState("");
-    const pathname = usePathname()
+    const pathname = usePathname();
+    const [currentPath, setCurrentPath] = useState("");
 
-    const generateRequest = async (editorContent: string, mood: string, length: string, language: string) => {
+    useEffect(() => {
+        setCurrentPath(pathname);
+    }, [pathname]);
+
+    const generateRequest = async () => {
         try {
-            if (pathname.includes("event-page")) {
-                const response = await fetch(`/api/generate-event-description`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ editorContent, mood, length, language }),
-                });
+            let apiEndpoint = "";
 
-                if (!response.ok) throw new Error("Generation request failed");
-
-                const data = await response.json();
-
-                setEditorContent(data.eventDescription);
-                setIsOpen(false);
-            } else if (pathname.includes("group-page")) {
-                const response = await fetch(`/api/generate-group-description`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ editorContent, mood, length, language }),
-                });
-
-                if (!response.ok) throw new Error("Generation request failed");
-
-                const data = await response.json();
-
-                setEditorContent(data.eventDescription);
-                setIsOpen(false);
+            if (currentPath.includes("event-page")) {
+                apiEndpoint = "/api/generate-event-description";
+            } else if (currentPath.includes("group-page")) {
+                apiEndpoint = "/api/generate-group-description";
+            } else if (currentPath.includes("events")) {
+                apiEndpoint = "/api/generate-event-description";
+            } else if (currentPath.includes("groups")) {
+                apiEndpoint = "/api/generate-group-description";
             }
+
+            const response = await fetch(apiEndpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ editorContent, mood, length, language }),
+            });
+
+            if (!response.ok) throw new Error("Generation request failed");
+
+            const data = await response.json();
+            setEditorContent(data.eventDescription);
+            setIsOpen(false);
         } catch (error) {
             console.error("Error in generateRequest:", error);
         }
@@ -100,10 +101,7 @@ export const GenerateDescriptionDialog = () => {
                                     onChange: setEditorContent
                                 }
                             } />
-                            <HoverBorderGradient
-                                onClick={async () => {
-                                    await generateRequest(editorContent, mood, length, language);
-                                }}>
+                            <HoverBorderGradient onClick={generateRequest}>
                                 Generate Description
                             </HoverBorderGradient>
                         </div>

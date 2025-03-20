@@ -90,7 +90,7 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
         const { data, error } = await supabase
             .from("group-members")
             .select("*")
-            .eq("attendee_id", userId)
+            .eq("user_id", userId)
             .eq("group_id", selectedGroup?.id || "")
 
         if (error) {
