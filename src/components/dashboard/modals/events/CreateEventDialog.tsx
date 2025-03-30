@@ -377,37 +377,35 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                                 </div>
                             </div>
 
-                            <div className="flex justify-between gap-4">
-                                {eventTitle && editorContent && eventAddress && selectedGroup && eventStartDate && eventEndDate && files.length > 0 && (
-                                    <HoverBorderGradient className="w-full"
-                                        onClick={() => {
-                                            if (!eventTitle || !editorContent || !eventAddress || !selectedGroup || !eventStartDate || eventEndDate || !files) {
-                                                toast({
-                                                    variant: "destructive",
-                                                    title: "Invalid Fields",
-                                                    description: "Please fill all the required fields.",
-                                                });
-                                                return;
-                                            } else {
-                                                createEvent.mutate({
-                                                    event_title: eventTitle,
-                                                    event_description: editorContent,
-                                                    starts_at: eventStartDate,
-                                                    ends_at: eventEndDate,
-                                                    event_address: eventAddress,
-                                                    created_by: userId,
-                                                    event_group: selectedGroup,
-                                                    event_topics: groupTopics,
-                                                    ticket_price: isFreeTicket ? 999999999 : eventTicketPrice,
-                                                    attendees_limit: isUnlimitedSpots ? 999999999 : spotsLimit,
-                                                } as unknown as EventData);
-                                            }
-                                        }}
-                                    >
-                                        Create Event
-                                    </HoverBorderGradient>
-                                )}
-                            </div>
+                            {eventTitle && editorContent && eventAddress && selectedGroup && eventStartDate && eventEndDate && files.length > 0 && (
+                                <HoverBorderGradient className="w-full"
+                                    onClick={() => {
+                                        if (!eventTitle || !editorContent || !eventAddress || !selectedGroup || !eventStartDate || !eventEndDate || !files) {
+                                            toast({
+                                                variant: "destructive",
+                                                title: "Invalid Fields",
+                                                description: "Please fill all the required fields.",
+                                            });
+                                            return;
+                                        } else {
+                                            createEvent.mutate({
+                                                event_title: eventTitle,
+                                                event_description: editorContent,
+                                                starts_at: eventStartDate,
+                                                ends_at: eventEndDate,
+                                                event_address: eventAddress,
+                                                created_by: userId,
+                                                event_group: selectedGroup,
+                                                event_topics: groupTopics,
+                                                ticket_price: isFreeTicket ? 999999999 : eventTicketPrice,
+                                                attendees_limit: isUnlimitedSpots ? 999999999 : spotsLimit,
+                                            } as unknown as EventData);
+                                        }
+                                    }}
+                                >
+                                    Create Event
+                                </HoverBorderGradient>
+                            )}
                         </div>
 
                     </div>

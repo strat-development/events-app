@@ -11,14 +11,17 @@ import { UserDataModal } from "../../components/dashboard/modals/user-profile/Us
 import { DeleteUserProfileImageDialog } from "../../components/dashboard/modals/user-profile/DeleteUserProfileImageDialog";
 import { EditSocialsDialog } from "../../components/dashboard/modals/user-profile/EditSocialsDialog";
 import { SocialMediaTypes } from "@/types/types";
-import { Facebook, Instagram, Languages, Save, Twitter, X } from "lucide-react";
+import { Brain, Facebook, Github, Globe, Instagram, Languages, Linkedin, Save, Twitter, X, Youtube } from "lucide-react";
 import Link from "next/link";
 import { TextEditor } from "@/features/TextEditor";
 import { Button } from "../../components/ui/button";
 import { toast } from "../../components/ui/use-toast";
 import { UpdateUserImageDialog } from "@/components/dashboard/modals/user-profile/UpdateUserImageDialog";
-import { IconGhost2Filled } from "@tabler/icons-react";
+import { IconBrandTiktok, IconGhost2Filled } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
+import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { FaXTwitter } from "react-icons/fa6";
 
 interface UserProfileSectionProps {
     userId: string;
@@ -34,14 +37,20 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
     const [translatedBio, setTranslatedBio] = useState<string>();
     const [showTranslatedBio, setShowTranslatedBio] = useState(false);
     const [isSetToEdit, setIsSetToEdit] = useState(false)
+    const [isTranslating, setIsTranslating] = useState(false);
     const socialMediaIcons: Record<SocialMediaTypes, JSX.Element> = {
-        Facebook: <Facebook className="text-white/70" size={24} />,
-        Instagram: <Instagram className="text-white/70" size={24} />,
-        X: <Twitter className="text-white/70" size={24} />,
+        TikTok: <IconBrandTiktok className="text-white/70" />,
+        Instagram: <Instagram className="text-white/70" />,
+        X: <FaXTwitter className="text-white/70" />,
+        YouTube: <Youtube className="text-white/70" />,
+        PersonalWebsite: <Globe className="text-white/70" />,
+        LinkedIn: <Linkedin className="text-white/70" />,
+        GitHub: <Github className="text-white/70" />,
     };
 
     const translateRequest = async (description: string) => {
         try {
+            setIsTranslating(true);
             const response = await fetch("/api/text-translate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -53,10 +62,11 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
             const data = await response.json();
             setTranslatedBio(data.translatedText);
             setShowTranslatedBio(true);
-
             return data.translatedText;
         } catch (error) {
             console.error("Error in translateRequest:", error);
+        } finally {
+            setIsTranslating(false);
         }
     };
 
@@ -218,28 +228,43 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                             {isSetToEdit === false && (
                                 <>
                                     {!translatedBio && (
-                                        <Button className="w-fit text-white/70 self-end"
+                                        <Button
+                                            className="w-fit text-white/70 self-end"
                                             variant="ghost"
                                             onClick={() => {
-                                                translateRequest(user.user_bio as string)
-                                            }}>
+                                                translateRequest(user.user_bio as string);
+                                            }}
+                                            disabled={isTranslating}
+                                        >
                                             <Languages size={20} />
                                         </Button>
                                     ) || (
                                             <Button
-                                                className="w-fit flex gap-2 text-white/70"
+                                                className="w-fit self-end flex gap-2 text-white/70"
                                                 variant="ghost"
                                                 onClick={() => setShowTranslatedBio(!showTranslatedBio)}
                                             >
-                                               <Languages size={20} /> {showTranslatedBio ? "Show Original" : "Show Translation"}
+                                                <Languages size={20} /> {showTranslatedBio ? "Show Original" : "Show Translation"}
                                             </Button>
                                         )}
 
-                                    {showTranslatedBio === false && (
+                                    {isTranslating ? (
+                                        <div className="flex items-center justify-center">
+                                            <BackgroundGradientAnimation className="w-full min-h-[320px] rounded-xl">
+                                                <div className="flex w-full h-full bg-black/20 flex-col gap-2 items-center justify-center absolute transform left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2">
+                                                    <Brain className="w-24 h-24 bg-metallic-gradient bg-clip-text text-white/70"
+                                                        strokeWidth={2} />
+                                                    <TextGenerateEffect className="text-white/70" words="Translating..." />
+                                                </div>
+
+                                                <div className="p-4 blur-sm opacity-70" dangerouslySetInnerHTML={{ __html: user.user_bio as string }}></div>
+                                            </BackgroundGradientAnimation>
+                                        </div>
+                                    ) : showTranslatedBio === false ? (
                                         <div dangerouslySetInnerHTML={{ __html: user.user_bio as string }}></div>
-                                    ) || (
-                                            <div dangerouslySetInnerHTML={{ __html: translatedBio as string }}></div>
-                                        )}
+                                    ) : (
+                                        <div dangerouslySetInnerHTML={{ __html: translatedBio as string }}></div>
+                                    )}
 
                                 </>
                             ) || (

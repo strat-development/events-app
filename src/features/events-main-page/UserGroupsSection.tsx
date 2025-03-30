@@ -15,7 +15,7 @@ export const UserGroupsSection = () => {
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<GroupData | null>(null);
-    const [selectedGroupImageUrl, setSelectedGroupImageUrl] = useState<string | null>(null);
+    const [selectedGroupImageUrl, setSelectedGroupImageUrl] = useState<string>("");
     const [groupData, setGroupData] = useState<GroupData[]>([]);
 
     const fetchGroupId = useQuery(
@@ -74,14 +74,14 @@ export const UserGroupsSection = () => {
             const { data, error } = await supabase
                 .from('group-pictures')
                 .select('*')
-                .eq('group_id', groupId)
+                .in('group_id', groupId);
             if (error) {
                 throw error;
             }
             return data || [];
         },
         {
-            enabled: !!groupId,
+            enabled: !!groupId && groupId.length > 0,
             cacheTime: 10 * 60 * 1000,
         }
     );
@@ -108,11 +108,18 @@ export const UserGroupsSection = () => {
         <>
             <div className="flex gap-8 max-w-[440px] w-full min-[1200px]:w-fit overflow-y-auto max-h-[416px]">
                 {memoizedGroupsData?.map((group) => (
-                    <div onClick={() => {
+                    <div onClick={async () => {
                         setIsSidebarOpen(true);
                         setSelectedGroup(group);
-                        const selectedImage = memoizedImageUrls.find(url => url.publicUrl.includes(group.id));
-                        setSelectedGroupImageUrl(selectedImage ? selectedImage.publicUrl : null);
+                        const selectedImage = images?.find(img => img.group_id === group.id);
+                        if (selectedImage) {
+                            const { data: publicURL } = await supabase.storage
+                                .from('group-pictures')
+                                .getPublicUrl(selectedImage.hero_picture_url || "");
+                            setSelectedGroupImageUrl(publicURL.publicUrl);
+                        } else {
+                            setSelectedGroupImageUrl("");
+                        }
                     }}
                         key={group.id}
                         className="border cursor-pointer rounded-xl border-white/10 w-full">
@@ -147,7 +154,7 @@ export const UserGroupsSection = () => {
             </div>
 
             <SidebarProvider>
-                {isSidebarOpen && <GroupSidebar imageUrl={selectedGroupImageUrl}
+                {isSidebarOpen && <GroupSidebar imageUrl={selectedGroupImageUrl || ""}
                     selectedGroup={selectedGroup}
                     isOpen={isSidebarOpen}
                     onClose={() => setIsSidebarOpen(false)} />}

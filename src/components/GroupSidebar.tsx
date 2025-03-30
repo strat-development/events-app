@@ -4,7 +4,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 import { GroupData } from "@/types/types";
 import Image from "next/image";
-import { ArrowUpRight, ChevronsRight, Files, Languages, MapPin } from "lucide-react";
+import { ArrowUpRight, Brain, ChevronsRight, Files, Languages, MapPin } from "lucide-react";
 import { Button } from "./ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import { format, parseISO } from "date-fns";
@@ -15,6 +15,8 @@ import { useUserContext } from "@/providers/UserContextProvider";
 import { useState } from "react";
 import { toast } from "./ui/use-toast";
 import { IconGhost2Filled } from "@tabler/icons-react";
+import { BackgroundGradientAnimation } from "./ui/background-gradient-animation";
+import { TextGenerateEffect } from "./ui/text-generate-effect";
 
 interface GroupSidebarProps {
     isOpen: boolean;
@@ -33,6 +35,7 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
     const [member, setMemberData] = useState<string[]>([])
     const [translatedGroupDescription, setTranslatedGroupDescription] = useState<string>()
     const [showTranslatedDescription, setShowTranslatedDescription] = useState(false)
+    const [isTranslating, setIsTranslating] = useState(false);
 
     const joinGroupMutation = useMutation(
         async () => {
@@ -68,6 +71,7 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
 
     const translateRequest = async (description: string) => {
         try {
+            setIsTranslating(true);
             const response = await fetch("/api/text-translate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -83,6 +87,8 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
             return data.translatedText;
         } catch (error) {
             console.error("Error in translateRequest:", error);
+        } finally {
+            setIsTranslating(false);
         }
     };
 
@@ -179,21 +185,20 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
                             </div>
                         </div>
                         <div className="flex w-full flex-col items-center gap-4">
-
-                            {imageUrl && (
+                            {imageUrl ? (
                                 <Image
-                                    src={imageUrl || ""}
+                                    src={imageUrl}
                                     alt="Profile picture"
                                     width={2000}
                                     height={2000}
-                                    className="rounded-xl w-[280px] h-[280px]"
+                                    className="rounded-xl w-[280px] h-[280px] object-cover"
                                 />
-                            ) || (
-                                    <div className="w-[280px] h-[280px] flex flex-col gap-2 items-center justify-center rounded-xl bg-white/5">
-                                        <IconGhost2Filled className="w-24 h-24 text-white/70" strokeWidth={1} />
-                                        <p className="text-white/50 text-lg">No picture available</p>
-                                    </div>
-                                )}
+                            ) : (
+                                <div className="w-[280px] h-[280px] flex flex-col gap-2 items-center justify-center rounded-xl bg-white/5">
+                                    <IconGhost2Filled className="w-24 h-24 text-white/70" strokeWidth={1} />
+                                    <p className="text-white/50 text-lg">No picture available</p>
+                                </div>
+                            )}
                             <h2 className="text-2xl self-start font-bold text-white/70">{selectedGroup?.group_name}</h2>
                         </div>
                         <div className="flex w-full justify-start gap-8">
@@ -207,7 +212,7 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
                                     </span>
                                 </div>
                                 <div className="flex flex-col">
-                                    <p className="text-white/70 font-medium">{format(parseISO(selectedGroup?.created_at as string), 'EEEE, dd MMM')}</p>
+                                    <p className="text-white/70 font-medium">{format(parseISO(selectedGroup?.created_at as string), 'dd MMM, yyyy')}</p>
                                     <p className="text-white/50 text-sm">Created at</p>
                                 </div>
                             </div>
@@ -222,7 +227,7 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
                                                 {selectedGroup.group_city ? selectedGroup.group_city.split(', ')[0] || "Unknown City" : "Unknown City"}
                                             </p>
                                             <p className="text-white/50 text-sm">
-                                                {selectedGroup.group_country.split(', ')[1] || "Unknown Street"}
+                                                {selectedGroup.group_country.split(', ')[0] || "Unknown Street"}
                                             </p>
                                         </>
                                     )}
@@ -269,7 +274,7 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
                                 </Button>
                             ) || (
                                     <Button
-                                        className="w-fit flex gap-2 text-white/70"
+                                        className="w-fit self-end flex gap-2 text-white/70"
                                         variant="ghost"
                                         onClick={() => setShowTranslatedDescription(!setShowTranslatedDescription)}
                                     >
@@ -277,11 +282,23 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
                                     </Button>
                                 )}
 
-                            {showTranslatedDescription === false && (
+                            {isTranslating ? (
+                                <div className="flex items-center justify-center">
+                                    <BackgroundGradientAnimation className="w-full min-h-[320px] rounded-xl">
+                                        <div className="flex w-full h-full bg-black/20 flex-col gap-2 items-center justify-center absolute transform left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2">
+                                            <Brain className="w-24 h-24 bg-metallic-gradient bg-clip-text text-white/70"
+                                                strokeWidth={2} />
+                                            <TextGenerateEffect className="text-white/70" words="Translating..." />
+                                        </div>
+
+                                        <div className="p-4 blur-sm opacity-70" dangerouslySetInnerHTML={{ __html: selectedGroup?.group_description as string }}></div>
+                                    </BackgroundGradientAnimation>
+                                </div>
+                            ) : showTranslatedDescription === false ? (
                                 <div dangerouslySetInnerHTML={{ __html: selectedGroup?.group_description as string }}></div>
-                            ) || (
-                                    <div dangerouslySetInnerHTML={{ __html: translatedGroupDescription as string }}></div>
-                                )}
+                            ) : (
+                                <div dangerouslySetInnerHTML={{ __html: translatedGroupDescription as string }}></div>
+                            )}
                         </div>
                     </div>
                 </DialogPrimitive.Content>

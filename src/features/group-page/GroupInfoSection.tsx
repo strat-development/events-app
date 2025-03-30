@@ -11,8 +11,10 @@ import { toast } from "@/components/ui/use-toast"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { usePathname } from "next/navigation"
-import { Edit, Languages, Save, X } from "lucide-react"
+import { Brain, Edit, Languages, Save, X } from "lucide-react"
 import { GenerateDescriptionDialog } from "@/components/dashboard/modals/events/GenerateDescriptionDialog"
+import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation"
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
 
 interface GroupInfoSectionProps {
     groupId: string
@@ -29,6 +31,7 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
     const { userId } = useUserContext()
     const { ownerId } = useGroupOwnerContext()
     const pathname = usePathname()
+    const [isTranslating, setIsTranslating] = useState(false)
 
     useQuery(['groups-description'], async () => {
         const { data, error } = await supabase
@@ -50,6 +53,7 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
 
     const translateRequest = async (description: string) => {
         try {
+            setIsTranslating(true)
             const response = await fetch("/api/text-translate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -65,6 +69,8 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
             return data.translatedText;
         } catch (error) {
             console.error("Error in translateRequest:", error);
+        } finally {
+            setIsTranslating(false);
         }
     };
 
@@ -136,7 +142,7 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                                     </Button>
                                 ) || (
                                         <Button
-                                            className="w-fit flex gap-2 text-white/70"
+                                            className="w-fit self-end flex gap-2 text-white/70"
                                             variant="ghost"
                                             onClick={() => setShowTranslatedDescription(!setShowTranslatedDescription)}
                                         >
@@ -144,11 +150,24 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                                         </Button>
                                     )}
 
-                                {showTranslatedDescription === false && (
+                                {isTranslating ? (
+                                    <div className="flex items-center justify-center">
+                                        <BackgroundGradientAnimation className="w-full min-h-[320px] rounded-xl">
+                                            <div className="flex w-full h-full bg-black/20 flex-col gap-2 items-center justify-center absolute transform left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2">
+                                                <Brain className="w-24 h-24 bg-metallic-gradient bg-clip-text text-white/70"
+                                                    strokeWidth={2} />
+                                                <TextGenerateEffect className="text-white/70" words="Translating..." />
+                                            </div>
+
+                                            <div className="p-4 blur-sm opacity-70" dangerouslySetInnerHTML={{ __html: groupDescription as string }}></div>
+                                        </BackgroundGradientAnimation>
+                                    </div>
+                                ) : showTranslatedDescription === false ? (
                                     <div dangerouslySetInnerHTML={{ __html: groupDescription as string }}></div>
-                                ) || (
-                                        <div dangerouslySetInnerHTML={{ __html: translatedGroupDescription as string }}></div>
-                                    )}
+                                ) : (
+                                    <div dangerouslySetInnerHTML={{ __html: translatedGroupDescription as string }}></div>
+                                )}
+
                                 <button
                                     onClick={() => setIsExpanded(!isExpanded)}
                                     className='text-blue-500'>

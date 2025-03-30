@@ -12,7 +12,7 @@ export type GroupMembersData = Database["public"]["Tables"]["group-members"]["Ro
 
 export type EventAttendeesData = Database["public"]["Tables"]["event-attendees"]["Row"];
 
-export type SocialMediaTypes = 'Facebook' | 'Instagram' | 'X';
+export type SocialMediaTypes = 'TikTok' | 'Instagram' | 'X' | 'YouTube' | "LinkedIn" | "PersonalWebsite" | "GitHub";
 
 export type PostsData = Database["public"]["Tables"]["posts"]["Row"];
 

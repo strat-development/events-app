@@ -1,11 +1,14 @@
+import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 import { Input } from "@/components/ui/input"
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
 import { Toggle } from "@/components/ui/toggle"
 import { TextEditor } from "@/features/TextEditor"
 import { useGroupDataContext } from "@/providers/GroupDataModalProvider"
-import { Sparkles } from "lucide-react"
+import { set } from "lodash"
+import { Brain, Sparkles } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -17,6 +20,7 @@ export const GenerateDescriptionDialog = () => {
     const [language, setLanguage] = useState("");
     const pathname = usePathname();
     const [currentPath, setCurrentPath] = useState("");
+    const [isGenerating, setIsGenerating] = useState(false);
 
     useEffect(() => {
         setCurrentPath(pathname);
@@ -24,6 +28,7 @@ export const GenerateDescriptionDialog = () => {
 
     const generateRequest = async () => {
         try {
+            setIsGenerating(true);
             let apiEndpoint = "";
 
             if (currentPath.includes("event-page")) {
@@ -46,9 +51,14 @@ export const GenerateDescriptionDialog = () => {
 
             const data = await response.json();
             setEditorContent(data.eventDescription);
-            setIsOpen(false);
         } catch (error) {
             console.error("Error in generateRequest:", error);
+        } finally {
+            setMood("");
+            setLength("");
+            setLanguage("");
+            setIsOpen(false);
+            setIsGenerating(false);
         }
     };
 
@@ -95,12 +105,29 @@ export const GenerateDescriptionDialog = () => {
                         <div className="flex flex-col gap-4 items-end max-w-[400px] w-full">
                             <Input placeholder="Description language..."
                                 onChange={(e) => setLanguage(e.target.value)} />
-                            <TextEditor {
-                                ...{
-                                    editorContent: editorContent,
-                                    onChange: setEditorContent
-                                }
-                            } />
+                            {isGenerating && (
+
+                                <BackgroundGradientAnimation className="w-full min-h-[400px] rounded-xl">
+                                    <div className="flex w-full h-full bg-black/20 flex-col gap-2 items-center justify-center absolute transform left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2">
+                                        <Brain className="w-24 h-24 bg-metallic-gradient bg-clip-text text-white/70"
+                                            strokeWidth={2} />
+                                        <TextGenerateEffect className="text-white/70" words="Generating description..." />
+                                    </div>
+                                    <div className="p-4 blur-sm opacity-70">
+                                        <TextEditor
+                                            editorContent={editorContent}
+                                            onChange={setEditorContent}
+                                        />
+                                    </div>
+                                </BackgroundGradientAnimation>
+                            ) || (
+                                    <TextEditor {
+                                        ...{
+                                            editorContent: editorContent,
+                                            onChange: setEditorContent
+                                        }
+                                    } />
+                                )}
                             <HoverBorderGradient onClick={generateRequest}>
                                 Generate Description
                             </HoverBorderGradient>

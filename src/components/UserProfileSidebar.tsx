@@ -4,7 +4,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 import { UserData } from "@/types/types";
 import Image from "next/image";
-import { ArrowUpRight, ChevronsRight, Files, Languages, MapPin } from "lucide-react";
+import { ArrowUpRight, Brain, ChevronsRight, Files, Languages, MapPin } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { useQuery } from "react-query";
@@ -14,6 +14,8 @@ import { IconGhost2Filled } from "@tabler/icons-react";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { BackgroundGradientAnimation } from "./ui/background-gradient-animation";
+import { TextGenerateEffect } from "./ui/text-generate-effect";
 
 interface UserProfileSidebarProps {
     isOpen: boolean;
@@ -30,6 +32,7 @@ export const UserProfileSidebar = ({ isOpen, onClose, selectedUser, imageUrl }: 
     const supabase = createClientComponentClient<Database>()
     const [translatedBio, setTranslatedBio] = useState<string>();
     const [showTranslatedBio, setShowTranslatedBio] = useState(false);
+    const [isTranslating, setIsTranslating] = useState(false);
 
     useQuery("userInterests", async () => {
         if (!userId) return
@@ -53,6 +56,7 @@ export const UserProfileSidebar = ({ isOpen, onClose, selectedUser, imageUrl }: 
 
     const translateRequest = async (description: string) => {
         try {
+            setIsTranslating(true);
             const response = await fetch("/api/text-translate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -68,6 +72,8 @@ export const UserProfileSidebar = ({ isOpen, onClose, selectedUser, imageUrl }: 
             return data.translatedText;
         } catch (error) {
             console.error("Error in translateRequest:", error);
+        } finally {
+            setIsTranslating(false);
         }
     };
 
@@ -180,7 +186,7 @@ export const UserProfileSidebar = ({ isOpen, onClose, selectedUser, imageUrl }: 
                                 </Button>
                             ) || (
                                     <Button
-                                        className="w-fit flex gap-2 text-white/70"
+                                        className="w-fit self-end flex gap-2 text-white/70"
                                         variant="ghost"
                                         onClick={() => setShowTranslatedBio(!showTranslatedBio)}
                                     >
@@ -188,11 +194,23 @@ export const UserProfileSidebar = ({ isOpen, onClose, selectedUser, imageUrl }: 
                                     </Button>
                                 )}
 
-                            {showTranslatedBio === false && (
+                            {isTranslating ? (
+                                <div className="flex items-center justify-center">
+                                    <BackgroundGradientAnimation className="w-full min-h-[320px] rounded-xl">
+                                        <div className="flex w-full h-full bg-black/20 flex-col gap-2 items-center justify-center absolute transform left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2">
+                                            <Brain className="w-24 h-24 bg-metallic-gradient bg-clip-text text-white/70"
+                                                strokeWidth={2} />
+                                            <TextGenerateEffect className="text-white/70" words="Translating..." />
+                                        </div>
+
+                                        <div className="p-4 blur-sm opacity-70" dangerouslySetInnerHTML={{ __html: selectedUser?.user_bio as string }}></div>
+                                    </BackgroundGradientAnimation>
+                                </div>
+                            ) : showTranslatedBio === false ? (
                                 <div dangerouslySetInnerHTML={{ __html: selectedUser?.user_bio as string }}></div>
-                            ) || (
-                                    <div dangerouslySetInnerHTML={{ __html: translatedBio as string }}></div>
-                                )}
+                            ) : (
+                                <div dangerouslySetInnerHTML={{ __html: translatedBio as string }}></div>
+                            )}
                             <div className="flex flex-wrap gap-4">
                                 {memoizedUserInterests && (
                                     memoizedUserInterests.map((interest, index) => (

@@ -13,12 +13,14 @@ import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import Image from "next/image"
 import { IconGhost2Filled } from "@tabler/icons-react"
 import { usePathname } from "next/navigation"
-import { Edit, Languages, Save, X } from "lucide-react"
+import { Brain, Edit, Languages, Save, X } from "lucide-react"
 import { EventAttendeesDialog } from "@/components/dashboard/modals/events/EventAttendeesDialog"
 import { UserProfileSidebar } from "../../components/UserProfileSidebar"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { EventData, UserData } from "@/types/types"
 import { GenerateDescriptionDialog } from "@/components/dashboard/modals/events/GenerateDescriptionDialog"
+import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation"
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
 
 interface EventInfoSectionProps {
     eventId: string
@@ -44,6 +46,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const [selectedUserImageUrl, setSelectedUserImageUrl] = useState<string | null>(null);
     const [attendeesData, setAttendeesData] = useState<UserData[]>([]);
     const [eventData, setEventData] = useState<EventData | null>(null);
+    const [isTranslating, setIsTranslating] = useState(false)
 
     useQuery(['events-description'], async () => {
         const { data, error } = await supabase
@@ -67,6 +70,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
 
     const translateRequest = async (description: string) => {
         try {
+            setIsTranslating(true)
             const response = await fetch("/api/text-translate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -82,6 +86,8 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
             return data.translatedText;
         } catch (error) {
             console.error("Error in translateRequest:", error);
+        } finally {
+            setIsTranslating(false);
         }
     };
 
@@ -195,7 +201,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                                     </Button>
                                 ) || (
                                         <Button
-                                            className="w-fit flex gap-2 text-white/70"
+                                            className="w-fit self-end flex gap-2 text-white/70"
                                             variant="ghost"
                                             onClick={() => setShowTranslatedDescription(!setShowTranslatedDescription)}
                                         >
@@ -203,11 +209,24 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                                         </Button>
                                     )}
 
-                                {showTranslatedDescription === false && (
-                                    <div dangerouslySetInnerHTML={{ __html: eventData?.event_description as string }}></div>
-                                ) || (
-                                        <div dangerouslySetInnerHTML={{ __html: translatedEventDescription as string }}></div>
-                                    )}
+                                {isTranslating ? (
+                                    <div className="flex items-center justify-center">
+                                        <BackgroundGradientAnimation className="w-full min-h-[320px] rounded-xl">
+                                            <div className="flex w-full h-full bg-black/20 flex-col gap-2 items-center justify-center absolute transform left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2">
+                                                <Brain className="w-24 h-24 bg-metallic-gradient bg-clip-text text-white/70"
+                                                    strokeWidth={2} />
+                                                <TextGenerateEffect className="text-white/70" words="Translating..." />
+                                            </div>
+
+                                            <div className="p-4 blur-sm opacity-70" dangerouslySetInnerHTML={{ __html: eventDescription as string }}></div>
+                                        </BackgroundGradientAnimation>
+                                    </div>
+                                ) : showTranslatedDescription === false ? (
+                                    <div dangerouslySetInnerHTML={{ __html: eventDescription as string }}></div>
+                                ) : (
+                                    <div dangerouslySetInnerHTML={{ __html: translatedEventDescription as string }}></div>
+                                )}
+
 
                                 <button
                                     onClick={() => setIsExpanded(!isExpanded)}

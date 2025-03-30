@@ -46,7 +46,6 @@ export default function GroupDataModalProvider({ children }: { children: React.R
     const [groupCountry, setGroupCountry] = useState<string>("")
     const [editorContent, setEditorContent] = useState<string>("")
     const updateEditorContent = (newContent: string) => {
-        console.log("Updating editor content:", newContent);
         setEditorContent(newContent);
     };
 

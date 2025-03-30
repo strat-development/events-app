@@ -343,7 +343,7 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
                                 </Button>
                             ) || (
                                     <Button
-                                        className="w-fit flex gap-2 text-white/70"
+                                        className="w-fit self-end flex gap-2 text-white/70"
                                         variant="ghost"
                                         onClick={() => setShowTranslatedDescription(!setShowTranslatedDescription)}
                                     >
