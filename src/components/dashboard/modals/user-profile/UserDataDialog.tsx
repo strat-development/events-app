@@ -45,7 +45,6 @@ export const UserDataModal = () => {
     const [email, setEmail] = useState("");
     const [city, setCity] = useState("");
     const [country, setCountry] = useState("");
-    const [tabValue, setTabValue] = useState("user-data");
     const [interestsData, setInterestsData] = useState<InterestData | null>(null)
     const [selectedInterests, setSelectedInterests] = useState<string[]>([])
     const [selectedGroup, setSelectedGroup] = useState<string | null>("all")
@@ -197,48 +196,45 @@ export const UserDataModal = () => {
 
     const addProfilePicture = useMutation(
         async (paths: string[]) => {
-            const { data: currentData, error: currentError } = await supabase
-                .from('profile-pictures')
-                .select('image_url')
-                .eq('user_id', userId)
-                .single();
-
-            if (currentError) {
-                throw currentError;
-            }
-
-            if (currentData && currentData.image_url) {
-                const { error: deleteError } = await supabaseAdmin
-                    .storage
-                    .from('profile-pictures')
-                    .remove([currentData.image_url]);
-
-                if (deleteError) {
-                    throw deleteError;
-                }
-            }
-
-            const results = await Promise.all(paths.map(async (path) => {
-                const { data, error } = await supabase
-                    .from('profile-pictures')
-                    .update({
-                        user_id: userId,
-                        image_url: path
-                    })
-                    .eq('user_id', userId);
-
-                if (error) {
-                    throw error;
-                }
-                return data;
-            }));
-
-            return results;
-        }, {
-        onSuccess: () => {
+          const { data: currentData } = await supabase
+            .from('profile-pictures')
+            .select('image_url')
+            .eq('user_id', userId)
+            .single();
+      
+          if (currentData?.image_url) {
+            await supabaseAdmin.storage
+              .from('profile-pictures')
+              .remove([currentData.image_url]);
+          }
+      
+          const { data, error } = await supabase
+            .from('profile-pictures')
+            .upsert({
+              user_id: userId,
+              image_url: paths[0]
+            })
+            .eq('user_id', userId);
+      
+          if (error) throw error;
+          return data;
+        },
+        {
+          onSuccess: () => {
             queryClient.invalidateQueries(['profile-pictures', userId]);
+            toast({
+              title: "Success",
+              description: "Profile picture updated!"
+            });
+          },
+          onError: (error) => {
+            toast({
+              variant: "destructive",
+              title: "Error"
+            });
+          }
         }
-    });
+      );
 
     const uploadFiles = async (files: File[]) => {
         const uploadPromises = files.map((file) => {

@@ -11,7 +11,6 @@ import Image from "next/image";
 import { AboutSection } from "@/components/landing-page/AboutSection";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { motion } from "framer-motion";
-import { LandingPageMap } from "@/components/landing-page/LandingPageMap";
 
 export default function Home() {
   const session = useSessionContext();
@@ -19,7 +18,6 @@ export default function Home() {
   const words = ["Huddle.", "Create.", "Network.", "Learn."];
 
   const [gridRef, isGridVisible] = useIntersectionObserver({ threshold: 0.1 }, 300);
-  const [globeRef, isGlobeVisible] = useIntersectionObserver({ threshold: 0.1 }, 300);
   const [aboutRef, isAboutVisible] = useIntersectionObserver({ threshold: 0.1 }, 300);
 
   if (!session.session?.user.role === false) {
@@ -92,19 +90,6 @@ export default function Home() {
             transition={{ duration: 0.5 }}
           >
             <AboutSection />
-          </motion.div>
-        )}
-      </div>
-
-      <div className="w-full" ref={globeRef} style={{ minHeight: "500px" }}>
-        {isGlobeVisible && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeInUp}
-            transition={{ duration: 0.5 }}
-          >
-            <LandingPageMap />
           </motion.div>
         )}
       </div>

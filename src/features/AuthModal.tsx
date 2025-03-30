@@ -124,7 +124,7 @@ export const AuthModal = () => {
                 <Auth
                     theme="dark"
                     magicLink={false}
-                    providers={[]}
+                    providers={["google"]}
                     view={showSignUp ? "sign_up" : "sign_in"}
                     supabaseClient={supabaseClient}
                     appearance={{
