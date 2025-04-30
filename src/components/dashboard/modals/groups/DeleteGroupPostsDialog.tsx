@@ -4,7 +4,7 @@ import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
-import { useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { supabaseAdmin } from "@/lib/admin";
 import { Trash } from "lucide-react";
 
@@ -17,17 +17,15 @@ export const DeleteGroupPostsDialog = ({ postId }: DeleteGroupPostsDialogProps) 
     const [isOpen, setIsOpen] = useState(false);
     const queryClient = useQueryClient();
 
-    const deletePostAndImages = async () => {
-        try {
+    const deletePostWithImages = useMutation(
+        async () => {
             const { data: postImages, error: fetchError } = await supabase
                 .from("group-posts-pictures")
                 .select("image_urls")
                 .eq("post_id", postId)
                 .single();
 
-            if (fetchError) {
-                throw fetchError;
-            }
+            if (fetchError) throw fetchError;
 
             const imagePaths = postImages?.image_urls
                 ? JSON.parse(postImages.image_urls as string)
@@ -38,18 +36,7 @@ export const DeleteGroupPostsDialog = ({ postId }: DeleteGroupPostsDialogProps) 
                     .from("group-posts-pictures")
                     .remove(imagePaths);
 
-                if (storageError) {
-                    throw storageError;
-                }
-            }
-
-            const { error: deletePostError } = await supabase
-                .from("group-posts")
-                .delete()
-                .eq("id", postId);
-
-            if (deletePostError) {
-                throw deletePostError;
+                if (storageError) throw storageError;
             }
 
             const { error: deletePicturesError } = await supabase
@@ -57,54 +44,72 @@ export const DeleteGroupPostsDialog = ({ postId }: DeleteGroupPostsDialogProps) 
                 .delete()
                 .eq("post_id", postId);
 
-            if (deletePicturesError) {
-                throw deletePicturesError;
+            if (deletePicturesError) throw deletePicturesError;
+
+            const { error: deletePostError } = await supabase
+                .from("group-posts")
+                .delete()
+                .eq("id", postId);
+
+            if (deletePostError) throw deletePostError;
+        },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(['posts']);
+                toast({
+                    title: "Post Deleted",
+                    description: "The post has been successfully deleted.",
+                });
+                setIsOpen(false);
+            },
+            onError: (error) => {
+                console.error("Error deleting post:", error);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Failed to delete post",
+                });
             }
-
-            toast({
-                title: "Post Deleted",
-                description: "The post has been successfully deleted.",
-            });
-
-            queryClient.invalidateQueries(['posts']);
-            setIsOpen(false);
-        } catch (error) {
-            console.error("Error deleting post or images:", error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "An error occurred while deleting the post.",
-            });
         }
-    };
+    );
 
     return (
-        <>
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger asChild>
-                    <Button className="w-fit flex gap-2 text-red-500 border border-red-500 hover:bg-red-500 hover:text-white"
-                        variant="ghost">
-                        <span className="text-white">Delete Post</span><Trash size={20} />
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button
+                    className="w-fit flex gap-2 text-red-500 border border-red-500 hover:bg-red-500 hover:text-white"
+                    variant="ghost"
+                >
+                    <span className="text-white">Delete Post</span>
+                    <Trash size={20} />
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[425px] z-[999999]">
+                <DialogHeader>
+                    <DialogTitle>Delete post</DialogTitle>
+                    <DialogDescription className="text-white/70">
+                        Are you sure you want to delete this post and all its associated images?
+                        This action cannot be undone.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button
+                        className="text-red-500"
+                        variant="ghost"
+                        onClick={() => deletePostWithImages.mutate()}
+                        disabled={deletePostWithImages.isLoading}
+                    >
+                        {deletePostWithImages.isLoading ? (
+                            "Deleting..."
+                        ) : (
+                            <>
+                                <Trash size={20} />
+                                <span className="ml-2">Confirm Delete</span>
+                            </>
+                        )}
                     </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[425px] z-[999999]">
-                    <DialogHeader>
-                        <DialogTitle>Delete post</DialogTitle>
-                        <DialogDescription className="text-white/70">
-                            Are you sure you want to delete this post and all its associated images? This action cannot be undone.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button className="text-red-500"
-                            variant="ghost"
-                            onClick={deletePostAndImages}>
-                            <Trash size={20} />
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            
-        </>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 };

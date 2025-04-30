@@ -1,15 +1,29 @@
+"use client"
+
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/router';
+import { useUserContext } from "@/providers/UserContextProvider";
+import { useParams, useRouter } from "next/navigation";
+import { Navbar } from "@/components/dashboard/Navbar";
+import { PaymentsSection } from "@/components/dashboard/payments/PaymentsSection";
 
 export default function Refresh() {
-  const {query: {id: connectedAccountId}} = useRouter();
   const [accountLinkCreatePending, setAccountLinkCreatePending] = useState(false);
+  const params = useParams();
+  const connectedAccountId = params.slug;
+  const { userId, loading } = useUserContext();
+  const router = useRouter();
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (!loading && userId === null) {
+      router.push('/');
+    }
+  }, [loading, userId, router]);
 
   useEffect(() => {
     if (connectedAccountId) {
       setAccountLinkCreatePending(true);
-        fetch("/api/create-stripe-account-link", {
+      fetch("/api/create-stripe-account-link", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,19 +50,13 @@ export default function Refresh() {
   }, [connectedAccountId])
 
   return (
-    <div className="container">
-      <div className="banner">
-        <h2>Rocket Rides</h2>
-      </div>
-      <div className="content">
-        <h2>Add information to start accepting money</h2>
-        <p>Rocket Rides is the world's leading air travel platform: join our team of pilots to help people travel faster.</p>
-        {error && <p className="error">Something went wrong!</p>}
-      </div>
-      <div className="dev-callout">
-        {connectedAccountId && <p>Your connected account ID is: <code className="bold">{connectedAccountId}</code></p>}
-        {accountLinkCreatePending && <p>Creating a new Account Link...</p>}
-      </div>
+    <div className="flex justify-between items-start pt-24 max-w-[1200px] w-full justify-self-center">
+      <Navbar />
+      {userId.length > 0 && (
+        <div className="justify-self-center overflow-x-hidden w-full">
+          <PaymentsSection />
+        </div>
+      )}
     </div>
   );
 }
