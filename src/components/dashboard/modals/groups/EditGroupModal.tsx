@@ -1,10 +1,9 @@
 "use client"
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
-import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
@@ -223,7 +222,7 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
                 </DialogContent>
             </Dialog>
 
-            <Toaster />
+            
         </>
     );
 };

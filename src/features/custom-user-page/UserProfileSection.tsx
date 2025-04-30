@@ -330,8 +330,6 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
             {!userRole && userId && (
                 <UserDataModal />
             )}
-
-            <Toaster />
         </>
     )
 }

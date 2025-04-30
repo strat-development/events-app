@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
-import { Toaster } from "@/components/ui/toaster";
+;
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { Database } from "@/types/supabase";
@@ -121,7 +121,7 @@ export const DeleteGroupAlbumDialog = ({ albumId }: DeleteGroupAlbumDialogProps)
                 </Dialog>
             </div>
 
-            <Toaster />
+            
         </>
     );
 }

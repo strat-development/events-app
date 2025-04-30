@@ -6,7 +6,7 @@ import { Database } from "@/types/supabase";
 import { EventData } from "@/types/types";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { format, parseISO } from "date-fns";
-import { Ticket } from "lucide-react";
+import { CalendarRange, Plus, Ticket } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -16,6 +16,8 @@ import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, Pagi
 import GridLoader from "react-spinners/GridLoader";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { EventSidebar } from "@/components/EventSidebar";
+import { Button } from "@/components/ui/button";
+import "@/styles/calendar-icon.css"
 
 export default function EventsPage() {
     const supabase = createClientComponentClient<Database>();
@@ -158,76 +160,100 @@ export default function EventsPage() {
         <>
             <div className="max-w-[1200px] w-full justify-self-center pt-24 flex flex-col gap-4">
                 <div className="flex flex-wrap max-[800px]:justify-center gap-8">
-                    {currentItems.map((event) => (
-                        <div onClick={() => {
-                            setIsSidebarOpen(true);
-                            setSelectedEvent(event);
-                            setSelectedEventImageUrl(memoizedImageUrls[event.id]);
-                        }}
-                            key={event.id}
-                            className="flex flex-col cursor-pointer gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
-                            <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
-                                {memoizedImageUrls[event.id] && (
-                                    <Image
-                                        src={memoizedImageUrls[event.id]}
-                                        alt={event.event_title || ""}
-                                        width={2000}
-                                        height={2000}
-                                        objectFit="cover"
-                                    />
-                                ) || (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
-                                            <p className="text-center font-medium">No image available 😔</p>
-                                        </div>
-                                    )}
+                    {currentItems.length === 0 && (
+                        <div className="flex flex-col items-center justify-center gap-4 w-full h-[70vh]">
+                            <div className="metallic-icon h-48 w-48">
+                                <CalendarRange className="icon-base" strokeWidth={2} />
+                                <div className="gradient-overlay" />
                             </div>
 
-                            <div className="flex flex-col gap-1">
-                                <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.event_title}</h1>
-                                <div className="flex flex-col gap-1">
-                                    <p className="text-sm text-white/70">{format(parseISO(event?.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                                    <p className="text-sm text-white/60">{event?.event_address}</p>
-                                    <div className="flex gap-2 mt-1 items-center">
-                                        <Ticket className="h-4 w-4" />
-                                        {event?.ticket_price !== null && event.ticket_price > 10000 ? (
-                                            <p className="text-sm text-white/60">FREE</p>
-                                        ) : (
-                                            <p className="text-sm text-white/60">{event?.ticket_price}$</p>
-                                        )}
+                            <div className="flex flex-col gap-2">
+                                <p className="text-center text-xl text-white/60 font-medium">No events found</p>
+                                <p className="text-center text-lg text-white/50">It's a great opportunity to create one</p>
+                            </div>
+                            <Button className="flex gap-4 w-fit text-lg px-4 text-white/70"
+                                variant="outline"
+                                onClick={() => router.push('/dashboard/events')}>
+                                Create Event
+                                <Plus className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ) || (
+
+                            currentItems.map((event) => (
+                                <div onClick={() => {
+                                    setIsSidebarOpen(true);
+                                    setSelectedEvent(event);
+                                    setSelectedEventImageUrl(memoizedImageUrls[event.id]);
+                                }}
+                                    key={event.id}
+                                    className="flex flex-col cursor-pointer gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
+                                    <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
+                                        {memoizedImageUrls[event.id] && (
+                                            <Image
+                                                src={memoizedImageUrls[event.id]}
+                                                alt={event.event_title || ""}
+                                                width={2000}
+                                                height={2000}
+                                                objectFit="cover"
+                                            />
+                                        ) || (
+                                                <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
+                                                    <p className="text-center font-medium">No image available 😔</p>
+                                                </div>
+                                            )}
+                                    </div>
+
+                                    <div className="flex flex-col gap-1">
+                                        <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.event_title}</h1>
+                                        <div className="flex flex-col gap-1">
+                                            <p className="text-sm text-white/70">{format(parseISO(event?.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                            <p className="text-sm text-white/60">{event?.event_address}</p>
+                                            <div className="flex gap-2 mt-1 items-center">
+                                                <Ticket className="h-4 w-4" />
+                                                {event.ticket_price === "FREE" ? (
+                                                    <p className="text-sm text-white/60">FREE</p>
+                                                ) : (
+                                                    <p className="text-sm text-white/60">{event?.ticket_price}$</p>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    ))}
+                            ))
+                        )}
                 </div>
 
-                <Pagination>
-                    <PaginationContent className="flex gap-8">
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
-                                aria-disabled={currentPage === 1}
-                            />
-                        </PaginationItem>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                            <PaginationItem key={page}>
-                                <PaginationLink
-                                    isActive={page === currentPage}
-                                    onClick={() => handlePageChange(page)}
-                                >
-                                    {page}
-                                </PaginationLink>
+                {currentItems.length > 0 && (
+                    <Pagination>
+                        <PaginationContent className="flex gap-8">
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                    aria-disabled={currentPage === 1}
+                                />
                             </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
-                                aria-disabled={currentPage === totalPages}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                <PaginationItem key={page}>
+                                    <PaginationLink
+                                        isActive={page === currentPage}
+                                        onClick={() => handlePageChange(page)}
+                                    >
+                                        {page}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                    aria-disabled={currentPage === totalPages}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                )}
             </div>
+
             <SidebarProvider>
                 {isSidebarOpen && <EventSidebar imageUrl={selectedEventImageUrl}
                     selectedEvent={selectedEvent}

@@ -239,7 +239,7 @@ export const EventsSection = () => {
                                             <p className="text-white/60">{event.event_address}</p>
                                             <div className="flex items-center gap-2 mt-1">
                                                 <Ticket className="text-white/70 h-6 w-6" />
-                                                {event?.ticket_price !== null && event.ticket_price > 10000 && (
+                                                {event?.ticket_price === "FREE" && (
                                                     <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
                                                 ) || (
                                                         <p className="text-sm text-white/60 font-bold tracking-wide">{event?.ticket_price}$</p>
@@ -284,7 +284,7 @@ export const EventsSection = () => {
                     )}
                 </div>
             </div>
-            
+
             <SidebarProvider>
                 {isSidebarOpen && <EventSidebar imageUrl={selectedEventImageUrl}
                     selectedEvent={selectedEvent}

@@ -5,7 +5,6 @@ import { UpdateGroupHeroImageDialog } from "@/components/dashboard/modals/groups
 import { GroupReportDialog } from "@/components/dashboard/modals/contact/GroupReportDialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
 import { useUserContext } from "@/providers/UserContextProvider"
@@ -418,7 +417,7 @@ export const GroupHero = ({
                 </div>
             </div>
 
-            <Toaster />
+            
         </>
     )
 }

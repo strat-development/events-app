@@ -11,7 +11,7 @@ import CityContextProvider from "@/providers/cityContextProvider";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import ViewContextProvider from "@/providers/pageViewProvider";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/toaster";
 
 const Footer = dynamic(() => import('@/components/Footer').then(mod => mod.Footer), { ssr: false });
 
@@ -47,6 +47,7 @@ export default function RootLayout({
             </UserContextProvider>
           </QueryClientProvider>
         </SupabaseProvider>
+        <Toaster />
       </body>
     </html>
   );

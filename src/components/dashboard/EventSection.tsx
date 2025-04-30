@@ -16,7 +16,6 @@ import { CreateEventDialog } from "./modals/events/CreateEventDialog"
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
 import { EditEventDialog } from "./modals/events/EditEventDialog"
 
-
 export const EventSection = () => {
     const supabase = createClientComponentClient<Database>()
     const { eventCreatorId, ownerId } = useGroupOwnerContext();
@@ -200,7 +199,7 @@ export const EventSection = () => {
                                         <p className="text-sm text-white/60">{event.events?.event_address}</p>
                                         <div className="flex gap-2 mt-1 items-center">
                                             <Ticket className="h-4 w-4" />
-                                            {event?.events?.ticket_price !== null && (event.events?.ticket_price ?? 0) > 10000 ? (
+                                            {event.events?.ticket_price === "FREE" ? (
                                                 <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
                                             ) : (
                                                 <p className="text-sm text-white/60 font-bold tracking-wide">{event.events?.ticket_price}$</p>
@@ -247,7 +246,7 @@ export const EventSection = () => {
                                         <p className="text-sm text-white/60">{event.event_address}</p>
                                         <div className="flex items-center gap-2 mt-1">
                                             <Ticket className="h-4 w-4" />
-                                            {event?.ticket_price !== null && event.ticket_price > 10000 ? (
+                                            {event?.ticket_price === "FREE" ? (
                                                 <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
                                             ) : (
                                                 <p className="text-sm text-white/60 font-bold tracking-wide">{event?.ticket_price}$</p>
@@ -271,34 +270,36 @@ export const EventSection = () => {
                 )}
             </div>
 
-            {(attendingEvents && currentAttendingItems.length > 0) || (!attendingEvents && currentHostItems.length > 0) ? (
-                <Pagination>
-                    <PaginationContent className="flex gap-8">
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
-                                aria-disabled={currentPage === 1}
-                            />
-                        </PaginationItem>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                            <PaginationItem key={page}>
-                                <PaginationLink
-                                    isActive={page === currentPage}
-                                    onClick={() => handlePageChange(page)}
-                                >
-                                    {page}
-                                </PaginationLink>
+            {
+                (attendingEvents && currentAttendingItems.length > 0) || (!attendingEvents && currentHostItems.length > 0) ? (
+                    <Pagination>
+                        <PaginationContent className="flex gap-8">
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                    aria-disabled={currentPage === 1}
+                                />
                             </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
-                                aria-disabled={currentPage === totalPages}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            ) : null}
-        </div>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                <PaginationItem key={page}>
+                                    <PaginationLink
+                                        isActive={page === currentPage}
+                                        onClick={() => handlePageChange(page)}
+                                    >
+                                        {page}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                    aria-disabled={currentPage === totalPages}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                ) : null
+            }
+        </div >
     )
 }

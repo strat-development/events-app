@@ -1,7 +1,6 @@
 "use state"
 
 import { useEffect, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../ui/tabs"
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -12,12 +11,9 @@ import { Button } from "../../../ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../ui/select";
 import { UserData } from "@/types/types";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Toaster } from "@/components/ui/toaster";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
-import { useRouter } from "next/navigation";
 import { FileUpload } from "@/components/ui/file-upload";
 import { supabaseAdmin } from "@/lib/admin";
-import { Building2 } from "lucide-react";
 
 interface Interest {
     name: string
@@ -488,7 +484,7 @@ export const UserDataModal = () => {
                 </DialogContent >
             </Dialog >
 
-            <Toaster />
+            
         </>
     )
 }

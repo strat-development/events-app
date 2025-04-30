@@ -2,7 +2,6 @@
 
 import { UpdateEventImagesAlbumDialog } from "@/components/dashboard/modals/events/UpdateEventImagesDialog";
 import { Button } from "@/components/ui/button";
-import { Toaster } from "@/components/ui/toaster";
 import { toast } from "@/components/ui/use-toast";
 import { EventHero } from "@/features/custom-event-page/EventHero";
 import { supabaseAdmin } from "@/lib/admin";
@@ -287,8 +286,6 @@ export default function EventPhotosAlbumPage({
                     </PaginationContent>
                 </Pagination>
             </div>
-
-            <Toaster />
         </>
     );
 }

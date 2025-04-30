@@ -101,7 +101,7 @@ interface TicketDialogProps {
                     <div className="text-white/70 flex gap-2 truncate"><MapPin size={20} />{ticket?.event_address}</div>
                     <div className="text-white/70 flex gap-2">
                       <Ticket size={20} />
-                      {ticket?.ticket_price !== null && ticket?.ticket_price > 10000 ? (
+                      {ticket?.ticket_price === "FREE" ? (
                         <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
                       ) : (
                         <p className="text-sm text-white/60 font-bold tracking-wide">{ticket?.ticket_price}$</p>

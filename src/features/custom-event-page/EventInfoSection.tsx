@@ -6,7 +6,6 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { TextEditor } from "../TextEditor"
-import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider"
@@ -325,7 +324,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                         imageUrl={selectedUserImageUrl} />
                 )}
             </SidebarProvider>
-            <Toaster />
+            
         </>
     )
 }

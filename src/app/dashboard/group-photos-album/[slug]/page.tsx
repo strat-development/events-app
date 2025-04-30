@@ -2,7 +2,6 @@
 
 import { UpdateGroupImagesAlbumDialog } from "@/components/dashboard/modals/groups/UpdateGroupImagesDialog";
 import { Button } from "@/components/ui/button";
-import { Toaster } from "@/components/ui/toaster";
 import { GroupHero } from "@/features/group-page/GroupHero";
 import { supabaseAdmin } from "@/lib/admin";
 import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
@@ -262,8 +261,6 @@ export default function GroupPhotosAlbumPage({
                     </PaginationContent>
                 </Pagination>
             </div>
-
-            <Toaster />
         </>
     );
 }

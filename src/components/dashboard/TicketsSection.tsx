@@ -188,7 +188,7 @@ export const Ticketsection = () => {
                                         <p className="text-sm text-white/60">{ticket.event_address}</p>
                                         <div className="flex gap-2 mt-1 items-center">
                                             <Ticket className="h-4 w-4" />
-                                            {ticket.ticket_price !== null && (ticket.ticket_price ?? 0) > 10000 ? (
+                                            {ticket?.ticket_price === "FREE" ? (
                                                 <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
                                             ) : (
                                                 <p className="text-sm text-white/60 font-bold tracking-wide">{ticket.ticket_price}$</p>
@@ -230,7 +230,7 @@ export const Ticketsection = () => {
                                     <p className="text-sm text-white/60">{ticket.event_address}</p>
                                     <div className="flex gap-2 mt-1 items-center">
                                         <Ticket className="h-4 w-4" />
-                                        {ticket.ticket_price !== null && (ticket.ticket_price ?? 0) > 10000 ? (
+                                        {ticket?.ticket_price === "FREE" ? (
                                             <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
                                         ) : (
                                             <p className="text-sm text-white/60 font-bold tracking-wide">{ticket.ticket_price}$</p>

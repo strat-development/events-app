@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Toaster } from "@/components/ui/toaster";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useState } from "react";
@@ -105,7 +104,7 @@ export const DeletePostDialog = ({ postId }: DeletePostDialogProps) => {
                 </DialogContent>
             </Dialog>
 
-            <Toaster />
+            
         </>
     );
 };

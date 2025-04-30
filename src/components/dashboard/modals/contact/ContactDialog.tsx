@@ -4,7 +4,6 @@ import useWeb3forms from "@web3forms/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "../../../ui/use-toast";
-import { Toaster } from "../../../ui/toaster";
 import { Input } from "../../../ui/input";
 import { Button } from "../../../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../../../ui/dialog";
@@ -171,8 +170,6 @@ export const ContactDialog = ({ expanded }: ContactDialogProps) => {
                     </form>
                 </DialogContent>
             </Dialog>
-
-            <Toaster />
         </>
     )
 }

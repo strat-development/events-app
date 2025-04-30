@@ -1,15 +1,13 @@
 "use client"
 
-
-import React from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
-import { Toaster } from "@/components/ui/toaster";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Trash } from "lucide-react";
+import { useState } from "react";
 
 interface DeleteGroupUserDialogProps {
     userId: string;
@@ -18,7 +16,7 @@ interface DeleteGroupUserDialogProps {
 export const DeleteGroupUserDialog = ({ userId }: DeleteGroupUserDialogProps) => {
     const supabase = createClientComponentClient<Database>()
     const queryClient = useQueryClient()
-    const [isOpen, setIsOpen] = React.useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
     const deleteGroupUserMutation = useMutation(
         async (userId: string) => {
@@ -86,7 +84,7 @@ export const DeleteGroupUserDialog = ({ userId }: DeleteGroupUserDialogProps) =>
                 </DialogContent>
             </Dialog>
 
-            <Toaster />
+            
         </>
     );
 };

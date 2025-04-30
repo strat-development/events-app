@@ -1,11 +1,10 @@
 "use client"
 
 
-import React, { useCallback, useState } from "react";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
-import { Toaster } from "@/components/ui/toaster";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
@@ -183,7 +182,7 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
                 </DialogContent>
             </Dialog>
 
-            <Toaster />
+            
         </>
     );
 };

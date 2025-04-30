@@ -4,11 +4,10 @@ import { LogIn, LogOut, Ticket } from "lucide-react"
 import { Button } from "./ui/button"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Database } from "@/types/supabase"
-import { Toaster } from "./ui/toaster"
 import { toast } from "./ui/use-toast"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useMemo, useState } from "react"
-import { EventData } from "@/types/types"
+import { EventData, TicketsData } from "@/types/types"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { format, parseISO } from "date-fns";
 import { ShareDialog } from "@/features/qr-code-generator/ShareDialog"
@@ -120,11 +119,13 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                 user_id: userId,
                 user_fullname: userName,
                 user_email: userEmail,
-                event_starts_at: eventData?.map((event) => event.starts_at),
-                event_title: eventData?.map((event) => event.event_title),
-                event_address: eventData?.map((event) => event.event_address),
-                ticket_price: eventData?.map((event) => event.ticket_price)
-            })
+                event_starts_at: eventData?.[0]?.starts_at,
+                event_title: eventData?.[0]?.event_title,
+                event_address: eventData?.[0]?.event_address,
+                ticket_price: eventData?.[0]?.ticket_price,
+                created_at: new Date().toISOString(),
+                id: crypto.randomUUID()
+            } as TicketsData)
 
         if (error) {
             throw error
@@ -172,7 +173,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
             cacheTime: 10 * 60 * 1000,
         })
 
-    const availableSpots = eventData ? (eventData.reduce((acc, event) => acc + (event.attendees_limit as number), 0)) - (attendeeCount as number) : 0
+    const availableSpots = (Number(eventData?.[0]?.attendees_limit) || 0) - (attendeeCount ?? 0)
 
     const fetchAttendee = useQuery(['attendee'], async () => {
         const { data, error } = await supabase
@@ -235,7 +236,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                 <div className="flex flex-col">
                                     <div className="flex gap-2 mt-1 items-center">
                                         <Ticket size={20} />
-                                        {event?.ticket_price !== null && event.ticket_price > 10000 ? (
+                                        {event?.ticket_price === "FREE" ? (
                                             <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
                                         ) : (
                                             <p className="text-sm text-white/60 font-bold tracking-wide">{event?.ticket_price}$</p>
@@ -276,7 +277,6 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                         </>
                     ))}
                 </div>
-                <Toaster />
             </div>
         </>
     )

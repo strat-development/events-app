@@ -1,10 +1,9 @@
 "use client"
 
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
-import { Toaster } from "@/components/ui/toaster";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -459,8 +458,8 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
                                                     ends_at: eventEndDate,
                                                     event_address: eventAddress,
                                                     event_topics: groupTopics,
-                                                    ticket_price: isFreeTicket ? 999999999 : eventTicketPrice,
-                                                    attendees_limit: isUnlimitedSpots ? 999999999 : spotsLimit,
+                                                    ticket_price: isFreeTicket ? "FREE" : eventTicketPrice,
+                                                    attendees_limit: isUnlimitedSpots ? "FREE" : spotsLimit,
                                                 });
                                             }
                                         }}
@@ -474,7 +473,7 @@ export const EditEventDialog = ({ eventId }: EditEventDialogProps) => {
                 </DialogContent>
             </Dialog>
 
-            <Toaster />
+            
         </>
     );
 };

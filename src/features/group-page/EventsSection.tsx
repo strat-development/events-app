@@ -139,7 +139,7 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
                                         <p className="text-white/60">{event.event_address}</p>
                                         <div className="flex items-center gap-2 mt-1">
                                             <Ticket size={20} />
-                                            {event?.ticket_price !== null && event.ticket_price > 10000 ? (
+                                            {event?.ticket_price === "FREE" ? (
                                                 <p className="text-sm text-white/60 font-bold">FREE</p>
                                             ) : (
                                                 <p className="text-sm text-white/60">{event?.ticket_price}$</p>

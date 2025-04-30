@@ -1,11 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { useState } from "react";
 import { TextEditor } from "../../../../features/TextEditor";
-import { Toaster } from "@/components/ui/toaster";
 import { FileUpload } from "@/components/ui/file-upload";
 import { useMutation, useQueryClient } from "react-query";
 import { useUserContext } from "@/providers/UserContextProvider";
@@ -14,8 +13,6 @@ import { Database } from "@/types/supabase";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { Input } from "@/components/ui/input";
-import { Plus, X } from "lucide-react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 export const CreatePostDialog = () => {
     const { userId } = useUserContext();
@@ -188,7 +185,7 @@ export const CreatePostDialog = () => {
                 </DialogContent>
             </Dialog>
 
-            <Toaster />
+            
         </>
     );
 };

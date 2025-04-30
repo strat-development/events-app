@@ -1,11 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { useState } from "react";
 import { TextEditor } from "../../../../features/TextEditor";
-import { Toaster } from "@/components/ui/toaster";
 import { FileUpload } from "@/components/ui/file-upload";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -13,8 +12,7 @@ import { Database } from "@/types/supabase";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { Input } from "@/components/ui/input";
-import { Plus, Save } from "lucide-react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { Plus } from "lucide-react";
 
 interface CreateGroupPostDialogProps {
     groupId: string;
@@ -23,7 +21,6 @@ interface CreateGroupPostDialogProps {
 export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) => {
     const supabase = createClientComponentClient<Database>();
     const queryClient = useQueryClient();
-    const [modalStepCount, setModalStepCount] = useState(1);
     const [isOpen, setIsOpen] = useState(false);
     const [editorContent, setEditorContent] = useState("");
     const [title, setTitle] = useState("");
@@ -265,7 +262,7 @@ export const CreateGroupPostDialog = ({ groupId }: CreateGroupPostDialogProps) =
                 </DialogContent>
             </Dialog>
 
-            <Toaster />
+            
         </>
     );
 };

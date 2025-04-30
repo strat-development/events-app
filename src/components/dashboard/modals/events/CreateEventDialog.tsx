@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
@@ -19,6 +18,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Plus } from "lucide-react"
 import { TextEditor } from "@/features/TextEditor"
 import { GenerateDescriptionDialog } from "./GenerateDescriptionDialog"
+import { set } from "lodash"
+import { ActivateStripeDialog } from "../payments/ActivateStripeDialog"
 
 interface CreateEventDialogProps {
     ownerId: string
@@ -27,7 +28,7 @@ interface CreateEventDialogProps {
 export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
     const supabase = createClientComponentClient<Database>()
     const queryClient = useQueryClient()
-    const { userId } = useUserContext()
+    const { userId, stripeUser } = useUserContext()
     const [fetchedGroupsData, setFetchedGroupsData] = useState<GroupData[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [eventTitle, setEventTitle] = useState("")
@@ -35,21 +36,22 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
     const [eventStartDate, setEventStartDate] = useState("")
     const [eventEndDate, setEventEndDate] = useState("")
     const [eventAddress, setEventAddress] = useState("")
-    const [eventTicketPrice, setEventTicketPrice] = useState<number | null>(null);
-    const [spotsLimit, setSpotsLimit] = useState<number | null>(null);
+    const [eventTicketPrice, setEventTicketPrice] = useState<string | null>(null);
+    const [spotsLimit, setSpotsLimit] = useState<string | null>(null);
     const [isFreeTicket, setIsFreeTicket] = useState(false);
     const [isUnlimitedSpots, setIsUnlimitedSpots] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState("")
     const [groupTopics, setGroupTopics] = useState([])
     const [files, setFiles] = useState<File[]>([]);
+    const [showStripeDialog, setShowStripeDialog] = useState(false);
 
     const clearStates = useCallback(() => {
         setEventTitle("")
         setEditorContent("")
         setEventStartDate("")
         setEventAddress("")
-        setEventTicketPrice(0)
-        setSpotsLimit(0)
+        setEventTicketPrice("")
+        setSpotsLimit("")
         setSelectedGroup("")
         setFiles([])
     }, [])
@@ -76,27 +78,6 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
             cacheTime: 10 * 60 * 1000,
         }
     )
-
-    useEffect(() => {
-        const fetchGroupTopics = async () => {
-            if (selectedGroup) {
-                const { data, error } = await supabase
-                    .from("groups")
-                    .select("group_topics")
-                    .eq("id", selectedGroup)
-                if (error) {
-                    console.error(error)
-                    return
-                }
-
-                if (data && data.length > 0) {
-                    setGroupTopics(data[0].group_topics as any)
-                }
-            }
-        }
-
-        fetchGroupTopics()
-    }, [selectedGroup])
 
     const addEventPicture = useMutation(async ({ paths, eventId }: { paths: string[], eventId: string }) => {
         const results = await Promise.all(paths.map(async (path) => {
@@ -195,8 +176,48 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
         }
     )
 
+    useEffect(() => {
+        const fetchGroupTopics = async () => {
+            if (selectedGroup) {
+                const { data, error } = await supabase
+                    .from("groups")
+                    .select("group_topics")
+                    .eq("id", selectedGroup)
+                if (error) {
+                    console.error(error)
+                    return
+                }
+
+                if (data && data.length > 0) {
+                    setGroupTopics(data[0].group_topics as any)
+                }
+            }
+        }
+
+        fetchGroupTopics()
+    }, [selectedGroup])
+
+    const handleFreeTicketChange = (checked: boolean) => {
+        if (!checked && (!stripeUser || stripeUser?.isActive === false)) {
+            setShowStripeDialog(true);
+
+            return;
+        }
+        setIsFreeTicket(checked);
+    };
+
+    useEffect(() => {
+        if (!stripeUser || !stripeUser.isActive) {
+            setIsFreeTicket(true);
+        }
+    }, [stripeUser]);
+
     return (
         <>
+            <ActivateStripeDialog
+                open={showStripeDialog}
+                onOpenChange={setShowStripeDialog}
+            />
             <Dialog open={isOpen} onOpenChange={(open) => {
                 if (open && ownerId !== userId) {
                     toast({
@@ -300,34 +321,28 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                                     value={eventTicketPrice === null ? "" : eventTicketPrice}
                                     disabled={isFreeTicket}
                                     onChange={(e) => {
-                                        let value = e.target.value;
-                                        let number = Number(value);
+                                        const value = e.target.value;
 
-                                        if (isNaN(number) || number < 0) {
-                                            toast({
-                                                variant: "destructive",
-                                                title: "Invalid Input",
-                                                description: "Please enter a valid non-negative number.",
-                                            });
+                                        if (value === "") {
+                                            setEventTicketPrice("");
                                             return;
                                         }
 
-                                        if (number > 9999) {
-                                            number = 9999;
-                                            toast({
-                                                title: "Limit Reached",
-                                                description: "Maximum ticket price is 9999.",
-                                            });
+                                        if (value.toUpperCase() === "FREE") {
+                                            setEventTicketPrice("FREE");
+                                            return;
                                         }
 
-                                        setEventTicketPrice(number);
+                                        if (/^\d*\.?\d*$/.test(value)) {
+                                            setEventTicketPrice(value);
+                                        }
                                     }}
                                 />
                                 <div className="flex w-full items-center gap-2">
                                     <Checkbox
                                         checked={isFreeTicket}
                                         id="free-tickets"
-                                        onClick={() => setIsFreeTicket((prev) => !prev)}
+                                        onCheckedChange={handleFreeTicketChange}
                                     />
                                     <label className="text-white/70" htmlFor="free-tickets">
                                         Free Tickets
@@ -342,27 +357,21 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                                     value={spotsLimit === null ? "" : spotsLimit}
                                     disabled={isUnlimitedSpots}
                                     onChange={(e) => {
-                                        let value = e.target.value;
-                                        let number = Number(value);
+                                        const value = e.target.value;
 
-                                        if (isNaN(number) || number < 0) {
-                                            toast({
-                                                variant: "destructive",
-                                                title: "Invalid Input",
-                                                description: "Please enter a valid non-negative number.",
-                                            });
+                                        if (value === "") {
+                                            setSpotsLimit("");
                                             return;
                                         }
 
-                                        if (number > 9999) {
-                                            number = 9999;
-                                            toast({
-                                                title: "Limit Reached",
-                                                description: "Maximum spots limit is 9999.",
-                                            });
+                                        if (value.toUpperCase() === "NO LIMIT") {
+                                            setSpotsLimit("NO LIMIT");
+                                            return;
                                         }
 
-                                        setSpotsLimit(number);
+                                        if (/^\d+$/.test(value)) {
+                                            setSpotsLimit(value);
+                                        }
                                     }}
                                 />
                                 <div className="flex w-full items-center gap-2">
@@ -397,8 +406,8 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                                                 created_by: userId,
                                                 event_group: selectedGroup,
                                                 event_topics: groupTopics,
-                                                ticket_price: isFreeTicket ? 999999999 : eventTicketPrice,
-                                                attendees_limit: isUnlimitedSpots ? 999999999 : spotsLimit,
+                                                ticket_price: isFreeTicket ? "FREE" : eventTicketPrice,
+                                                attendees_limit: isUnlimitedSpots ? "FREE" : spotsLimit,
                                             } as unknown as EventData);
                                         }
                                     }}
@@ -412,7 +421,7 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                 </DialogContent>
             </Dialog>
 
-            <Toaster />
+
         </>
     )
 }
