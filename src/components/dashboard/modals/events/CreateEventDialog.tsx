@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
@@ -18,8 +20,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Plus } from "lucide-react"
 import { TextEditor } from "@/features/TextEditor"
 import { GenerateDescriptionDialog } from "./GenerateDescriptionDialog"
-import { set } from "lodash"
 import { ActivateStripeDialog } from "../payments/ActivateStripeDialog"
+import { useStripeProducts } from "@/hooks/useStripeProducts"
 
 interface CreateEventDialogProps {
     ownerId: string
@@ -44,6 +46,7 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
     const [groupTopics, setGroupTopics] = useState([])
     const [files, setFiles] = useState<File[]>([]);
     const [showStripeDialog, setShowStripeDialog] = useState(false);
+    const { createProduct } = useStripeProducts();
 
     const clearStates = useCallback(() => {
         setEventTitle("")
@@ -122,36 +125,94 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
         return uploadPromises.map(({ path }) => path);
     }
 
-    const createEvent = useMutation(
-        async (eventData: EventData) => {
-            const { data, error } = await supabase
-                .from('events')
-                .insert(eventData)
-                .select('id');
-            if (error) {
-                throw error;
+    const createStripeProduct = async (eventId: string) => {
+        if (!eventTicketPrice || isFreeTicket || !stripeUser?.isActive) return null;
+
+        try {
+            const result = await createProduct.mutateAsync({
+                eventId,
+                name: eventTitle,
+                description: editorContent,
+                price: parseFloat(eventTicketPrice),
+                metadata: {
+                    event_id: eventId,
+                    created_by: userId || '',
+                    group_id: selectedGroup
+                },
+                stripeAccountId: stripeUser.stripeUserId
+            });
+
+            if (!result) {
+                throw new Error('Failed to create Stripe product');
             }
 
-            return data;
+            const { error: updateError } = await supabase
+                .from('stripe-products')
+                .update({
+                    stripe_product_id: result.stripe_product_id,
+                    stripe_price_id: result.stripe_price_id
+                })
+                .eq('id', eventId);
+
+            if (updateError) throw updateError;
+
+            return result;
+        } catch (error: any) {
+            console.error("Failed to create Stripe product:", error);
+            toast({
+                variant: "destructive",
+                title: "Stripe Error",
+                description: error.message || "Failed to create product in Stripe"
+            });
+            throw error;
+        }
+    };
+
+    const createEvent = useMutation(
+        async (eventData: EventData) => {
+            const { data: event, error } = await supabase
+                .from('events')
+                .insert(eventData)
+                .select('id')
+                .single();
+
+            if (error) throw error;
+
+            if (!isFreeTicket && eventTicketPrice && stripeUser?.isActive) {
+                await createStripeProduct(event.id);
+            }
+
+            return event;
         },
         {
             onSuccess: async (data) => {
                 if (data) {
-                    const paths = await uploadFiles(files);
-                    await addEventPicture.mutate({ paths, eventId: data[0].id });
-                    clearStates();
-                    setIsOpen(false);
-                    queryClient.invalidateQueries('events');
-                    toast({
-                        title: "Success",
-                        description: "Event created successfully",
-                    });
+                    try {
+                        const paths = await uploadFiles(files);
+                        await addEventPicture.mutateAsync({ paths, eventId: data.id });
+                        clearStates();
+                        setIsOpen(false);
+                        queryClient.invalidateQueries('events');
+                        toast({
+                            title: "Success",
+                            description: "Event created successfully",
+                        });
+                    } catch (error) {
+                        console.error("Error in post-event creation:", error);
+                        toast({
+                            variant: "destructive",
+                            title: "Error",
+                            description: "Event created but there were issues with additional processing",
+                        });
+                    }
                 }
             },
-            onError: () => {
+            onError: (error: any) => {
+                console.error("Event creation error:", error);
                 toast({
+                    variant: "destructive",
                     title: "Error",
-                    description: "Failed to create event",
+                    description: error.message || "Failed to create event",
                 });
             }
         }
@@ -200,7 +261,6 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
     const handleFreeTicketChange = (checked: boolean) => {
         if (!checked && (!stripeUser || stripeUser?.isActive === false)) {
             setShowStripeDialog(true);
-
             return;
         }
         setIsFreeTicket(checked);
@@ -282,7 +342,6 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                                         onChange={(e) => setEventStartDate(e.target.value)}
                                     />
                                 </div>
-
 
                                 <div className="flex items-center w-full justify-between bg-white/5 p-2 rounded-xl">
                                     <span className="text-white/50">End Date</span>
@@ -407,7 +466,7 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                                                 event_group: selectedGroup,
                                                 event_topics: groupTopics,
                                                 ticket_price: isFreeTicket ? "FREE" : eventTicketPrice,
-                                                attendees_limit: isUnlimitedSpots ? "FREE" : spotsLimit,
+                                                attendees_limit: isUnlimitedSpots ? "NO_LIMIT" : spotsLimit,
                                             } as unknown as EventData);
                                         }
                                     }}
@@ -416,12 +475,9 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                                 </HoverBorderGradient>
                             )}
                         </div>
-
                     </div>
                 </DialogContent>
             </Dialog>
-
-
         </>
     )
 }

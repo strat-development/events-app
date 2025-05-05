@@ -173,7 +173,17 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
             cacheTime: 10 * 60 * 1000,
         })
 
-    const availableSpots = (Number(eventData?.[0]?.attendees_limit) || 0) - (attendeeCount ?? 0)
+    const availableSpots = useMemo(() => {
+        const limit = Number(eventData?.[0]?.attendees_limit) || 0;
+        const count = attendeeCount ?? 0;
+        
+        if (limit <= 0) {
+            return "No spot limits";
+        }
+        
+        const spots = Math.max(0, limit - count);
+        return spots === 0 ? "Sold out" : `${spots} spots available`;
+    }, [eventData, attendeeCount]);
 
     const fetchAttendee = useQuery(['attendee'], async () => {
         const { data, error } = await supabase
@@ -243,7 +253,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                         )}
                                     </div>
                                     <p className="text-sm text-white/60">
-                                        {availableSpots > 10000 ? "No spot limits" : `${availableSpots} spots available`}
+                                        {availableSpots}
                                     </p>
                                 </div>
                                 <ShareDialog />
@@ -257,7 +267,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                         <LogOut size={20} />
                                     </Button>
                                 ) : (
-                                    availableSpots <= 0 ? (
+                                    availableSpots === "Sold out" ? (
                                         <Button className="h-fit"
                                             disabled>
                                             Sold out
