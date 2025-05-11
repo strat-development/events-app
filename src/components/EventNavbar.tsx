@@ -11,6 +11,7 @@ import { EventData, TicketsData } from "@/types/types"
 import { useUserContext } from "@/providers/UserContextProvider"
 import { format, parseISO } from "date-fns";
 import { ShareDialog } from "@/features/qr-code-generator/ShareDialog"
+import { PurchaseTicketButton } from "./dashboard/modals/events/PurchaseTicketButton"
 
 interface EventNavbarProps {
     eventId: string
@@ -176,11 +177,11 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
     const availableSpots = useMemo(() => {
         const limit = Number(eventData?.[0]?.attendees_limit) || 0;
         const count = attendeeCount ?? 0;
-        
+
         if (limit <= 0) {
             return "No spot limits";
         }
-        
+
         const spots = Math.max(0, limit - count);
         return spots === 0 ? "Sold out" : `${spots} spots available`;
     }, [eventData, attendeeCount]);
@@ -273,14 +274,20 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                             Sold out
                                         </Button>
                                     ) : (
-                                        <Button className="text-green-500"
-                                            variant="ghost"
-                                            onClick={() => {
-                                                addAttendee.mutateAsync()
-                                                addTicket.mutateAsync()
-                                            }}>
-                                            <LogIn size={20} />
-                                        </Button>
+                                        <>
+                                            {event.ticket_price === "FREE" ? (
+                                                <Button className="text-green-500 h-fit"
+                                                    variant="ghost"
+                                                    onClick={() => {
+                                                        addAttendee.mutateAsync()
+                                                        addTicket.mutateAsync()
+                                                    }}>
+                                                    <LogIn size={20} />
+                                                </Button>
+                                            ) : (
+                                                <PurchaseTicketButton eventId={eventId} />
+                                            )}
+                                        </>
                                     )
                                 )}
                             </div>

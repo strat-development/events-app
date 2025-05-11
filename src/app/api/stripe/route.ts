@@ -40,6 +40,7 @@ export async function POST(request: Request) {
                 .eq('stripe_session_id', session.id);
 
             break;
+            
         case 'checkout.session.expired':
             await supabase
                 .from('stripe-sessions')

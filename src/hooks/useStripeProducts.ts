@@ -1,9 +1,21 @@
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 
 export const useStripeProducts = () => {
   const supabase = createClientComponentClient<Database>();
+
+  const getProductByEventId = (eventId: string) => 
+    useQuery(['stripe-product', eventId], async () => {
+      const { data, error } = await supabase
+        .from('stripe-products')
+        .select('*')
+        .eq('event_id', eventId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    });
 
   const createProduct = useMutation(async (productData: {
     eventId: string;
@@ -50,5 +62,5 @@ export const useStripeProducts = () => {
     };
   });
 
-  return { createProduct };
+  return { createProduct, getProductByEventId };
 };

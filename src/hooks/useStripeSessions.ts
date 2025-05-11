@@ -7,7 +7,7 @@ export const useStripeSessions = () => {
   const supabase = createClientComponentClient<Database>();
   const queryClient = useQueryClient();
 
-  const getSessionById = (sessionId: string) => 
+  const getSessionById = (sessionId: string) =>
     useQuery(['stripe-session', sessionId], async () => {
       const { data, error } = await supabase
         .from('stripe-sessions')
@@ -17,7 +17,7 @@ export const useStripeSessions = () => {
 
       if (error) throw error;
 
-      return data as StripeSession;
+      return data;
     });
 
   const createSession = useMutation(async (sessionData: {
@@ -26,40 +26,54 @@ export const useStripeSessions = () => {
     priceId: string;
     successUrl: string;
     cancelUrl: string;
+    stripeAccountId?: string;
   }) => {
-    const stripeResponse = await fetch('/api/create-checkout-session', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        priceId: sessionData.priceId,
-        successUrl: sessionData.successUrl,
-        cancelUrl: sessionData.cancelUrl,
-        metadata: {
+    console.log("Creating session with:", sessionData);
+
+    try {
+      const stripeResponse = await fetch('/api/create-stripe-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId: sessionData.priceId,
+          successUrl: sessionData.successUrl,
+          cancelUrl: sessionData.cancelUrl,
+          stripeAccountId: sessionData.stripeAccountId,
+          metadata: {
+            user_id: sessionData.userId,
+            event_id: sessionData.eventId
+          }
+        })
+      });
+
+      const responseData = await stripeResponse.json();
+
+      if (!stripeResponse.ok) {
+        console.error('Stripe API error response:', responseData);
+        throw new Error(responseData.error || 'Failed to create Stripe session');
+      }
+
+      const { data, error } = await supabase
+        .from('stripe-sessions')
+        .insert({
           user_id: sessionData.userId,
-          event_id: sessionData.eventId
-        }
-      })
-    });
+          event_id: sessionData.eventId,
+          stripe_session_id: responseData.sessionId,
+          status: 'pending'
+        })
+        .select()
+        .single();
 
-    const stripeData = await stripeResponse.json();
-    if (!stripeResponse.ok) throw new Error(stripeData.error);
+      if (error) throw error;
 
-    const { data, error } = await supabase
-      .from('stripe-sessions')
-      .insert({
-        user_id: sessionData.userId,
-        event_id: sessionData.eventId,
-        stripe_session_id: stripeData.sessionId,
-        status: 'pending'
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    return data as StripeSession;
+      return {
+        ...data,
+        url: responseData.url
+      };
+    } catch (error: any) {
+      console.error('Full session creation error:', error);
+      throw new Error(error.message || 'Failed to create payment session');
+    }
   }, {
     onSuccess: () => {
       queryClient.invalidateQueries('stripe-sessions');
@@ -88,7 +102,7 @@ export const useStripeSessions = () => {
 
     if (error) throw error;
 
-    return data as StripeSession;
+    return data;
   }, {
     onSuccess: () => {
       queryClient.invalidateQueries('stripe-sessions');

@@ -1,41 +1,55 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { useStripeProducts } from "@/hooks/useStripeProducts";
 import { useStripeSessions } from "@/hooks/useStripeSessions";
+import { useStripeProducts } from "@/hooks/useStripeProducts";
 import { useUserContext } from "@/providers/UserContextProvider";
 
 export const PurchaseTicketButton = ({ eventId }: { eventId: string }) => {
   const { userId } = useUserContext();
-  const { data: product } = useStripeProducts().createProduct
+  const { getProductByEventId } = useStripeProducts();
   const { createSession } = useStripeSessions();
 
+  const { data: stripeProduct, isLoading, error } = getProductByEventId(eventId);
+
   const handlePurchase = async () => {
-    if (!product) {
-      alert('This event is not configured for ticket purchases');
+    if (!stripeProduct?.stripe_price_id) {
+      alert("This event has no ticket price configured");
+      return;
+    }
+
+    if (!stripeProduct?.stripe_account_id) {
+      alert("Organizer hasn't completed payment setup");
       return;
     }
 
     try {
-      const session = await createSession.mutateAsync({
-        userId: userId!,
+      const response = await createSession.mutateAsync({
+        userId,
         eventId,
-        priceId: product.stripe_price_id as string,
-        successUrl: `${window.location.origin}/events/${eventId}/success`,
-        cancelUrl: `${window.location.origin}/events/${eventId}`
+        priceId: stripeProduct.stripe_price_id,
+        stripeAccountId: stripeProduct.stripe_account_id,
+        successUrl: `${window.location.origin}/event-page/${eventId}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/event-page/${eventId}`,
       });
 
-      if (session) {
-        window.location.href = session.stripe_session_id;
+      if (!response?.url) {
+        throw new Error("No checkout URL received");
       }
+
+      window.location.href = response.url;
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      console.error("Payment error:", error);
+      alert(`Payment failed: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   };
 
+  if (isLoading) return <Button disabled>Loading...</Button>;
+  if (error) return <Button disabled>Purchase unavailable</Button>;
+
   return (
-    <Button onClick={handlePurchase}>
+    <Button onClick={handlePurchase} disabled={!stripeProduct}>
       Purchase Ticket
     </Button>
   );
-};
+}
