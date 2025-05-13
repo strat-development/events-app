@@ -1,5 +1,6 @@
 import { stripe } from "@/lib/stripe-util";
 import { NextResponse } from "next/server";
+import Stripe from "stripe";
 
 export async function POST(request: Request) {
   try {
@@ -26,25 +27,16 @@ export async function POST(request: Request) {
       );
     }
 
-    const sessionParams: any = {
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: [{
-        price_data: { 
-          currency: price.currency,
-          product_data: {
-            name: 'Event Ticket',
-          },
-          unit_amount: price.unit_amount,
-        },
+        price: priceId,
         quantity: 1,
       }],
       mode: 'payment',
       success_url: successUrl,
       cancel_url: cancelUrl,
-      metadata: {
-        ...metadata,
-        connected_account_id: stripeAccountId,
-      },
+      metadata: metadata,
     };
 
     if (stripeAccountId && stripeAccountId !== platformAccountId) {
@@ -55,7 +47,9 @@ export async function POST(request: Request) {
       };
     }
 
-    const session = await stripe.checkout.sessions.create(sessionParams);
+    const session = await stripe.checkout.sessions.create(sessionParams, {
+      stripeAccount: stripeAccountId
+    });
 
     return NextResponse.json({
       sessionId: session.id,
@@ -63,14 +57,8 @@ export async function POST(request: Request) {
       payment_intent: session.payment_intent,
       status: session.status
     });
-
   } catch (error: any) {
-    console.error('Stripe API error:', {
-      message: error.message,
-      code: error.code,
-      type: error.type,
-      stack: error.stack
-    });
+    console.error('Stripe API error:', error);
     return NextResponse.json(
       { error: `Payment processing error: ${error.message}` },
       { status: 500 }

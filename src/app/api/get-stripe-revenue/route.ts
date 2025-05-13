@@ -24,6 +24,8 @@ export async function POST(request: Request) {
       stripeAccount: accountId,
     });
 
+    const currency = allCharges.data[0]?.currency?.toUpperCase() || '';
+
     const currentMonthCharges = allCharges.data.filter((charge: any) => 
       new Date(charge.created * 1000) >= currentMonthStart
     );
@@ -62,6 +64,7 @@ export async function POST(request: Request) {
         allTime,
         currentMonth,
         previousMonth,
+        currency
       },
       payments: allCharges.data
     });

@@ -15,6 +15,7 @@ import { useUserContext } from "@/providers/UserContextProvider";
 import { useState } from "react";
 import { toast } from "./ui/use-toast";
 import { IconGhost2Filled } from "@tabler/icons-react";
+import { PurchaseTicketButton } from "./dashboard/modals/events/PurchaseTicketButton";
 
 interface EventSidebarProps {
     isOpen: boolean;
@@ -311,20 +312,37 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
                                     <p className="font-semibold text-white/70 truncate">{userName}</p>
                                     <p className="font-semibold text-white/50 truncate">{userEmail}</p>
                                 </div>
-                                {attendeeData.length === 0 ? (
-                                    <Button className="mt-4" variant="default" onClick={() => {
-                                        addAttendee.mutateAsync()
-                                        addTicket.mutateAsync()
-                                    }}>
-                                        Join event
-                                    </Button>
+                                {selectedEvent?.ticket_price === "FREE" ? (
+                                    attendeeData.length === 0 ? (
+                                        <Button
+                                            className="w-full"
+                                            onClick={() => {
+                                                addAttendee.mutateAsync()
+                                                addTicket.mutateAsync()
+                                            }}
+                                        >
+                                            Attend
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            className="w-full"
+                                            onClick={() => {
+                                                removeAttendee.mutateAsync()
+                                                removeTicket.mutateAsync()
+                                            }}
+                                        >
+                                            Leave
+                                        </Button>
+                                    )
                                 ) : (
-                                    <Button className="mt-4" variant="destructive" onClick={() => {
-                                        removeAttendee.mutateAsync()
-                                        removeTicket.mutateAsync()
-                                    }}>
-                                        Leave event
-                                    </Button>
+                                    <PurchaseTicketButton
+                                        title={selectedEvent?.event_title as string}
+                                        starts_at={selectedEvent?.starts_at as string}  
+                                        ends_at={selectedEvent?.ends_at as string}
+                                        address={selectedEvent?.event_address as string}
+                                        eventId={selectedEvent?.id as string}
+                                        ticket_price={selectedEvent?.ticket_price as any}
+                                    />
                                 )}
                             </div>
                         </div>

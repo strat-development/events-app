@@ -27,6 +27,7 @@ export const useStripeSessions = () => {
     successUrl: string;
     cancelUrl: string;
     stripeAccountId?: string;
+    metadata?: Record<string, string>;
   }) => {
     console.log("Creating session with:", sessionData);
 

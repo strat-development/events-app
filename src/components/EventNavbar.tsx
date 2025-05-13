@@ -285,7 +285,13 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
                                                     <LogIn size={20} />
                                                 </Button>
                                             ) : (
-                                                <PurchaseTicketButton eventId={eventId} />
+                                                <PurchaseTicketButton
+                                                    ends_at={event.ends_at as string}
+                                                    starts_at={event.starts_at as string}
+                                                    title={event.event_title as string}
+                                                    eventId={event.id as string}
+                                                    ticket_price={event.ticket_price as any}
+                                                    address={event.event_address as string} />
                                             )}
                                         </>
                                     )
