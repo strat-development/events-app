@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useStripeSessions } from "@/hooks/useStripeSessions";
 import { useStripeProducts } from "@/hooks/useStripeProducts";
 import { useUserContext } from "@/providers/UserContextProvider";
+import { toast } from "@/components/ui/use-toast";
 
 interface EventData {
   title: string;
@@ -58,8 +59,11 @@ export const PurchaseTicketButton = ({ title, starts_at, ends_at, address, ticke
 
       window.location.href = response.url;
     } catch (error) {
-      console.error("Payment error:", error);
-      alert(`Payment failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+      toast({
+        title: "Purchase failed",
+        description: "There was an error processing your purchase. Please try again later.",
+        variant: "destructive",
+      });
     }
   };
 

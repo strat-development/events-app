@@ -103,13 +103,46 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
         }
     )
 
+    const productData = useQuery(
+        ['stripe-product', eventId],
+        async () => {
+            const { data, error } = await supabase
+                .from("stripe-products")
+                .select("*")
+                .eq("event_id", eventId)
+                .single()
+            if (error) {
+                throw error
+            }
+
+            return data
+        }, {
+        enabled: isOpen,
+        cacheTime: 10 * 60 * 1000,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+    })
 
     const deleteEventMutation = useMutation(
         async (eventId: string) => {
+            if (productData.data?.stripe_product_id) {
+                await deleteStripeProduct(productData.data.stripe_product_id);
+
+                const { error: productError } = await supabase
+                    .from("stripe-products")
+                    .delete()
+                    .eq("event_id", eventId);
+
+                if (productError) {
+                    throw new Error(`Failed to delete product record: ${productError.message}`);
+                }
+            }
+
             const { error } = await supabase
                 .from("events")
                 .delete()
-                .eq('id', eventId)
+                .eq('id', eventId);
 
             const emailResponse = await fetch('/api/deleted-event-mail', {
                 method: 'POST',
@@ -128,30 +161,64 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
             }
 
             if (error) {
-                console.error("Error deleting event:", error.message)
-                throw new Error(error.message)
+                throw new Error(error.message);
             }
         },
         {
             onSuccess: () => {
-                queryClient.invalidateQueries("events")
+                queryClient.invalidateQueries("events");
                 toast({
                     variant: "default",
                     title: "Success",
-                    description: "Event deleted successfully",
-                })
-
-                setIsOpen(false)
+                    description: "Event and associated products deleted successfully",
+                });
+                setIsOpen(false);
             },
             onError: (error) => {
                 toast({
                     variant: "destructive",
                     title: "Error",
-                    description: "There was an error deleting the event"
-                })
+                    description: error instanceof Error ? error.message : "There was an error deleting the event"
+                });
             },
         }
-    )
+    );
+
+    const deactivateStripePrice = async (priceId: string) => {
+        const response = await fetch('/api/deactivate-stripe-price', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ priceId })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to deactivate Stripe price');
+        }
+    };
+
+    const deleteStripeProduct = async (productId: string) => {
+        const response = await fetch('/api/delete-stripe-product', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                productId: productId,
+                priceId: productData.data?.stripe_price_id
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok || result.resolution) {
+            return result;
+        }
+
+        throw new Error(result.error || 'Failed to process Stripe product');
+    };
 
 
     return (
@@ -170,8 +237,8 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button className="text-red-500" 
-                        variant="ghost"
+                        <Button className="text-red-500"
+                            variant="ghost"
                             type="submit"
                             onClick={() => {
                                 deleteEventMutation.mutate(eventId)
@@ -181,8 +248,6 @@ export const DeleteEventDialog = ({ eventId }: DeleteEventDialogProps) => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-
-            
         </>
     );
 };

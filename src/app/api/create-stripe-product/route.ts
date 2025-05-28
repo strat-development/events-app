@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       stripeAccount: stripeAccountId
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       productId: product.id,
       priceId: stripePrice.id
