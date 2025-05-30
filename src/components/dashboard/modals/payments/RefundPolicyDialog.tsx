@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useUserContext } from "@/providers/UserContextProvider";
-import { Database } from "@/types/supabase";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Plus, Receipt } from "lucide-react";
+import { Banknote, Plus } from "lucide-react";
 import { useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { TextEditor } from "@/features/TextEditor";
 import { useMutation } from "react-query";
 import { toast } from "@/components/ui/use-toast";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/types/supabase";
 
 export const RefundPolicyDialog = () => {
     const supabase = createClientComponentClient<Database>();
@@ -59,7 +59,7 @@ export const RefundPolicyDialog = () => {
                 <DialogContent className="flex flex-col w-full max-w-[400px] h-fit rounded-2xl bg-[#131414]">
                     <div className="flex flex-col items-start gap-4 justify-center">
                         <div className="p-4 text-white/70 bg-white/10 rounded-full w-fit">
-                            <Receipt size={32} />
+                            <Banknote size={32} />
                         </div>
                         <div className="flex flex-col gap-1">
                             <h2 className="text-lg font-medium tracking-wide text-white/70">Add refund policy</h2>

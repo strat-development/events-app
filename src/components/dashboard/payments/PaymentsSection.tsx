@@ -221,7 +221,7 @@ export const PaymentsSection = () => {
                 <RevenueSection connectedAccountId={connectedAccountId}
                     isActiveUser={isActiveUser} />
                 <RefundSection />
-                <ReceiptsSection sellerAccountId={connectedAccountId} />
+                {/* <ReceiptsSection sellerAccountId={connectedAccountId} /> */}
             </div>
         </>
     );

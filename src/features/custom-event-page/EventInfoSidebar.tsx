@@ -1,4 +1,5 @@
 import { EventReportDialog } from "@/components/dashboard/modals/contact/EventReportDialog"
+import { ShowRefundPolicyDialog } from "@/components/dashboard/modals/payments/ShowRefundPolicyDialog"
 import { GroupSidebar } from "@/components/GroupSidebar"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { Database } from "@/types/supabase"
@@ -7,7 +8,6 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { format, parseISO } from "date-fns"
 import { Clock, MapPin } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { useQuery } from "react-query"
 
@@ -19,7 +19,7 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
     const supabase = createClientComponentClient<Database>()
     const [imageUrls, setImageUrls] = useState<{ publicUrl: string }[]>([])
     const [eventData, setEventData] = useState<EventData[]>()
-    const groupId = eventData?.map((event) => event.event_group).toString() 
+    const groupId = eventData?.map((event) => event.event_group).toString()
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<GroupData | null>(null);
     const [selectedGroupImageUrl, setSelectedGroupImageUrl] = useState<string | null>(null);
@@ -41,6 +41,28 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
         {
             cacheTime: 10 * 60 * 1000,
         })
+
+
+    const refundPolicy = useQuery(
+        ['refund-policy', eventId, eventData?.[0]?.created_by],
+        async () => {
+            if (!eventData || !eventData[0]?.created_by) {
+                return "";
+            }
+            const { data, error } = await supabase
+                .from("stripe-users")
+                .select("refund_policy")
+                .eq("user_id", eventData[0].created_by as string)
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            return data?.[0]?.refund_policy || "";
+        },
+        {
+            enabled: !!eventData && !!eventData[0]?.created_by,
+        });
+
 
     const groupInfo = useQuery(
         ['group-info'],
@@ -81,7 +103,7 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
 
     useEffect(() => {
         if (images) {
-            Promise.all(images.map(async (image) => {
+            Promise.all(images.map(async (image: any) => {
                 const { data: publicURL } = await supabase.storage
                     .from('group-pictures')
                     .getPublicUrl(image.hero_picture_url || "")
@@ -139,8 +161,15 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
                     </div>
                 ))}
 
+                <div>
+                    {(eventData && eventData[0] && Number(eventData[0].ticket_price) > 0) && (
+                        <div className="text-white/70 text-sm">
+                            <ShowRefundPolicyDialog refundPolicy={refundPolicy.data as string} />
+                        </div>
+                    )}
+                </div>
                 <EventReportDialog eventId={eventId} />
-            </div>
+            </div >
 
             <SidebarProvider>
                 {isSidebarOpen && <GroupSidebar imageUrl={selectedGroupImageUrl}

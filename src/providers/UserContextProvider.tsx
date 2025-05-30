@@ -3,7 +3,6 @@ import {
     useUser as useSupaUser
 } from "@supabase/auth-helpers-react";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useQuery } from "react-query";
 
 type UserContextType = {
     userRole: string;
