@@ -1,0 +1,66 @@
+:root {
+    --blending-value: hard-light;
+}
+
+.blob {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40vmax;
+    height: 40vmax;
+    border-radius: 100%;
+    background: radial-gradient(circle, rgba(255, 0, 255, 0.6) 0%, transparent 90%);
+    mix-blend-mode: var(--blending-value);
+    filter: blur(120px);
+    animation: move 2s ease-in-out infinite,
+        colorChange 5s ease-in-out infinite,
+        sizeChange 5s ease-in-out infinite;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+}
+
+@keyframes move {
+    0% {
+        transform: translate(-50%, -50%) translate(-20vw, -10vh);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) translate(10vw, 15vh);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) translate(-15vw, 5vh);
+    }
+}
+
+@keyframes colorChange {
+    0% {
+        background: radial-gradient(circle, rgba(255, 0, 255, 0.6) 0%, transparent 70%);
+    }
+
+    50% {
+        background: radial-gradient(circle, rgba(0, 255, 255, 0.6) 0%, transparent 70%);
+    }
+
+    100% {
+        background: radial-gradient(circle, rgba(255, 255, 0, 0.6) 0%, transparent 70%);
+    }
+}
+
+@keyframes sizeChange {
+    0% {
+        width: 30vmax;
+        height: 30vmax;
+    }
+
+    50% {
+        width: 45vmax;
+        height: 45vmax;
+    }
+
+    100% {
+        width: 35vmax;
+        height: 35vmax;
+    }
+}
+

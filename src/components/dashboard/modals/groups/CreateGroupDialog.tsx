@@ -167,12 +167,8 @@ export const CreateGroupDialog = () => {
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="flex w-full max-w-[100vw] h-screen rounded-none bg-transparent">
-                    <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start max-h-[80vh] overflow-y-auto justify-center w-full gap-16 mt-24">
-                        <DialogPrimitive.Close className="absolute top-0 right-0 min-[1200px]:right-24 rounded-xl opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-                            <X className="h-4 w-4 text-white/70" />
-                            <span className="sr-only">Close</span>
-                        </DialogPrimitive.Close>
-                        <FileUpload className="max-[900px]:mt-96"
+                    <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start h-full overflow-y-auto justify-center w-full gap-16 mt-8">
+                        <FileUpload className="max-[900px]:mt-[600px]"
                             onChange={(selectedFiles) => {
                                 setFiles(selectedFiles);
                             }}

@@ -284,7 +284,8 @@ export const GroupSidebar = ({ isOpen, onClose, selectedGroup, imageUrl }: Group
 
                             {isTranslating ? (
                                 <div className="flex items-center justify-center">
-                                    <BackgroundGradientAnimation className="w-full min-h-[320px] rounded-xl">
+                                    <BackgroundGradientAnimation
+                                        className="w-full min-h-[320px] rounded-xl">
                                         <div className="flex w-full h-full bg-black/20 flex-col gap-2 items-center justify-center absolute transform left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2">
                                             <Brain className="w-24 h-24 bg-metallic-gradient bg-clip-text text-white/70"
                                                 strokeWidth={2} />

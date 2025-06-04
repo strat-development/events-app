@@ -162,8 +162,8 @@ export const EditGroupDialog = ({ groupId }: EditGroupDialogProps) => {
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="flex w-full max-w-[100vw] h-screen rounded-none bg-transparent">
-                    <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start max-h-[80vh] overflow-y-auto justify-center w-full gap-16 mt-24">
-                        <FileUpload className="max-[900px]:mt-96"
+                    <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start overflow-y-auto justify-center w-full gap-16 mt-8">
+                        <FileUpload className="max-[900px]:mt-[672px]"
                             onChange={(selectedFiles) => {
                                 setFiles(selectedFiles);
                             }}
