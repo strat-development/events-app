@@ -21,7 +21,7 @@ import { PostViewModal } from "./PostViewModal";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { UserProfileSidebar } from "@/components/UserProfileSidebar";
-import { ImagePlus, Plus } from "lucide-react";
+import { BookImage, ImagePlus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import "@/styles/calendar-icon.css"
 
@@ -156,31 +156,31 @@ export const GroupPostsSection = ({ groupId }: GroupPostsSectionProps) => {
 
                 {posts.length === 0 && (
                     <div className="flex flex-col items-center justify-center gap-4 w-full h-[70vh]">
-                        <div className="metallic-icon h-48 w-48">
-                            <svg width="0" height="0" style={{ position: "absolute" }}>
-                                <defs>
-                                    <linearGradient id="metallic-gradient" gradientTransform="rotate(45)">
-                                        <stop offset="0%" stop-color="#e0e0e0" />
-                                        <stop offset="25%" stop-color="#ffffff" />
-                                        <stop offset="50%" stop-color="#e0e0e0" />
-                                        <stop offset="75%" stop-color="#ffffff" />
-                                        <stop offset="100%" stop-color="#e0e0e0" />
-                                    </linearGradient>
-                                </defs>
-                            </svg>
+                        <div className="metallic-icon-container">
+                            <div className="metallic-icon-container">
+                                <svg className="metallic-gradient">
+                                    <defs>
+                                        <linearGradient id="metallic-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#ffffff" stopOpacity=".5" />
+                                            <stop offset="25%" stopColor="#a0a0a0" stopOpacity="0.7" />
+                                            <stop offset="50%" stopColor="#d3d3d3" stopOpacity="0.8" />
+                                            <stop offset="75%" stopColor="#a0a0a0" stopOpacity="0.9" />
+                                            <stop offset="100%" stopColor="#ffffff" stopOpacity="0.7" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+
+                                <div className="metallic-icon">
+                                    <BookImage />
+                                </div>
+                            </div>
                             <div className="gradient-overlay" />
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <p className="text-center text-xl text-white/60 font-medium">No posts found</p>
-                            <p className="text-center text-lg text-white/50">It's a great opportunity to create one</p>
+                            <p className="text-center text-xl text-white/60 font-medium">No posts yet</p>
+                            <p className="text-center text-lg text-white/50">Wait for the groups to post something</p>
                         </div>
-                        <Button className="flex gap-4 w-fit text-lg px-4 text-white/70"
-                            variant="outline"
-                            onClick={() => router.push('/dashboard')}>
-                            Create Post
-                            <Plus className="h-4 w-4" />
-                        </Button>
                     </div>
                 ) || (
                         posts.map((post) => {

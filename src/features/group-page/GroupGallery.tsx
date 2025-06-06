@@ -92,20 +92,27 @@ export const GroupGallery = ({ groupId }: GroupGalleryProps) => {
             <div className="flex flex-col w-full gap-8 justify-center">
                 <div className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
                     {currentItems.map((album) => (
-                        <div className="flex flex-col relative gap-2 max-w-[280px] text-center items-center"
-                            key={album.id}>
-                            <AlbumsImageCarousel imageCount={album.publicUrls.length}
-                                groupId={groupId}
-                                album={album}
-                                imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
+                        currentItems.length > 0 && (
+                            <div className="flex flex-col relative gap-2 max-w-[280px] text-center items-center"
+                                key={album.id}>
+                                <AlbumsImageCarousel imageCount={album.publicUrls.length}
+                                    groupId={groupId}
+                                    album={album}
+                                    imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
 
-                            <p className="text-lg justify-self-center">{album.album_name}</p>
+                                <p className="text-lg justify-self-center">{album.album_name}</p>
 
-                            {pathname.includes("/dashboard") && ownerId === userId && (
-                                <DeleteGroupAlbumDialog albumId={album.id} />
-                            )}
-                        </div>
-                    ))}
+                                {pathname.includes("/dashboard") && ownerId === userId && (
+                                    <DeleteGroupAlbumDialog albumId={album.id} />
+                                ) || (
+                                        <p className="text-sm text-gray-500">
+                                            {album.image_urls ? JSON.parse(album.image_urls).length : 0} photos
+                                        </p>
+                                    )}
+
+                            </div>
+                        ))
+                    )}
                 </div>
 
                 <Pagination>

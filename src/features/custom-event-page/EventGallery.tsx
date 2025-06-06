@@ -10,6 +10,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
+import { ImageIcon } from "lucide-react";
+import "@/styles/calendar-icon.css"
 
 interface EventGalleryProps {
     eventId: string;
@@ -92,47 +94,78 @@ export const EventGallery = ({ eventId }: EventGalleryProps) => {
         <>
             <div className="flex flex-col max-w-[1200px] w-full gap-8 justify-center mb-24">
                 <div className="max-w-[1200px] w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
-                    {currentItems.map((album) => (
-                        <div className="flex flex-col relative gap-2 max-w-[280px] text-center items-center"
-                            key={album.id}>
-                            <AlbumsImageCarousel imageCount={album.publicUrls.length ?? 0}
-                            eventId={eventId} album={album}
-                                imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
-                            <p className="text-lg">{album.album_name}</p>
+                    {currentItems.length === 0 && (
+                        <div className="flex flex-col items-center justify-center gap-4 w-full h-[70vh]">
+                            <div className="metallic-icon-container">
+                                <div className="metallic-icon-container">
+                                    <svg className="metallic-gradient">
+                                        <defs>
+                                            <linearGradient id="metallic-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stopColor="#ffffff" stopOpacity=".5" />
+                                                <stop offset="25%" stopColor="#a0a0a0" stopOpacity="0.7" />
+                                                <stop offset="50%" stopColor="#d3d3d3" stopOpacity="0.8" />
+                                                <stop offset="75%" stopColor="#a0a0a0" stopOpacity="0.9" />
+                                                <stop offset="100%" stopColor="#ffffff" stopOpacity="0.7" />
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
 
-                            {pathname.includes("/dashboard") && eventCreatorId === userId && (
-                                <DeleteEventAlbumDialog albumId={album.id} />
-                            )}
+                                    <div className="metallic-icon">
+                                        <ImageIcon />
+                                    </div>
+                                </div>
+                                <div className="gradient-overlay" />
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                                <p className="text-center text-xl text-white/60 font-medium">No albums found for this event</p>
+                                <p className="text-center text-lg text-white/50">Wait for the event creator to create an album</p>
+                            </div>
                         </div>
-                    ))}
+                    ) || (
+                            currentItems.map((album) => (
+                                <div className="flex flex-col relative gap-2 max-w-[280px] text-center items-center"
+                                    key={album.id}>
+                                    <AlbumsImageCarousel imageCount={album.publicUrls.length ?? 0}
+                                        eventId={eventId} album={album}
+                                        imageUrls={album.publicUrls.map((image: any) => image.publicUrl)} />
+                                    <p className="text-lg">{album.album_name}</p>
+
+                                    {pathname.includes("/dashboard") && eventCreatorId === userId && (
+                                        <DeleteEventAlbumDialog albumId={album.id} />
+                                    )}
+                                </div>
+                            )))}
                 </div>
 
-                <Pagination>
-                    <PaginationContent className="flex gap-8">
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
-                                aria-disabled={currentPage === 1}
-                            />
-                        </PaginationItem>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                            <PaginationItem key={page}>
-                                <PaginationLink
-                                    isActive={page === currentPage}
-                                    onClick={() => handlePageChange(page)}
-                                >
-                                    {page}
-                                </PaginationLink>
+                {currentItems.length > 0 && (
+                    <Pagination>
+                        <PaginationContent className="flex gap-8">
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                    aria-disabled={currentPage === 1}
+                                />
                             </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
-                                aria-disabled={currentPage === totalPages}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                <PaginationItem key={page}>
+                                    <PaginationLink
+                                        isActive={page === currentPage}
+                                        onClick={() => handlePageChange(page)}
+                                    >
+                                        {page}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                    aria-disabled={currentPage === totalPages}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                )}
             </div>
         </>
     );

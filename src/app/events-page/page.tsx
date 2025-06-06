@@ -6,7 +6,7 @@ import { Database } from "@/types/supabase";
 import { EventData } from "@/types/types";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { format, parseISO } from "date-fns";
-import { CalendarRange, Plus, Ticket } from "lucide-react";
+import { CalendarIcon, CalendarRange, CalendarX, Plus, Ticket } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -162,8 +162,24 @@ export default function EventsPage() {
                 <div className="flex flex-wrap max-[800px]:justify-center gap-8">
                     {currentItems.length === 0 && (
                         <div className="flex flex-col items-center justify-center gap-4 w-full h-[70vh]">
-                            <div className="metallic-icon h-48 w-48">
-                                <CalendarRange className="icon-base" strokeWidth={2} />
+                            <div className="metallic-icon-container">
+                                <div className="metallic-icon-container">
+                                    <svg className="metallic-gradient">
+                                        <defs>
+                                            <linearGradient id="metallic-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stopColor="#ffffff" stopOpacity=".5" />
+                                                <stop offset="25%" stopColor="#a0a0a0" stopOpacity="0.7" />
+                                                <stop offset="50%" stopColor="#d3d3d3" stopOpacity="0.8" />
+                                                <stop offset="75%" stopColor="#a0a0a0" stopOpacity="0.9" />
+                                                <stop offset="100%" stopColor="#ffffff" stopOpacity="0.7" />
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+
+                                    <div className="metallic-icon">
+                                        <CalendarX />
+                                    </div>
+                                </div>
                                 <div className="gradient-overlay" />
                             </div>
 
