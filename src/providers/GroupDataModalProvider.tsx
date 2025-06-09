@@ -37,7 +37,6 @@ const GroupDataContext = createContext<GroupDataContextType | null>(null)
 
 export default function GroupDataModalProvider({ children }: { children: React.ReactNode }) {
     const supabase = createClientComponentClient<Database>()
-
     const [interestsData, setInterestsData] = useState<InterestData | null>(null)
     const [selectedInterests, setSelectedInterests] = useState<string[]>([])
     const [selectedGroup, setSelectedGroup] = useState<string | null>("all")
@@ -53,7 +52,6 @@ export default function GroupDataModalProvider({ children }: { children: React.R
         const { data, error } = await supabase
             .from("interests")
             .select("*")
-            .limit(5)
         if (error) {
             throw error
         }

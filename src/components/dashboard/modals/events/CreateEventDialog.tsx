@@ -22,6 +22,7 @@ import { TextEditor } from "@/features/TextEditor"
 import { GenerateDescriptionDialog } from "./GenerateDescriptionDialog"
 import { ActivateStripeDialog } from "../payments/ActivateStripeDialog"
 import { useStripeProducts } from "@/hooks/useStripeProducts"
+import { GenerateEventImageDialog } from "./GenerateEventImageDialog"
 
 interface CreateEventDialogProps {
     ownerId: string
@@ -305,11 +306,16 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                 </DialogTrigger>
                 <DialogContent className="flex w-full max-w-[100vw] h-screen rounded-none bg-transparent">
                     <div className="relative flex flex-row max-[900px]:flex-col max-[900px]:items-center items-start overflow-y-auto justify-center w-full gap-16 mt-8">
-                        <FileUpload className="max-[900px]:mt-96"
-                            onChange={(selectedFiles) => {
-                                setFiles(selectedFiles);
-                            }}
-                        />
+                        <div className="flex flex-col gap-8 items-center">
+                            <FileUpload className="max-[900px]:mt-96"
+                                onChange={(selectedFiles) => {
+                                    setFiles(selectedFiles);
+                                }}
+                            />
+                            <h2 className="text-xl font-medium tracking-wide text-white/70">OR</h2>
+                            <GenerateEventImageDialog />
+                        </div>
+
                         <div className="flex flex-col gap-4">
                             <Select
                                 value={selectedGroup}

@@ -9,7 +9,7 @@ export async function POST(request: Request) {
         }
 
         const response = await openAiClient.chat.completions.create({
-            model: "gpt-4o-mini",
+            model: "gpt-4o",
             messages: [
                 { role: "user", content: `Describe a group in this criteria - mood: ${mood}, length: ${length}, language: ${language}: ${editorContent}` }
             ],
