@@ -254,7 +254,7 @@ export const EventsSection = () => {
                             <GroupPostsSection groupId={groupId as any} />
                         )}
 
-                    {totalItems > 0 && (
+                    {totalItems > 20 && (
                         <Pagination>
                             <PaginationContent className="flex gap-8">
                                 <PaginationItem>

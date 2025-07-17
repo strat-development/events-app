@@ -66,7 +66,7 @@ export const DeleteGroupUserDialog = ({ userId }: DeleteGroupUserDialogProps) =>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle className="text-white/70">Delete User</DialogTitle>
+                        <DialogTitle className="text-white/70">Delete From Group</DialogTitle>
                         <DialogDescription>
                             Are you sure you want to delete this user from group? If not please close this dialog.
                         </DialogDescription>

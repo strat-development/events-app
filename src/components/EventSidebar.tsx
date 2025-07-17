@@ -16,6 +16,7 @@ import { useState } from "react";
 import { toast } from "./ui/use-toast";
 import { IconGhost2Filled } from "@tabler/icons-react";
 import { PurchaseTicketButton } from "./dashboard/modals/events/PurchaseTicketButton";
+import { checkIsEventPast } from "@/helpers/dateHelper";
 
 interface EventSidebarProps {
     isOpen: boolean;
@@ -35,6 +36,7 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
     const [attendeeData, setAttendeeData] = useState<AttendeesData[]>([])
     const [translatedEventDescription, setTranslatedEventDescription] = useState<string>()
     const [showTranslatedDescription, setShowTranslatedDescription] = useState(false)
+    const isPastEvent = selectedEvent?.starts_at ? checkIsEventPast(selectedEvent) : false
 
     const groupData = useQuery(
         ["group", groupId],
@@ -312,13 +314,18 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
                                     <p className="font-semibold text-white/70 truncate">{userName}</p>
                                     <p className="font-semibold text-white/50 truncate">{userEmail}</p>
                                 </div>
+
                                 {selectedEvent?.ticket_price === "FREE" ? (
-                                    attendeeData.length === 0 ? (
+                                    isPastEvent ? (
+                                        <Button className="w-full" disabled>
+                                            Event has ended
+                                        </Button>
+                                    ) : attendeeData.length === 0 ? (
                                         <Button
                                             className="w-full"
                                             onClick={() => {
-                                                addAttendee.mutateAsync()
-                                                addTicket.mutateAsync()
+                                                addAttendee.mutateAsync();
+                                                addTicket.mutateAsync();
                                             }}
                                         >
                                             Attend
@@ -327,8 +334,8 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
                                         <Button
                                             className="w-full"
                                             onClick={() => {
-                                                removeAttendee.mutateAsync()
-                                                removeTicket.mutateAsync()
+                                                removeAttendee.mutateAsync();
+                                                removeTicket.mutateAsync();
                                             }}
                                         >
                                             Leave
@@ -337,13 +344,15 @@ export const EventSidebar = ({ isOpen, onClose, selectedEvent, imageUrl }: Event
                                 ) : (
                                     <PurchaseTicketButton
                                         title={selectedEvent?.event_title as string}
-                                        starts_at={selectedEvent?.starts_at as string}  
+                                        starts_at={selectedEvent?.starts_at as string}
                                         ends_at={selectedEvent?.ends_at as string}
                                         address={selectedEvent?.event_address as string}
                                         eventId={selectedEvent?.id as string}
                                         ticket_price={selectedEvent?.ticket_price as any}
+                                        disabled={isPastEvent}
                                     />
-                                )}
+                                )}  
+
                             </div>
                         </div>
                         <div className="w-full flex flex-col gap-4">

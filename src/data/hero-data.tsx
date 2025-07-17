@@ -36,13 +36,13 @@ export const items = [
     icon: <IconTableOptions className="h-6 w-6 text-neutral-500" />,
     imagePath: "/Custom-event-page.png"
   },
-  {
-    title: "Automatic event search",
-    description: "Find events all around the internet and save to your dashboard",
-    header: null,
-    icon: <IconRobot className="h-6 w-6 text-neutral-500" />,
-    imagePath: "/Automatic-search.png"
-  },
+  // {
+  //   title: "Automatic event search",
+  //   description: "Find events all around the internet and save to your dashboard",
+  //   header: null,
+  //   icon: <IconRobot className="h-6 w-6 text-neutral-500" />,
+  //   imagePath: "/Automatic-search.png"
+  // },
   {
     title: "Events statistics",
     description: "Track monthly statistics for your events",

@@ -22,7 +22,6 @@ import { TextEditor } from "@/features/TextEditor"
 import { GenerateDescriptionDialog } from "./GenerateDescriptionDialog"
 import { ActivateStripeDialog } from "../payments/ActivateStripeDialog"
 import { useStripeProducts } from "@/hooks/useStripeProducts"
-import { GenerateEventImageDialog } from "./GenerateEventImageDialog"
 
 interface CreateEventDialogProps {
     ownerId: string
@@ -312,8 +311,6 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
                                     setFiles(selectedFiles);
                                 }}
                             />
-                            <h2 className="text-xl font-medium tracking-wide text-white/70">OR</h2>
-                            <GenerateEventImageDialog />
                         </div>
 
                         <div className="flex flex-col gap-4">

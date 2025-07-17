@@ -12,6 +12,7 @@ import { useUserContext } from "@/providers/UserContextProvider"
 import { format, parseISO } from "date-fns";
 import { ShareDialog } from "@/features/qr-code-generator/ShareDialog"
 import { PurchaseTicketButton } from "./dashboard/modals/events/PurchaseTicketButton"
+import { checkIsEventPast } from "@/helpers/dateHelper"
 
 interface EventNavbarProps {
     eventId: string
@@ -25,6 +26,7 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
     const { userId, userName, userEmail } = useUserContext()
     const [groupId, setGroupId] = useState<string>("")
     const [groupName, setGroupName] = useState<string>("")
+    const isPastEvent = eventData?.map((event) => event.starts_at) ? checkIsEventPast(eventData[0]) : false
 
     const groupData = useQuery(
         ["group", groupId],
@@ -235,72 +237,75 @@ export const EventNavbar = ({ eventId }: EventNavbarProps) => {
 
     return (
         <>
-            <div className="py-4 flex justify-center items-center w-full border-t-2 border-t-white/10 bg-[#131414]">
-                <div className="flex max-w-[1200px] w-full self-center justify-end min-[640px]:justify-between items-center">
-                    {memoizedEventData?.map((event) => (
-                        <>
-                            <div className="flex flex-col max-[640px]:hidden">
-                                <p className="text-lg font-medium text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')} - {format(parseISO(event.ends_at as string), 'HH:mm')}</p>
-                                <p className="text-white/50">{event.event_address}</p>
-                            </div>
-                            <div className="flex gap-4">
-                                <div className="flex flex-col">
-                                    <div className="flex gap-2 mt-1 items-center">
-                                        <Ticket size={20} />
-                                        {event?.ticket_price === "FREE" ? (
-                                            <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
-                                        ) : (
-                                            <p className="text-sm text-white/60 font-bold tracking-wide">{event?.ticket_price}$</p>
-                                        )}
-                                    </div>
-                                    <p className="text-sm text-white/60">
-                                        {availableSpots}
-                                    </p>
+            {isPastEvent === false && (
+                <div className="py-4 flex justify-center items-center w-full border-t-2 border-t-white/10 bg-[#131414]">
+                    <div className="flex max-w-[1200px] w-full self-center justify-end min-[640px]:justify-between items-center">
+                        {memoizedEventData?.map((event) => (
+                            <>
+                                <div className="flex flex-col max-[640px]:hidden">
+                                    <p className="text-lg font-medium text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')} - {format(parseISO(event.ends_at as string), 'HH:mm')}</p>
+                                    <p className="text-white/50">{event.event_address}</p>
                                 </div>
-                                <ShareDialog />
-                                {attendeeData.length > 0 ? (
-                                    <Button variant="ghost"
-                                        className="text-red-500 h-fit"
-                                        onClick={() => {
-                                            removeAttendee.mutateAsync()
-                                            removeTicket.mutateAsync()
-                                        }}>
-                                        <LogOut size={20} />
-                                    </Button>
-                                ) : (
-                                    availableSpots === "Sold out" ? (
-                                        <Button className="h-fit"
-                                            disabled>
-                                            Sold out
+                                <div className="flex gap-4">
+                                    <div className="flex flex-col">
+                                        <div className="flex gap-2 mt-1 items-center">
+                                            <Ticket size={20} />
+                                            {event?.ticket_price === "FREE" ? (
+                                                <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
+                                            ) : (
+                                                <p className="text-sm text-white/60 font-bold tracking-wide">{event?.ticket_price}$</p>
+                                            )}
+                                        </div>
+                                        <p className="text-sm text-white/60">
+                                            {availableSpots}
+                                        </p>
+                                    </div>
+                                    <ShareDialog />
+                                    {attendeeData.length > 0 ? (
+                                        <Button variant="ghost"
+                                            className="text-red-500 h-fit"
+                                            onClick={() => {
+                                                removeAttendee.mutateAsync()
+                                                removeTicket.mutateAsync()
+                                            }}>
+                                            <LogOut size={20} />
                                         </Button>
                                     ) : (
-                                        <>
-                                            {event.ticket_price === "FREE" ? (
-                                                <Button className="text-green-500 h-fit"
-                                                    variant="ghost"
-                                                    onClick={() => {
-                                                        addAttendee.mutateAsync()
-                                                        addTicket.mutateAsync()
-                                                    }}>
-                                                    <LogIn size={20} />
-                                                </Button>
-                                            ) : (
-                                                <PurchaseTicketButton
-                                                    ends_at={event.ends_at as string}
-                                                    starts_at={event.starts_at as string}
-                                                    title={event.event_title as string}
-                                                    eventId={event.id as string}
-                                                    ticket_price={event.ticket_price as any}
-                                                    address={event.event_address as string} />
-                                            )}
-                                        </>
-                                    )
-                                )}
-                            </div>
-                        </>
-                    ))}
+                                        availableSpots === "Sold out" ? (
+                                            <Button className="h-fit"
+                                                disabled>
+                                                Sold out
+                                            </Button>
+                                        ) : (
+                                            <>
+                                                {event.ticket_price === "FREE" ? (
+                                                    <Button className="text-green-500 h-fit"
+                                                        variant="ghost"
+                                                        onClick={() => {
+                                                            addAttendee.mutateAsync()
+                                                            addTicket.mutateAsync()
+                                                        }}>
+                                                        <LogIn size={20} />
+                                                    </Button>
+                                                ) : (
+                                                    <PurchaseTicketButton
+                                                        ends_at={event.ends_at as string}
+                                                        starts_at={event.starts_at as string}
+                                                        title={event.event_title as string}
+                                                        eventId={event.id as string}
+                                                        ticket_price={event.ticket_price as any}
+                                                        address={event.event_address as string}
+                                                    />
+                                                )}
+                                            </>
+                                        )
+                                    )}
+                                </div>
+                            </>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
         </>
     )
 }

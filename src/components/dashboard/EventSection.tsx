@@ -20,7 +20,7 @@ export const EventSection = () => {
     const supabase = createClientComponentClient<Database>()
     const { eventCreatorId, ownerId } = useGroupOwnerContext();
     const { userId } = useUserContext();
-    const [attendingEvents, setAttendingEvents] = useState(true)
+    const [attendingEvents, setAttendingEvents] = useState<string>("attending")
     const [imageUrls, setImageUrls] = useState<{ [eventId: string]: string }>({});
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 20;
@@ -36,7 +36,7 @@ export const EventSection = () => {
                         *
                     )
                 `)
-                .eq('user_id', userId);
+                .eq('user_id', userId) 
 
             if (error) {
                 console.error("Error fetching events:", error.message);
@@ -57,7 +57,8 @@ export const EventSection = () => {
             const { data, error } = await supabase
                 .from("events")
                 .select(`*`)
-                .eq('created_by', eventCreatorId);
+                .eq('created_by', eventCreatorId)
+                .order('starts_at', { ascending: false });
 
             if (error) {
                 console.error("Error fetching events:", error.message);
@@ -84,7 +85,8 @@ export const EventSection = () => {
             const { data, error } = await supabase
                 .from('event-pictures')
                 .select('*')
-                .in('event_id', eventIds);
+                .in('event_id', eventIds)
+                .order('starts_at', { ascending: false });
 
             if (error) {
                 throw error;
@@ -126,6 +128,7 @@ export const EventSection = () => {
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
     const currentAttendingItems = memoizedEventsByAttendees?.slice(startIndex, endIndex) ?? [];
     const currentHostItems = memoizedEventsByHosts?.slice(startIndex, endIndex) ?? [];
+    const currentPastAttendingItems = memoizedEventsByAttendees?.filter(event => new Date(event.events?.starts_at || "") < new Date()) ?? [];
 
     const totalPages = Math.ceil((attendingEvents ? (memoizedEventsByAttendees?.length ?? 0) : (memoizedEventsByHosts?.length ?? 0)) / itemsPerPage);
 
@@ -136,26 +139,34 @@ export const EventSection = () => {
     return (
         <div className="flex flex-col gap-4">
             <div className="flex gap-4">
-                <Button className={attendingEvents === true ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
+                <Button className={attendingEvents === "attending" ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
                     variant="ghost"
                     onClick={() => {
-                        setAttendingEvents(true);
+                        setAttendingEvents("attending");
                         fetchedEventsByAttendees.refetch();
                     }}>
                     Attending
                 </Button>
-                <Button className={attendingEvents === false ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
+                <Button className={attendingEvents === "hosting" ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
                     variant="ghost"
                     onClick={() => {
-                        setAttendingEvents(false);
+                        setAttendingEvents("hosting");
                         fetchedEventsByHosts.refetch();
                     }}>
                     Hosting
                 </Button>
+                <Button className={attendingEvents === "past" ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
+                    variant="ghost"
+                    onClick={() => {
+                        setAttendingEvents("past");
+                        fetchedEventsByHosts.refetch();
+                    }}>
+                    Past
+                </Button>
             </div>
 
-            <div className="flex flex-wrap max-[800px]:justify-center gap-8">
-                {attendingEvents && (
+            <div className="flex flex-wrap max-[800px]:justify-between gap-8">
+                {attendingEvents === "attending" && (
                     <>
                         {attendingEvents && currentAttendingItems.length === 0 && (
                             <div className="flex flex-col justify-self-center items-center w-full gap-8 mt-24">
@@ -216,8 +227,8 @@ export const EventSection = () => {
                 )}
             </div>
 
-            <div className="flex flex-wrap max-[800px]:justify-center gap-8">
-                {!attendingEvents && (
+            <div className="flex flex-wrap max-[800px]:justify-between gap-8">
+                {attendingEvents === "hosting" && (
                     <>
                         <CreateEventDialog ownerId={ownerId} />
 
@@ -270,8 +281,59 @@ export const EventSection = () => {
                 )}
             </div>
 
+            <div className="flex flex-wrap max-[800px]:justify-between gap-8">
+                {attendingEvents === "past" && (
+                    <>
+                        {currentPastAttendingItems?.map((event) => (
+                            <div key={event.events?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4 opacity-50">
+
+                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
+                                    {event.events?.id && imageUrls[event.events?.id] ? (
+                                        <Image
+                                            src={imageUrls[event.events?.id]}
+                                            alt={event.events?.event_title || ""}
+                                            width={200}
+                                            height={200}
+                                            className="object-cover rounded-xl w-full max-h-[240px]"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
+                                            <p className="text-center font-medium">No image available 😔</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.events?.event_title}</h1>
+                                    <div className="flex flex-col gap-1">
+                                        <p className="text-sm text-white/70">{format(parseISO(event.events?.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
+                                        <p className="text-sm text-white/60">{event.events?.event_address}</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <Ticket className="h-4 w-4" />
+                                            {event.events?.ticket_price === "FREE" ? (
+                                                <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
+                                            ) : (
+                                                <p className="text-sm text-white/60 font-bold tracking-wide">{event.events?.ticket_price}$</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-center gap-4 mt-2">
+                                        <div className="flex gap-4">
+                                            <Button className="rounded-xl w-fit text-sm text-white/70"
+                                                variant={"outline"}
+                                                onClick={() => router.push(`/dashboard/event-page/${event.events?.id}`)}>View event</Button>
+                                        </div>
+
+                                        <DeleteEventDialog eventId={event.events?.id as string} />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </>
+                )}
+            </div>
+
             {
-                (attendingEvents && currentAttendingItems.length > 0) || (!attendingEvents && currentHostItems.length > 0) ? (
+                (attendingEvents && currentAttendingItems.length > 20) || (!attendingEvents && currentHostItems.length > 20) ? (
                     <Pagination>
                         <PaginationContent className="flex gap-8">
                             <PaginationItem>

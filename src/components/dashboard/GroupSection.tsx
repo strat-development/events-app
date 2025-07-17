@@ -251,7 +251,7 @@ export const GroupSection = () => {
                 )}
             </div>
 
-            {(attendingGroups && currentAttendingItems.length > 0) || (!attendingGroups && currentHostItems.length > 0) && (
+            {(attendingGroups && currentAttendingItems.length > 20) || (!attendingGroups && currentHostItems.length > 20) && (
                 <Pagination>
                     <PaginationContent className="flex gap-8">
                         <PaginationItem>

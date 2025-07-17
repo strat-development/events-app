@@ -85,7 +85,7 @@ interface TicketDialogProps {
                     ) : null
                   )
                 ) : (
-                  <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-xl bg-white/5">
+                  <div className="w-fit h-full flex flex-col gap-2 items-center justify-center rounded-xl">
                     <IconGhost2Filled className="w-24 h-24 text-white" strokeWidth={1} />
                     <p className="text-white/70 text-lg">No profile picture</p>
                   </div>

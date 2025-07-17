@@ -13,9 +13,10 @@ interface EventData {
   address: string;
   ticket_price: number;
   eventId: string;
+  disabled?: boolean
 }
 
-export const PurchaseTicketButton = ({ title, starts_at, ends_at, address, ticket_price, eventId }: EventData) => {
+export const PurchaseTicketButton = ({ title, starts_at, address, ticket_price, eventId, disabled }: EventData) => {
   const { userId, userEmail, userName } = useUserContext();
   const { getProductByEventId } = useStripeProducts();
   const { createSession } = useStripeSessions();
@@ -71,7 +72,7 @@ export const PurchaseTicketButton = ({ title, starts_at, ends_at, address, ticke
   if (error) return <Button disabled>Purchase unavailable</Button>;
 
   return (
-    <Button onClick={handlePurchase} disabled={!stripeProduct}>
+    <Button onClick={handlePurchase} disabled={!stripeProduct || disabled}>
       Purchase Ticket
     </Button>
   );

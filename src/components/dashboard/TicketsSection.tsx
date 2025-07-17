@@ -65,7 +65,6 @@ export const Ticketsection = () => {
 
     const eventIds = fetchTickets ? [...activeTicketData.map(ticket => ticket.event_id), ...expiredTicketData.map(ticket => ticket.event_id)] : [];
 
-
     const { data: images } = useQuery(
         ['event-pictures', eventIds],
         async () => {
@@ -115,7 +114,6 @@ export const Ticketsection = () => {
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
     const currentActiveItems = memoizedTickets?.slice(startIndex, endIndex) ?? [];
     const currentExpiredItems = memoizedExpiredTickets?.slice(startIndex, endIndex) ?? [];
-
     const totalPages = Math.ceil((activeTickets ? (memoizedTickets?.length ?? 0) : (memoizedExpiredTickets?.length ?? 0)) / itemsPerPage);
 
     const handlePageChange = (page: number) => {
@@ -166,7 +164,7 @@ export const Ticketsection = () => {
 
                         {currentActiveItems?.map((ticket) => (
                             <div key={ticket?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
-                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
+                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-fit aspect-square">
                                     {ticket?.id && ticket.event_id && memoizedImageUrls[ticket.event_id] ? (
                                         <Image
                                             src={memoizedImageUrls[ticket.event_id]}
@@ -245,36 +243,34 @@ export const Ticketsection = () => {
                 }
             </div>
 
-            {
-                (activeTickets && currentActiveItems.length > 0) || (!activeTickets && currentExpiredItems.length > 0) ? (
-                    <Pagination>
-                        <PaginationContent className="flex gap-8">
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
-                                    aria-disabled={currentPage === 1}
-                                />
+            {(activeTickets && currentActiveItems.length > 0) || (!activeTickets && currentExpiredItems.length > 0) ? (
+                <Pagination>
+                    <PaginationContent className="flex gap-8">
+                        <PaginationItem>
+                            <PaginationPrevious
+                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                aria-disabled={currentPage === 1}
+                            />
+                        </PaginationItem>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <PaginationItem key={page}>
+                                <PaginationLink
+                                    isActive={page === currentPage}
+                                    onClick={() => handlePageChange(page)}
+                                >
+                                    {page}
+                                </PaginationLink>
                             </PaginationItem>
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                <PaginationItem key={page}>
-                                    <PaginationLink
-                                        isActive={page === currentPage}
-                                        onClick={() => handlePageChange(page)}
-                                    >
-                                        {page}
-                                    </PaginationLink>
-                                </PaginationItem>
-                            ))}
-                            <PaginationItem>
-                                <PaginationNext
-                                    onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
-                                    aria-disabled={currentPage === totalPages}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
-                ) : null
-            }
+                        ))}
+                        <PaginationItem>
+                            <PaginationNext
+                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                aria-disabled={currentPage === totalPages}
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            ) : null}
         </div >
     )
 }

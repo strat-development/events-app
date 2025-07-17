@@ -152,10 +152,9 @@ export const EditSocialsDialog = () => {
                 <Button variant="ghost"
                     className="w-fit">Edit socials</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[425px]">
+            <DialogContent className="max-w-[425px] p-8">
                 {Object.keys(socialMediaIcons).map((social) => {
                     const Icon = socialMediaIcons[social as SocialMediaTypes];
-
                     return (
                         <div className="flex flex-col gap-2" key={social}>
                             <div className="flex items-center gap-4">
