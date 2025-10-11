@@ -9,19 +9,12 @@
 
 <h2>✨ Features</h2>
 <ul>
-  <li> 🧑‍🎨 <b>Customizable users, events, and groups pages</b> - lets you customize your pages in your own way </li>
-  <li> 👥 <b>Events groups</b> - grow a community of people with the same passion easily </li>
-  <li> 🤖 <b>AI Assistant for creating events</b> - create unique events faster with AI Asisstant </li>
-  <li> 📊 <b>Events statistics</b> - lets you keep eye on your statistics to grow bigger community </li>
-  <li> 🗂️ <b>Events management dashboard</b> - allows you to easily ban, add, update your attendees </li>
-  <li> 💳 <b>STRIPE Payments</b> - lets you perform fast and secure payments for tickets </li>
-  <li> 📋 <b>User dashboard</b> - a place where you can manage your events, groups, tickets and payments </li>
-  <li> 🎨 <b>Interests customization</b> - have a new passion? Add it to your profile in seconds </li>
-  <li> 🎟️ <b>Safe Ticket System</b> - each ticket is being uniqely generated for every event </li>
-  <li> 📜 <b>ChangeLog</b> - track what changes in the project </li>
-  <li> 📈 <b>Events, groups, and users reports</b> - found any violations? You can easily report them to us </li>
-  <li> 🔍 <b>Realtime event searcher</b> - not enough events for you? Then we will search them on the whole internet specailly for you </li>
-  <li> 📱 <b> Events QR Codes </b> - easily share events with friends </li>
+  <li> 🧑‍🎨 <b>Customizable pages</b> - Personalize your profile, event, and group pages your way. </li>
+  <li> 🤖 <b>AI Assistant for creating events</b> - Create unique events quickly with our AI Assistant.</li>
+  <li> 📊 <b>Events statistics</b> - Track event stats to grow your community. </li>
+  <li> 💳 <b>STRIPE Payments</b> - Make fast, secure ticket payments with Stripe. </li>
+  <li> 🎟️ <b>Safe Ticket System</b> - Get unique, secure tickets for every event. </li>
+  <li> 🔍 <b>Realtime event searcher</b> - Find events across the web instantly, tailored for you. </li>
 </ul>
 
 <hr />
