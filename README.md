@@ -1,8 +1,10 @@
-<img width="1914" height="1200" alt="image" src="https://github.com/user-attachments/assets/5fc32a0f-1dd6-47b5-b02b-a8aba8b9a99b" />
-
 <h1>🎉 "Huddle." Event App</h1>
 
 <p>A website created for networking and inspiration.</p>
+
+<img width="1914" height="1200" alt="image" src="https://github.com/user-attachments/assets/5fc32a0f-1dd6-47b5-b02b-a8aba8b9a99b" />
+
+
 
 <hr />
 
