@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<img width="1914" height="1200" alt="image" src="https://github.com/user-attachments/assets/5fc32a0f-1dd6-47b5-b02b-a8aba8b9a99b" />
 
-## Getting Started
+<h1>🎉 "Huddle." Event App</h1>
 
-First, run the development server:
+<p>A website created for networking and inspiration.</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<hr />
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<h2>📁 Folder Structure</h2>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<pre><code>
+    📁 android
+    📁 cypress
+    📁 src
+ ┣ 📁 app            #
+ ┣ 📁 components     #
+ ┣ 📁 features       #
+ ┣ 📁 fetchers       #
+ ┣ 📁 hooks          #
+ ┣ 📁 lib            #
+ ┣ 📁 providers      #
+ ┣ 📁 styles         #
+ ┗ 📁 types          #
+</code></pre>
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+<hr />
 
-## Learn More
+<h2>✨ Features</h2>
+<ul>
+  <li> Customizable users, events and groups pages </li>
+  <li> Events groups </li>
+  <li> AI Assistant for creating events </li>
+  <li> Events statistics </li>
+  <li> Events management dashboard </li>
+  <li> STRIPE Payments </li>
+  <li> User dashboard </li>
+  <li> Interests customization </li>
+  <li> Safe Ticket System </li>
+  <li> ChangeLog </li>
+  <li> Events, groups and users reports </li>
+  <li> Realtime event searcher </li>
+  <li> Events QR Codes </li>
+</ul>
 
-To learn more about Next.js, take a look at the following resources:
+<hr />
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<h2>🧠 Technology</h2>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<h3>🎨 Front-end</h3> 
 
-## Deploy on Vercel
+<table> 
+  <tr><th>Technology</th><th>Description</th></tr> 
+  <tr><td>Next.js</td><td>The React framework for building fast, scalable web applications with server-side rendering and static generation.</td></tr> 
+  <tr><td>React</td><td>A JavaScript library for building dynamic, component-based user interfaces.</td></tr>
+  <tr><td>TypeScript</td><td>A strongly typed superset of JavaScript that improves code quality, readability, and maintainability.</td></tr>
+</table> 
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<h3>🧪 Tests and others</h3> 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+<table> 
+  <tr><th>Technology</th><th>Description</th></tr> 
+  <tr><td>Ionic</td><td>A cross-platform framework for building responsive web and mobile applications using web technologies.</td></tr> 
+  <tr><td>Cypress</td><td>An end-to-end testing framework for ensuring reliable and maintainable UI tests.</td></tr> 
+  <tr><td>Stripe</td><td>A powerful payment processing platform for handling secure online transactions and subscriptions.</td></tr> 
+  <tr><td>Puppeteer</td><td>A Node.js library providing a high-level API to control Chrome or Chromium for automation and testing.</td></tr> 
+</table> 
+
+<h3>💅 UI Libraries</h3> 
+
+<table> 
+  <tr><th>Library</th><th>Description</th></tr> 
+  <tr><td>Aceternity UI</td><td>A modern React component library focused on animations and minimalistic design aesthetics.</td></tr> 
+  <tr><td>Shadcn UI</td><td>A collection of reusable, accessible, and customizable components built on Radix UI and Tailwind CSS.</td></tr> 
+</table> 
+
+<h3>📡 Data Fetching</h3>
+
+<table> 
+  <tr><th>Technology</th><th>Description</th></tr> 
+  <tr><td>GraphQL</td><td>A query language and runtime for fetching precise data from APIs efficiently and predictably.</td></tr> 
+  <tr><td>Supabase API</td><td>An open-source Firebase alternative that provides a REST and real-time API for PostgreSQL databases.</td></tr> 
+</table>
+
+<h3>🧱 Back-end</h3>
+<table>
+  <tr><th>Technology</th><th>Description</th></tr> <tr><td>Hygraph</td><td>A headless CMS powered by GraphQL, enabling structured content management and flexible API delivery.</td></tr>   <tr><td>Supabase</td><td>A backend-as-a-service offering authentication, storage, and database management built on PostgreSQL.</td></tr> 
+  </table> 
+<hr />
+
+<h2>⚡️ Powered by</h2>
+<p><strong>Vercel</strong> — a platform for frontend frameworks and static sites.</p>
