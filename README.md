@@ -5,43 +5,23 @@
 <img width="1914" height="1200" alt="image" src="https://github.com/user-attachments/assets/5fc32a0f-1dd6-47b5-b02b-a8aba8b9a99b" />
 
 
-
-<hr />
-
-<h2>📁 Folder Structure</h2>
-
-<pre><code>
-    📁 android
-    📁 cypress
-    📁 src
- ┣ 📁 app            #
- ┣ 📁 components     #
- ┣ 📁 features       #
- ┣ 📁 fetchers       #
- ┣ 📁 hooks          #
- ┣ 📁 lib            #
- ┣ 📁 providers      #
- ┣ 📁 styles         #
- ┗ 📁 types          #
-</code></pre>
-
 <hr />
 
 <h2>✨ Features</h2>
 <ul>
-  <li> Customizable users, events and groups pages </li>
-  <li> Events groups </li>
-  <li> AI Assistant for creating events </li>
-  <li> Events statistics </li>
-  <li> Events management dashboard </li>
-  <li> STRIPE Payments </li>
-  <li> User dashboard </li>
-  <li> Interests customization </li>
-  <li> Safe Ticket System </li>
-  <li> ChangeLog </li>
-  <li> Events, groups and users reports </li>
-  <li> Realtime event searcher </li>
-  <li> Events QR Codes </li>
+  <li> 🧑‍🎨 <b>Customizable users, events, and groups pages</b> - lets you customize your pages in your own way </li>
+  <li> 👥 <b>Events groups</b> - grow a community of people with the same passion easily </li>
+  <li> 🤖 <b>AI Assistant for creating events</b> - create unique events faster with AI Asisstant </li>
+  <li> 📊 <b>Events statistics</b> - lets you keep eye on your statistics to grow bigger community </li>
+  <li> 🗂️ <b>Events management dashboard</b> - allows you to easily ban, add, update your attendees </li>
+  <li> 💳 <b>STRIPE Payments</b> - lets you perform fast and secure payments for tickets </li>
+  <li> 📋 <b>User dashboard</b> - a place where you can manage your events, groups, tickets and payments </li>
+  <li> 🎨 <b>Interests customization</b> - have a new passion? Add it to your profile in seconds </li>
+  <li> 🎟️ <b>Safe Ticket System</b> - each ticket is being uniqely generated for every event </li>
+  <li> 📜 <b>ChangeLog</b> - track what changes in the project </li>
+  <li> 📈 <b>Events, groups, and users reports</b> - found any violations? You can easily report them to us </li>
+  <li> 🔍 <b>Realtime event searcher</b> - not enough events for you? Then we will search them on the whole internet specailly for you </li>
+  <li> 📱 <b> Events QR Codes </b> - easily share events with friends </li>
 </ul>
 
 <hr />
