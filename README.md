@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1>🎉 "Huddle." Event App</h1>
 
-## Getting Started
+<p>A website created for networking and inspiration.</p>
 
-First, run the development server:
+<!-- <img width="1914" height="1200" alt="image" src="https://github.com/user-attachments/assets/5fc32a0f-1dd6-47b5-b02b-a8aba8b9a99b" />-->
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+  
+![10124-1-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/ce59c712-c03e-4922-8b82-fb5e66dc2911?raw=true) 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<hr />
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<h2>✨ Features</h2>
+<ul>
+  <li> 🧑‍🎨 <b>Customizable pages</b> - Personalize your profile, event, and group pages your way. </li>
+  
+  ![10124-2-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/3914320a-34a8-4215-aebb-f96b0d1b06d6?raw=true)
+  ![10124-4-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/bd62967d-4eb3-4b12-9944-c574e567c0b0?raw=true)
+  ![10124-7-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/3547fe1c-7784-4bcd-afff-ce137ffecf8f?raw=true)
+  
+  <li> 🤖 <b>AI Assistant for creating events</b> - Create unique events quickly with our AI Assistant.</li>
+  
+  ![10125-1-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/68583c0f-6751-45d9-a757-8319b185ece8?raw=true)
+  
+  <li> 📊 <b>Events statistics</b> - Track event stats to grow your community. </li>
+  
+  ![10124-11-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f4f4c5d2-99a0-431a-b6b1-eb0b3bfb5474?raw=true)
+  
+  <li> 💳 <b>STRIPE Payments</b> - Make fast, secure ticket payments with Stripe. </li>
+  
+  ![10124-6-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/3b8b6ee8-19d4-40da-af7f-ba3ee688aeae?raw=true)
+  
+  <li> 🎟️ <b>Safe Ticket System</b> - Get unique, secure tickets for every event. </li>
+  
+  ![10124-5-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/da695f3b-cb45-4124-8808-8b46aee9b4ed?raw=true)
+  
+  <li> 🔍 <b>Realtime event searcher</b> - Find events across the web instantly, tailored for you. </li>
+</ul>
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+<hr />
 
-## Learn More
+<h2>🧠 Technology</h2>
 
-To learn more about Next.js, take a look at the following resources:
+<h3>🎨 Front-end</h3> 
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<table> 
+  <tr><th>Technology</th><th>Description</th></tr> 
+  <tr><td>Next.js</td><td>The React framework for building fast, scalable web applications with server-side rendering and static generation.</td></tr> 
+  <tr><td>React</td><td>A JavaScript library for building dynamic, component-based user interfaces.</td></tr>
+  <tr><td>TypeScript</td><td>A strongly typed superset of JavaScript that improves code quality, readability, and maintainability.</td></tr>
+</table> 
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<h3>🧪 Tests and others</h3> 
 
-## Deploy on Vercel
+<table> 
+  <tr><th>Technology</th><th>Description</th></tr> 
+  <tr><td>Ionic</td><td>A cross-platform framework for building responsive web and mobile applications using web technologies.</td></tr> 
+  <tr><td>Cypress</td><td>An end-to-end testing framework for ensuring reliable and maintainable UI tests.</td></tr> 
+  <tr><td>Stripe</td><td>A powerful payment processing platform for handling secure online transactions and subscriptions.</td></tr> 
+  <tr><td>Puppeteer</td><td>A Node.js library providing a high-level API to control Chrome or Chromium for automation and testing.</td></tr> 
+</table> 
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<h3>💅 UI Libraries</h3> 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+<table> 
+  <tr><th>Library</th><th>Description</th></tr> 
+  <tr><td>Aceternity UI</td><td>A modern React component library focused on animations and minimalistic design aesthetics.</td></tr> 
+  <tr><td>Shadcn UI</td><td>A collection of reusable, accessible, and customizable components built on Radix UI and Tailwind CSS.</td></tr> 
+</table> 
+
+<h3>📡 Data Fetching</h3>
+
+<table> 
+  <tr><th>Technology</th><th>Description</th></tr> 
+  <tr><td>GraphQL</td><td>A query language and runtime for fetching precise data from APIs efficiently and predictably.</td></tr> 
+  <tr><td>Supabase API</td><td>An open-source Firebase alternative that provides a REST and real-time API for PostgreSQL databases.</td></tr> 
+</table>
+
+<h3>🧱 Back-end</h3>
+<table>
+  <tr><th>Technology</th><th>Description</th></tr> <tr><td>Hygraph</td><td>A headless CMS powered by GraphQL, enabling structured content management and flexible API delivery.</td></tr>   <tr><td>Supabase</td><td>A backend-as-a-service offering authentication, storage, and database management built on PostgreSQL.</td></tr> 
+  </table> 
+<hr />
+
+<h2>⚡️ Powered by</h2>
+<p><strong>Vercel</strong> — a platform for frontend frameworks and static sites.</p>
