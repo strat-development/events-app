@@ -2,18 +2,37 @@
 
 <p>A website created for networking and inspiration.</p>
 
-<img width="1914" height="1200" alt="image" src="https://github.com/user-attachments/assets/5fc32a0f-1dd6-47b5-b02b-a8aba8b9a99b" />
+<!-- <img width="1914" height="1200" alt="image" src="https://github.com/user-attachments/assets/5fc32a0f-1dd6-47b5-b02b-a8aba8b9a99b" />-->
 
+  
+![10124-1-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/ce59c712-c03e-4922-8b82-fb5e66dc2911)
 
 <hr />
 
 <h2>✨ Features</h2>
 <ul>
   <li> 🧑‍🎨 <b>Customizable pages</b> - Personalize your profile, event, and group pages your way. </li>
+  
+  ![10124-2-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/3914320a-34a8-4215-aebb-f96b0d1b06d6)
+  ![10124-4-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/bd62967d-4eb3-4b12-9944-c574e567c0b0)
+  ![10124-7-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/3547fe1c-7784-4bcd-afff-ce137ffecf8f)
+  
   <li> 🤖 <b>AI Assistant for creating events</b> - Create unique events quickly with our AI Assistant.</li>
+  
+  ![10125-1-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/68583c0f-6751-45d9-a757-8319b185ece8)
+  
   <li> 📊 <b>Events statistics</b> - Track event stats to grow your community. </li>
+  
+  ![10124-11-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f4f4c5d2-99a0-431a-b6b1-eb0b3bfb5474)
+  
   <li> 💳 <b>STRIPE Payments</b> - Make fast, secure ticket payments with Stripe. </li>
+  
+  ![10124-6-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/3b8b6ee8-19d4-40da-af7f-ba3ee688aeae)
+  
   <li> 🎟️ <b>Safe Ticket System</b> - Get unique, secure tickets for every event. </li>
+  
+  ![10124-5-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/da695f3b-cb45-4124-8808-8b46aee9b4ed)
+  
   <li> 🔍 <b>Realtime event searcher</b> - Find events across the web instantly, tailored for you. </li>
 </ul>
 
