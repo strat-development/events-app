@@ -171,7 +171,7 @@ export const Ticketsection = () => {
                                             alt={ticket.event_title || ""}
                                             width={200}
                                             height={200}
-                                            className="object-cover rounded-xl w-full max-h-[240px]"
+                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-xl">
@@ -213,7 +213,7 @@ export const Ticketsection = () => {
                                         alt={ticket.event_title || ""}
                                         width={200}
                                         height={200}
-                                        className="object-cover rounded-xl w-full max-h-[240px]"
+                                        className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-xl">

@@ -126,7 +126,7 @@ export const UserProfileSidebar = ({ isOpen, onClose, selectedUser, imageUrl }: 
                                     alt="Profile picture"
                                     width={2000}
                                     height={2000}
-                                    className="rounded-xl w-[280px] h-[280px]"
+                                    className="rounded-xl aspect-square object-cover w-[280px] h-[280px]"
                                 />
                             ) || (
                                     <div className="w-[280px] h-[280px] flex flex-col gap-2 items-center justify-center rounded-xl bg-white/5">

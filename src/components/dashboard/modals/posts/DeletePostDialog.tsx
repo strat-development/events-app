@@ -81,15 +81,13 @@ export const DeletePostDialog = ({ postId }: DeletePostDialogProps) => {
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                    <Button className="w-fit flex gap-2 text-red-500 border border-red-500 hover:bg-red-500 hover:text-white" 
-                    variant="ghost">
-                        <span className="text-white">Delete Post</span><Trash size={20} /> 
-                        </Button>
+                <DialogTrigger asChild>
+                    <Button className="w-fit flex gap-2 text-red-500 border border-red-500 hover:bg-red-500 hover:text-white"
+                        variant="ghost"><Trash size={20} />
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Delete post</DialogTitle>
                         <DialogDescription className="text-white/70">
                             Are you sure you want to delete this post and all its associated images? This action cannot be undone.
                         </DialogDescription>
@@ -104,7 +102,7 @@ export const DeletePostDialog = ({ postId }: DeletePostDialogProps) => {
                 </DialogContent>
             </Dialog>
 
-            
+
         </>
     );
 };

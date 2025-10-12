@@ -179,7 +179,7 @@ export const EventsManagementTable = ({ searchQuery }: EventsManagementTableProp
                                         <Image
                                             src={item.profileImageUrl}
                                             alt="Profile"
-                                            className="w-10 h-10 rounded-full"
+                                            className="aspect-square object-cover rounded-full"
                                             width={48}
                                             height={48}
                                         />

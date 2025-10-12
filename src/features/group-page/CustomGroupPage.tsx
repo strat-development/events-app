@@ -19,8 +19,8 @@ export const CustomGroupPage = ({
         <>
             <div className="flex flex-col mt-24 max-w-[1200px] w-full justify-self-center">
                 <GroupHero groupId={groupId} />
-                <div className="flex flex-wrap w-full justify-between gap-8 relative">
-                    <div className="flex w-full flex-col min-[1140px]:w-[70%]">
+                <div className="flex gap-8">
+                    <div className="flex flex-1 flex-col">
                         {view === "about" && (
                             <GroupInfoSection groupId={groupId} />
                         ) || view === "photos" && (
@@ -30,7 +30,9 @@ export const CustomGroupPage = ({
                             )}
                         <EventsSection groupId={groupId} />
                     </div>
-                    <GroupMembersSidebar groupId={groupId} />
+                    <div className="w-[35%] flex-shrink-0">
+                        <GroupMembersSidebar groupId={groupId} />
+                    </div>
                 </div>
             </div>
         </>

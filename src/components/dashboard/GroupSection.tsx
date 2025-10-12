@@ -182,7 +182,7 @@ export const GroupSection = () => {
                                             alt={group.groups?.group_name || ""}
                                             width={200}
                                             height={200}
-                                            className="object-cover rounded-xl w-full max-h-[240px]"
+                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
@@ -221,7 +221,7 @@ export const GroupSection = () => {
                                             alt={group.group_name || ""}
                                             width={200}
                                             height={200}
-                                            className="object-cover rounded-xl w-full max-h-[240px]"
+                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">

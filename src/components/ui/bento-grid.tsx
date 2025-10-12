@@ -60,8 +60,7 @@ export const BentoGridItem = ({
                 style={{
                     backgroundImage: "url(https://assets.aceternity.com/noise.webp)",
                     backgroundSize: "30%",
-                }}
-            ></div>
+                }}></div>
         </div>
     );
 };

@@ -122,6 +122,7 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
                                             width={200}
                                             height={200}
                                             objectFit="cover"
+                                            className="rounded-xl aspect-square object-cover"
                                         />
                                     ) || (
                                             <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">

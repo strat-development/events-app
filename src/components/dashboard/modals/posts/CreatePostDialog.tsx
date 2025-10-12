@@ -70,6 +70,17 @@ export const CreatePostDialog = () => {
         }
     );
 
+    const generateSafeStoragePath = (postId: string, file: File) => {
+        const nameHasExt = file.name.includes(".");
+        const extFromName = nameHasExt ? (file.name.split(".").pop() || "") : "";
+        const extFromMime = file.type && file.type.includes("/") ? (file.type.split("/")[1] || "") : "";
+        const ext = (extFromName || extFromMime || "bin").toLowerCase();
+        const uniqueId = typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+        return `${postId}/${uniqueId}.${ext}`;
+    };
+
     const uploadFilesAndAddToPost = async (postId: string) => {
         try {
             const paths = await uploadFiles(files, postId);
@@ -81,8 +92,13 @@ export const CreatePostDialog = () => {
 
     const uploadFiles = async (files: File[], postId: string) => {
         const uploadPromises = files.map((file) => {
-            const path = `${postId}/${file.name}${Math.random()}.${file.name.split('.').pop()}`;
-            return { promise: supabaseAdmin.storage.from('posts-pictures').upload(path, file), path };
+            const path = generateSafeStoragePath(postId, file);
+            return {
+                promise: supabaseAdmin.storage
+                    .from('posts-pictures')
+                    .upload(path, file, { contentType: file.type || undefined, upsert: false }),
+                path
+            };
         });
 
         const responses = await Promise.all(uploadPromises.map(({ promise }) => promise));

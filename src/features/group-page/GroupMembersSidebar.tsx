@@ -110,12 +110,12 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
 
     return (
         <>
-            <div className="flex flex-col gap-4 sticky top-24 w-fit min-[1140px]:w-[25%]">
+            <div className="flex flex-col gap-4 sticky top-24 w-full">
                 <h2 className='text-2xl tracking-wider font-bold'>Group members</h2>
-                <div className="flex items-start gap-4">
-                    <div className='flex gap-4'>
+                <div className="flex flex-col gap-4">
+                    <div className='grid grid-cols-3 gap-4'>
                         {memoizedGroupMembers.slice(0, 4).map((member) => (
-                            <div className='flex flex-col cursor-pointer items-center border border-white/10 p-4 rounded-xl text-center w-[144px] h-full'
+                            <div className='flex flex-col cursor-pointer items-center border border-white/10 p-4 rounded-xl text-center w-fit justify-between'
                                 onClick={() => {
                                     setIsSidebarOpen(true);
                                     setIsOpen(true);
@@ -124,18 +124,18 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
                                 }}>
                                 {member?.id && memoizedProfileImages[member.id] ? (
                                     <Image
-                                        className="rounded-full"
+                                        className="rounded-full aspect-square object-cover"
                                         src={memoizedProfileImages[member.id]}
                                         width={48}
                                         height={48}
                                         alt="Profile image"
                                     />
                                 ) : (
-                                    <div className="flex h-[50px] w-[50px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
+                                    <div className="flex h-[48px] w-[48px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
                                         <IconGhost2Filled className="w-6 h-6 text-white/70" strokeWidth={1} />
                                     </div>
                                 )}
-                                <span className='font-medium w-full text-white/70 truncate'>{member?.full_name}</span>
+                                <span className='font-medium w-full text-white/70 truncate text-sm'>{member?.full_name}</span>
                             </div>
                         ))}
                         {memoizedGroupMembers && memoizedGroupMembers.length > 1 && (

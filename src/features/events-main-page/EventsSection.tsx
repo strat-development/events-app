@@ -70,7 +70,8 @@ export const EventsSection = () => {
             const { data, error } = await supabase
                 .from("events")
                 .select("*")
-                .gte('starts_at', selectedDate?.toISOString() || today);
+                .gte('starts_at', selectedDate?.toISOString() || today)
+                .order("starts_at", { ascending: false })
 
             if (error) {
                 console.error('Error fetching events:', error);
@@ -225,6 +226,7 @@ export const EventsSection = () => {
                                                 width={200}
                                                 height={200}
                                                 objectFit="cover"
+                                                className="rounded-xl aspect-square object-cover"
                                             />
                                         ) || (
                                                 <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">

@@ -13,7 +13,6 @@ import { GroupData, GroupMembersData } from "@/types/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { Edit, LogIn, LogOut, MapPin, Save, Users, X } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { ShareDialog } from "../qr-code-generator/ShareDialog"
@@ -23,8 +22,7 @@ import { useViewContext } from "@/providers/pageViewProvider"
 interface GroupHeroProps {
     groupId: string
 }
-
-
+    
 export const GroupHero = ({
     groupId
 }: GroupHeroProps) => {
@@ -417,7 +415,7 @@ export const GroupHero = ({
                 </div>
             </div>
 
-            
+
         </>
     )
 }

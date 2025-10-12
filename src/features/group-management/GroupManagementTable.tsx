@@ -186,7 +186,7 @@ export const GroupManagementTable = ({ searchQuery }: GroupManagementTableProps)
                                             <Image
                                                 src={item.profileImageUrl}
                                                 alt="Profile"
-                                                className="w-10 h-10 rounded-full"
+                                                className="aspect-square object-cover rounded-full"
                                                 width={48}
                                                 height={48}
                                             />
@@ -225,32 +225,34 @@ export const GroupManagementTable = ({ searchQuery }: GroupManagementTableProps)
                     </TableBody>
                 </Table>
 
-                <Pagination>
-                    <PaginationContent className="flex gap-8">
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
-                                aria-disabled={currentPage === 1}
-                            />
-                        </PaginationItem>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                            <PaginationItem key={page}>
-                                <PaginationLink
-                                    isActive={page === currentPage}
-                                    onClick={() => handlePageChange(page)}
-                                >
-                                    {page}
-                                </PaginationLink>
+                {totalPages > 1 && (
+                    <Pagination>
+                        <PaginationContent className="flex gap-8">
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                    aria-disabled={currentPage === 1}
+                                />
                             </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
-                                aria-disabled={currentPage === totalPages}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                <PaginationItem key={page}>
+                                    <PaginationLink
+                                        isActive={page === currentPage}
+                                        onClick={() => handlePageChange(page)}
+                                    >
+                                        {page}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                    aria-disabled={currentPage === totalPages}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                )}
             </div>
         </>
     )

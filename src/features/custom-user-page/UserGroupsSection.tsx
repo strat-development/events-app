@@ -149,7 +149,7 @@ export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
                                     <div className="flex flex-col items-center aspect-square justify-center gap-4 border rounded-xl border-white/10">
                                         {memoizedImageUrls[group.id] ? (
                                             <Image
-                                                className="rounded-xl"
+                                                className="rounded-xl aspect-square object-cover"
                                                 src={memoizedImageUrls[group.id]}
                                                 alt={`Group ${group.group_name}`}
                                                 width={1920}
@@ -187,7 +187,7 @@ export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
                                     <div className="flex flex-col aspect-square items-center justify-center gap-4 border rounded-xl border-white/10">
                                         {memoizedImageUrls[group.id] ? (
                                             <Image
-                                                className="rounded-xl"
+                                                className="rounded-xl aspect-square object-cover"
                                                 src={memoizedImageUrls[group.id]}
                                                 alt={`Group ${group.group_name}`}
                                                 width={1920}

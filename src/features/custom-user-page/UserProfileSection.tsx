@@ -25,7 +25,7 @@ import { FaXTwitter } from "react-icons/fa6";
 
 interface UserProfileSectionProps {
     userId: string;
-    userRole?: string;
+    userRole?: string; 
 }
 
 export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps) => {
@@ -193,7 +193,7 @@ export const UserProfileSection = ({ userId, userRole }: UserProfileSectionProps
                                                 alt="Profile picture"
                                                 width={2000}
                                                 height={2000}
-                                                className="rounded-xl"
+                                                className="rounded-xl aspect-square object-cover"
                                             />
                                         ) : null
                                     )

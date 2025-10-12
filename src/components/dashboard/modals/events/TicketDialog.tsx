@@ -80,7 +80,7 @@ interface TicketDialogProps {
                         alt="Profile picture"
                         width={128}
                         height={128}
-                        className="rounded-full"
+                        className="rounded-full aspect-square object-cover"
                       />
                     ) : null
                   )

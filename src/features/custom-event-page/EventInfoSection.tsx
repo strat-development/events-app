@@ -276,7 +276,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                 </div>
                 <div className="flex flex-col gap-4">
                     <h2 className='text-2xl font-bold tracking-wider'>Event attendees</h2>
-                    <div className="flex gap-4 w-full overflow-x-auto">
+                    <div className="grid grid-cols-3 gap-4 w-full overflow-x-auto">
                         <div className='flex gap-4'>
                             {memoizedEventAttendeesData?.slice(0, 3).map((attendee) => (
                                 <div className="cursor-pointer"
@@ -288,12 +288,12 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                                     }}
                                     key={attendee?.id}>
                                     <div key={attendee?.id}
-                                        className='flex flex-col items-center border border-white/10 p-4 rounded-xl text-center w-[144px] h-full'>
+                                        className='flex flex-col items-center border border-white/10 p-4 rounded-xl text-center w-fit h-full'>
                                         {attendee?.id && memoizedProfileImages[attendee.id] && (
-                                            <Image className="rounded-full"
+                                            <Image className="rounded-full aspect-square object-cover"
                                                 src={memoizedProfileImages[attendee?.id]} width={50} height={50} alt="" />
                                         ) || (
-                                                <div className="flex h-[50px] w-[50px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
+                                                <div className="flex h-[48px] w-[48px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
                                                     <IconGhost2Filled className="w-6 h-6 text-white/70"
                                                         strokeWidth={1} />
                                                 </div>

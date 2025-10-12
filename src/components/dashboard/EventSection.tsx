@@ -86,7 +86,6 @@ export const EventSection = () => {
                 .from('event-pictures')
                 .select('*')
                 .in('event_id', eventIds)
-                .order('starts_at', { ascending: false });
 
             if (error) {
                 throw error;
@@ -195,7 +194,7 @@ export const EventSection = () => {
                                             alt={event.events?.event_title || ""}
                                             width={200}
                                             height={200}
-                                            className="object-cover rounded-xl w-full max-h-[240px]"
+                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-xl">
@@ -242,7 +241,7 @@ export const EventSection = () => {
                                             alt={event.event_title || ""}
                                             width={200}
                                             height={200}
-                                            className="object-cover rounded-xl w-full max-h-[240px]"
+                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
@@ -294,7 +293,7 @@ export const EventSection = () => {
                                             alt={event.events?.event_title || ""}
                                             width={200}
                                             height={200}
-                                            className="object-cover rounded-xl w-full max-h-[240px]"
+                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
