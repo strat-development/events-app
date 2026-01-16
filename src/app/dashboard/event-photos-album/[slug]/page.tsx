@@ -9,13 +9,15 @@ import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Trash } from "lucide-react";
+import { Trash, ImageIcon, Check } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Key, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
 import GridLoader from "react-spinners/GridLoader";
+import { ImageLightbox } from "@/components/dashboard/ImageLightbox";
+import { twMerge } from "tailwind-merge";
 
 export default function EventPhotosAlbumPage({
     params
@@ -33,10 +35,12 @@ export default function EventPhotosAlbumPage({
     const { eventCreatorId } = useGroupOwnerContext();
     const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 20;
+    const itemsPerPage = 24;
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const albumId = searchParams.get('albumId');
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
 
     const { data: albumsData, error: albumsError } = useQuery(
         ['picture-albums', eventId],
@@ -169,16 +173,38 @@ export default function EventPhotosAlbumPage({
         });
     };
 
-    const memoizedAlbums = useMemo(() => albums, [albums]);
+    const handleImageClick = (index: number) => {
+        setLightboxIndex(index);
+        setLightboxOpen(true);
+    };
 
-    const totalItems = memoizedAlbums.length;
+    const handleSelectAll = () => {
+        if (albums.length > 0 && albums[0].publicUrls) {
+            const allImageUrls = albums[0].publicUrls.map((img: { publicUrl: string }) => img.publicUrl);
+            setSelectedImages(allImageUrls);
+        }
+    };
+
+    const handleDeselectAll = () => {
+        setSelectedImages([]);
+    };
+
+    const allImages = useMemo(() => {
+        if (albums.length > 0 && albums[0].publicUrls) {
+            return albums[0].publicUrls.map((img: { publicUrl: string }) => img.publicUrl);
+        }
+        return [];
+    }, [albums]);
+
+    const totalItems = allImages.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentItems = memoizedAlbums.slice(startIndex, endIndex);
+    const currentImages = allImages.slice(startIndex, endIndex);
 
     const handlePageChange = (page: number) => {
-        setCurrentPage(page)
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     if (loading) {
@@ -191,101 +217,174 @@ export default function EventPhotosAlbumPage({
 
     return (
         <>
-            <div className="flex flex-col gap-8 items-center max-w-[1200px] w-full justify-self-center">
+            <div className="flex flex-col gap-12 items-center max-w-[1400px] w-full justify-self-center px-4 md:px-6">
                 {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
-                    <div className="min-h-screen mt-24 flex flex-col gap-8 items-center justify-center w-full">
+                    <div className="min-h-screen mt-24 flex flex-col gap-10 items-center w-full">
                         <EventHero eventId={eventId} />
-                        <div className="flex flex-col gap-8 w-full">
-                            {pathname.includes("/dashboard") && eventCreatorId === userId && (
-                                <div className="flex gap-4 justify-self-end justify-end">
-                                    {selectedImages.length > 0 && (
-                                        <Button variant="ghost"
-                                            className="max-[900px]:hidden text-red-500"
-                                            onClick={() => {
-                                                deleteImagesMutation.mutate(Array.from(selectedImages));
-                                                setSelectedImages([]);
-                                            }
-                                            }
-                                            disabled={selectedImages.length === 0}>
-                                            <Trash size={20} />
-                                        </Button>
-                                    )}
-                                    <UpdateEventImagesAlbumDialog />
-                                </div>
-                            )}
-                            <div className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-between min-[768px]:gap-24">
-                                {currentItems.map((album, index) => (
-                                    <div key={index}
-                                        className="flex flex-col gap-4">
-                                        <h2 className="text-xl font-bold tracking-wider">{album.name}</h2>
-                                        <div key={index}
-                                            className="w-full flex flex-wrap justify-center gap-8 min-[768px]:justify-evenly min-[768px]:gap-24">
-                                            {album.publicUrls.map((imageUrl: { publicUrl: string | undefined; }, index: Key | null | undefined) => (
-                                                <div key={index}
-                                                    className={`relative ${imageUrl.publicUrl && selectedImages.includes(imageUrl.publicUrl) ? 'outline outline-2 outline-blue-500 rounded-xl' : ''}`}>
-                                                    <Image
-                                                        src={imageUrl.publicUrl ?? ''}
-                                                        alt={`Image ${index}`}
-                                                        className="max-w-[280px] aspect-square w-full border border-white/10 rounded-xl"
-                                                        height={1920}
-                                                        width={1080}
-                                                    />
-                                                    <input
-                                                        type="checkbox"
-                                                        className="absolute top-2 right-2"
-                                                        checked={selectedImages.includes(imageUrl.publicUrl ?? '')}
-                                                        onChange={() => handleCheckboxChange(imageUrl.publicUrl ?? '')}
-                                                    />
-                                                </div>
-                                            ))}
+
+                        {albums.length > 0 && albums[0] && (
+                            <>
+                                <div className="w-full flex flex-col gap-6">
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                        <div className="flex flex-col gap-2">
+                                            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                                                {albums[0].album_name}
+                                            </h1>
+                                            <p className="text-white/60 flex items-center gap-2">
+                                                <ImageIcon className="w-4 h-4" />
+                                                {allImages.length} {allImages.length === 1 ? 'photo' : 'photos'}
+                                            </p>
                                         </div>
+
+                                        {pathname.includes("/dashboard") && eventCreatorId === userId && (
+                                            <div className="flex flex-wrap items-center gap-3">
+                                                {selectedImages.length > 0 ? (
+                                                    <>
+                                                        <Button
+                                                            variant="outline"
+                                                            onClick={handleDeselectAll}
+                                                            className="border-white/20 hover:bg-white/10"
+                                                        >
+                                                            Deselect All
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                                            onClick={() => {
+                                                                deleteImagesMutation.mutate(Array.from(selectedImages));
+                                                                setSelectedImages([]);
+                                                            }}
+                                                            disabled={deleteImagesMutation.isLoading}
+                                                        >
+                                                            <Trash className="w-4 h-4 mr-2" />
+                                                            Delete ({selectedImages.length})
+                                                        </Button>
+                                                    </>
+                                                ) : (
+                                                    <Button
+                                                        variant="outline"
+                                                        onClick={handleSelectAll}
+                                                        className="border-white/20 hover:bg-white/10"
+                                                    >
+                                                        Select All
+                                                    </Button>
+                                                )}
+                                                <UpdateEventImagesAlbumDialog />
+                                            </div>
+                                        )}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                        {selectedImages.length > 0 && (
-                            <Button className="fixed w-fit p-2 rounded-full bottom-8 right-8 min-[900px]:hidden"
-                                onClick={() => {
-                                    deleteImagesMutation.mutate(Array.from(selectedImages));
-                                    setSelectedImages([]);
-                                }
-                                }
-                                disabled={selectedImages.length === 0}>
-                                <Trash className="text-red-600"
-                                    strokeWidth={1}
-                                    size={24} />
-                            </Button>
+                                </div>
+
+                                <div className="w-full">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4">
+                                        {currentImages.map((imageUrl: string, index: number) => (
+                                            <div
+                                                key={index}
+                                                className={twMerge(
+                                                    "relative group aspect-square overflow-hidden rounded-xl border transition-all duration-300 cursor-pointer",
+                                                    selectedImages.includes(imageUrl)
+                                                        ? "border-blue-500 border-2 ring-2 ring-blue-500/50"
+                                                        : "border-white/20 hover:border-white/40"
+                                                )}
+                                            >
+                                                <div
+                                                    onClick={() => handleImageClick(startIndex + index)}
+                                                    className="relative w-full h-full"
+                                                >
+                                                    <Image
+                                                        src={imageUrl}
+                                                        alt={`Image ${startIndex + index + 1}`}
+                                                        fill
+                                                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 16vw"
+                                                    />
+
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                                </div>
+
+                                                {pathname.includes("/dashboard") && eventCreatorId === userId && (
+                                                    <div
+                                                        className="absolute top-2 right-2 z-10"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <button
+                                                            onClick={() => handleCheckboxChange(imageUrl)}
+                                                            className={twMerge(
+                                                                "w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200",
+                                                                selectedImages.includes(imageUrl)
+                                                                    ? "bg-blue-500 border-blue-500"
+                                                                    : "bg-black/40 border-white/40 backdrop-blur-sm hover:bg-black/60"
+                                                            )}
+                                                        >
+                                                            {selectedImages.includes(imageUrl) && (
+                                                                <Check className="w-4 h-4 text-white" strokeWidth={3} />
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {totalPages > 1 && (
+                                    <Pagination className="mt-8">
+                                        <PaginationContent className="flex gap-2">
+                                            <PaginationItem>
+                                                <PaginationPrevious
+                                                    onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                                    aria-disabled={currentPage === 1}
+                                                    className={twMerge(
+                                                        currentPage === 1 && "opacity-50 cursor-not-allowed"
+                                                    )}
+                                                />
+                                            </PaginationItem>
+                                            {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                                                let page;
+                                                if (totalPages <= 7) {
+                                                    page = i + 1;
+                                                } else if (currentPage <= 4) {
+                                                    page = i + 1;
+                                                } else if (currentPage >= totalPages - 3) {
+                                                    page = totalPages - 6 + i;
+                                                } else {
+                                                    page = currentPage - 3 + i;
+                                                }
+                                                return (
+                                                    <PaginationItem key={page}>
+                                                        <PaginationLink
+                                                            isActive={page === currentPage}
+                                                            onClick={() => handlePageChange(page)}
+                                                        >
+                                                            {page}
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                );
+                                            })}
+                                            <PaginationItem>
+                                                <PaginationNext
+                                                    onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                                    aria-disabled={currentPage === totalPages}
+                                                    className={twMerge(
+                                                        currentPage === totalPages && "opacity-50 cursor-not-allowed"
+                                                    )}
+                                                />
+                                            </PaginationItem>
+                                        </PaginationContent>
+                                    </Pagination>
+                                )}
+                            </>
                         )}
                     </div>
                 )}
-
-                <Pagination>
-                    <PaginationContent className="flex gap-8">
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
-                                aria-disabled={currentPage === 1}
-                            />
-                        </PaginationItem>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                            <PaginationItem key={page}>
-                                <PaginationLink
-                                    isActive={page === currentPage}
-                                    onClick={() => handlePageChange(page)}
-                                >
-                                    {page}
-                                </PaginationLink>
-                            </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
-                                aria-disabled={currentPage === totalPages}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
             </div>
+                
+            <ImageLightbox
+                images={allImages}
+                initialIndex={lightboxIndex}
+                isOpen={lightboxOpen}
+                onClose={() => setLightboxOpen(false)}
+            />
         </>
     );
 }

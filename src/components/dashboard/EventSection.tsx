@@ -122,11 +122,9 @@ export const EventSection = () => {
     const memoizedEventsByAttendees = useMemo(() => fetchedEventsByAttendees.data, [fetchedEventsByAttendees.data]);
     const memoizedEventsByHosts = useMemo(() => fetchedEventsByHosts.data, [fetchedEventsByHosts.data]);
 
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
     const memoizedImageUrls = useMemo(() => imageUrls, [imageUrls]);
-    const currentAttendingItems = memoizedEventsByAttendees?.slice(startIndex, endIndex) ?? [];
-    const currentHostItems = memoizedEventsByHosts?.slice(startIndex, endIndex) ?? [];
+    const currentAttendingItems = memoizedEventsByAttendees?.filter(event => new Date(event.events?.starts_at || "") > new Date()) ?? [];
+    const currentHostItems = memoizedEventsByHosts?.filter(event => new Date(event.starts_at || "") > new Date()) ?? [];
     const currentPastAttendingItems = memoizedEventsByAttendees?.filter(event => new Date(event.events?.starts_at || "") < new Date()) ?? [];
 
     const totalPages = Math.ceil((attendingEvents ? (memoizedEventsByAttendees?.length ?? 0) : (memoizedEventsByHosts?.length ?? 0)) / itemsPerPage);

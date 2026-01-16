@@ -40,19 +40,25 @@ export default function GroupPhotosPage({
     return (
         <>
             {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
-                <div className="flex justify-self-center justify-between items-start min-h-screen max-w-[1200px] w-full">
+                <div className="flex justify-self-center items-start min-h-screen w-full">
                     <Navbar />
-                    <div className="flex flex-col gap-8 max-w-[1200px] w-full min-h-screen relative top-24">
+                    <div className="flex flex-col gap-12 max-w-[1400px] w-full min-h-screen relative top-24 px-4 md:px-6">
                         <GroupHero groupId={groupId} />
+                        
                         {pathname.includes("/dashboard") && (
-                            <div className="jusify-self-end">
+                            <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10">
+                                <div className="flex flex-col gap-1">
+                                    <h2 className="text-2xl font-bold">Photo Albums</h2>
+                                    <p className="text-white/60 text-sm">Organize your group photos into albums</p>
+                                </div>
                                 <CreateGroupImagesAlbumDialog groupId={groupId} />
                             </div>
                         )}
+                        
                         <GroupGallery groupId={groupId} />
                     </div>
                 </div>
             )}
         </>
-    )
+    );
 }

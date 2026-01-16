@@ -47,7 +47,7 @@ export default function Home() {
               style={{ animationDelay: "500ms" }}
             >
               <Image
-                src="/landing-imafes/Home-screen.png"
+                src="/Home-screen.png"
                 alt="Huddle."
                 width={2000}
                 height={2000}
