@@ -292,7 +292,7 @@ export const CreateEventDialog = ({ ownerId }: CreateEventDialogProps) => {
             }}>
                 <DialogTrigger asChild>
                     <Button
-                        className="flex flex-col items-center justify-center w-[280px] h-[440px] rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
+                        className="flex flex-col items-center justify-center w-[280px] h-[360px] rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
                         onClick={() => fetchGroups.refetch()}
                         variant="ghost">
                         <div className="flex flex-col items-center">

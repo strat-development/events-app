@@ -17,7 +17,7 @@ export const CustomGroupPage = ({
 
     return (
         <>
-            <div className="flex flex-col mt-24 max-w-[1400px] w-full justify-self-center px-4">
+            <div className="flex flex-col mt-24 max-w-[1200px] w-full justify-self-center px-4">
                 <GroupHero groupId={groupId} />
                 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 mt-8">

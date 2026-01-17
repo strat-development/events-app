@@ -28,7 +28,7 @@ export const ShareDialog = ({ expanded }: ShareDialogProps) => {
                     <span className="text-sm font-medium">Share</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[400px] bg-slate-900/95 backdrop-blur-xl border border-white/10 shadow-2xl">
+            <DialogContent className="max-w-[400px] bg-gray-600/15 backdrop-blur-xl border border-white/10 shadow-2xl">
                 <Suspense fallback={
                     <div className="flex flex-col items-center justify-center p-12 gap-4">
                         <div className="w-12 h-12 border-4 border-white/10 border-t-purple-500 rounded-full animate-spin"></div>

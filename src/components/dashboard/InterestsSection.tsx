@@ -133,120 +133,151 @@ export const InterestsSection = () => {
     }
 
     return (
-        <div className="flex flex-col gap-8 min-h-[90vh]">
-            <div className="flex flex-col gap-1">
-                <h1 className="text-2xl font-bold tracking-wider">Interests</h1>
-                <p className="text-white/70">Select to remove</p>
+        <div className="flex flex-col gap-6 min-h-[90vh]">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                <h1 className="text-3xl font-bold tracking-wider bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                    Your Interests
+                </h1>
+                <p className="text-white/60 mt-2">Manage your interests to get personalized event recommendations</p>
             </div>
 
-            <div className="flex gap-2">
-                <div className="flex gap-4 flex-wrap">
-                    {userInterests && (
-                        userInterests.map((interest, index) => (
-                            <Button variant="outline"
+            {userInterests && userInterests.length > 0 && (
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-semibold text-white/90">Current Interests</h2>
+                        {interestsToDelete.length > 0 && (
+                            <Button 
+                                variant="destructive"
+                                className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-400"
                                 onClick={() => {
-                                    handleInterestToRemoveClick(interest)
+                                    removeInterests(interestsToDelete)
+                                    setInterestsToDelete([])
                                 }}
+                            >
+                                Remove Selected ({interestsToDelete.length})
+                            </Button>
+                        )}
+                    </div>
+                    <p className="text-white/50 text-sm mb-4">Click to select interests you want to remove</p>
+                    <div className="flex gap-2 flex-wrap">
+                        {userInterests.map((interest, index) => (
+                            <Button 
+                                variant="outline"
+                                onClick={() => handleInterestToRemoveClick(interest)}
                                 id={`user-interest-${index}`}
                                 key={index}
-                                className={`px-4 py-2 border ${interestsToDelete.includes(interest) ? 'border border-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+                                className={`px-4 py-2 transition-all duration-300 ${
+                                    interestsToDelete.includes(interest) 
+                                        ? 'bg-red-500/20 border-red-500 text-white' 
+                                        : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/90'
+                                }`}
+                            >
                                 {interest}
                             </Button>
-                        )))}
-                </div>
-
-                {interestsToDelete.length > 0 && (
-                    <Button variant="destructive"
-                        onClick={() => {
-                            removeInterests(interestsToDelete)
-                            setInterestsToDelete([])
-                        }}>
-                        Remove Selected
-                    </Button>
-                )}
-            </div>
-            <div className="flex items-center gap-4">
-                <div className="mb-4 flex flex-col gap-2">
-                    <label htmlFor="group-select" className="block text-lg text-white/70 font-medium">Select Interest Group:</label>
-                    <Select
-                        value={selectedGroup || "all"}
-                        onValueChange={(value: string) => setSelectedGroup(value)}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select interest group" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Groups</SelectItem>
-                            {interestsData?.["interest-groups"].map((group) => (
-                                <SelectItem
-                                    value={group["group-name"]}
-                                    key={group["group-name"]}>
-                                    {group["group-name"]}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <p>
-                    OR
-                </p>
-                <div className="mb-4 flex flex-col gap-2">
-                    <label htmlFor="search-input" className="block text-lg text-white/70 font-medium">Search Interests:</label>
-                    <Input
-                        id="search-input"
-                        type="text"
-                        placeholder="Search interests"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                    />
-                </div>
-            </div>
-            <div className="flex flex-wrap gap-4 min-[900px]:max-w-[60%]">
-                {displayedInterests.map((interest) => (
-                    <Button key={interest.name}
-                        variant="outline"
-                        onClick={() => handleInterestClick(interest.name)}>
-                        {interest.name}
-                    </Button>
-                ))}
-            </div>
-
-            <Button
-                variant="ghost"
-                className="text-blue-500 w-fit"
-                onClick={shuffleInterests}>
-                Show More Interests
-            </Button>
-
-            <div className="flex flex-col gap-8">
-                {selectedInterests.length > 0 && (
-                    <div className="flex flex-col gap-4">
-                        <h2 className="text-xl tracking-wider font-semibold">Selected Interests</h2>
-                        <div className="flex flex-wrap gap-4 min-[900px]:max-w-[60%]">
-                            {selectedInterests.map((interest) => (
-                                <Button key={interest}
-                                    className="px-4 py-2 bg-transparent border border-blue-500 text-white"
-                                    onClick={() => handleInterestClick(interest)}>
-                                    {interest}
-                                </Button>
-                            ))}
-                        </div>
+                        ))}
                     </div>
-                )}
-                {selectedInterests.length > 0 && (
-                    <Button variant="ghost"
-                        className="w-fit text-blue-500"
-                        onClick={() => {
-                            if (userId) {
-                                addInterests.mutateAsync()
-                            }
+                </div>
+            )}
 
-                            setSelectedInterests([])
-                        }}>
-                        <Save size={20} />
-                    </Button>
-
-                )}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                <h2 className="text-xl font-semibold text-white/90 mb-4">Add New Interests</h2>
+                <div className="flex flex-col md:flex-row items-start md:items-end gap-4">
+                    <div className="flex-1 flex flex-col gap-2">
+                        <label htmlFor="group-select" className="text-sm text-white/70 font-medium">Filter by Category</label>
+                        <Select
+                            value={selectedGroup || "all"}
+                            onValueChange={(value: string) => setSelectedGroup(value)}
+                        >
+                            <SelectTrigger className="bg-white/5 border-white/10">
+                                <SelectValue placeholder="Select interest group" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Categories</SelectItem>
+                                {interestsData?.["interest-groups"].map((group) => (
+                                    <SelectItem
+                                        value={group["group-name"]}
+                                        key={group["group-name"]}
+                                    >
+                                        {group["group-name"]}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="flex items-center justify-center text-white/50 font-medium px-4">
+                        OR
+                    </div>
+                    <div className="flex-1 flex flex-col gap-2">
+                        <label htmlFor="search-input" className="text-sm text-white/70 font-medium">Search Interests</label>
+                        <Input
+                            id="search-input"
+                            type="text"
+                            placeholder="Type to search..."
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            className="bg-white/5 border-white/10"
+                        />
+                    </div>
+                </div>
             </div>
-        </div >
+
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                <h3 className="text-lg font-semibold text-white/90 mb-4">Available Interests</h3>
+                <div className="flex flex-wrap gap-2 mb-4">
+                    {displayedInterests.map((interest) => (
+                        <Button 
+                            key={interest.name}
+                            variant="outline"
+                            onClick={() => handleInterestClick(interest.name)}
+                            className={`px-4 py-2 transition-all duration-300 ${
+                                selectedInterests.includes(interest.name)
+                                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 border-transparent text-white'
+                                    : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/90'
+                            }`}
+                        >
+                            {interest.name}
+                        </Button>
+                    ))}
+                </div>
+                <Button
+                    variant="ghost"
+                    className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300"
+                    onClick={shuffleInterests}
+                >
+                    Show More Interests
+                </Button>
+            </div>
+                        
+            {selectedInterests.length > 0 && (
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-semibold text-white/90">Selected to Add ({selectedInterests.length})</h2>
+                        <Button 
+                            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+                            onClick={() => {
+                                if (userId) {
+                                    addInterests.mutateAsync()
+                                }
+                                setSelectedInterests([])
+                            }}
+                        >
+                            <Save size={18} />
+                            Save Interests
+                        </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {selectedInterests.map((interest) => (
+                            <Button 
+                                key={interest}
+                                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 border-transparent text-white"
+                                onClick={() => handleInterestClick(interest)}
+                            >
+                                {interest}
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
     )
 }

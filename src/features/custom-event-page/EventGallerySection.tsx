@@ -36,7 +36,7 @@ export const EventGallerySection = ({ eventId }: EventGallerySectionProps) => {
 
     return (
         <>
-            <div className="flex flex-col gap-6 w-full max-w-[1400px] justify-self-center">
+            <div className="flex flex-col gap-6 w-full max-w-[1200px] justify-self-center">
                 {pathname.includes("/dashboard") && (
                     <div className="flex justify-end">
                         <CreateEventImagesAlbumDialog eventId={eventId} />

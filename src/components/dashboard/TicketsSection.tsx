@@ -1,4 +1,4 @@
-"use state"
+"use client"
 
 import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
@@ -7,15 +7,16 @@ import { useQuery } from "react-query"
 import { Button } from "../ui/button"
 import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
-import { Globe, Ticket } from "lucide-react"
+import { Globe, Ticket, MapPin, Calendar, Sparkles } from "lucide-react"
 import { format, parseISO } from "date-fns";
 import { useRouter } from "next/navigation"
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
 import { TicketsData } from "@/types/types"
 import { TicketDialog } from "./modals/events/TicketDialog"
+import { twMerge } from "tailwind-merge"
 
 
-export const Ticketsection = () => {
+export const TicketsSection = () => {
     const supabase = createClientComponentClient<Database>()
     const { userId } = useUserContext();
     const [activeTickets, setActiveTickets] = useState(true)
@@ -121,80 +122,142 @@ export const Ticketsection = () => {
     }
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
-                <Button className={activeTickets === true ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
-                    variant="ghost"
-                    onClick={() => {
-                        setActiveTickets(true);
-                        fetchTickets.refetch();
-                    }}>
-                    Active
-                </Button>
-                <Button className={activeTickets === false ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
-                    variant="ghost"
-                    onClick={() => {
-                        setActiveTickets(false);
-                        fetchTickets.refetch();
-                    }}>
-                    Expired
-                </Button>
+        <div className="flex flex-col gap-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent">
+                        My Tickets
+                    </h1>
+                    <div className="flex gap-2">
+                        <Button 
+                            className={twMerge(
+                                "px-6 py-2 rounded-xl font-medium transition-all duration-300",
+                                activeTickets === true 
+                                    ? "bg-white/20 border-white/30 text-white" 
+                                    : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:text-white/80"
+                            )}
+                            variant="outline"
+                            onClick={() => {
+                                setActiveTickets(true);
+                                fetchTickets.refetch();
+                            }}>
+                            Active
+                        </Button>
+                        <Button 
+                            className={twMerge(
+                                "px-6 py-2 rounded-xl font-medium transition-all duration-300",
+                                activeTickets === false 
+                                    ? "bg-white/20 border-white/30 text-white" 
+                                    : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:text-white/80"
+                            )}
+                            variant="outline"
+                            onClick={() => {
+                                setActiveTickets(false);
+                                fetchTickets.refetch();
+                            }}>
+                            Expired
+                        </Button>
+                    </div>
+                </div>
             </div>
 
-            <div className="flex flex-wrap max-[800px]:justify-center gap-8">
+            <div className="flex flex-wrap gap-6">
                 {activeTickets && (
                     <>
                         {activeTickets && currentActiveItems.length === 0 && (
-                            <div className="flex flex-col justify-self-center items-center w-full gap-8 mt-24">
-                                <h2 className="text-white/70 text-center text-2xl font-semibold tracking-wide">You have no tickets for events</h2>
-                                <Button
-                                    className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
-                                    onClick={() => router.push('/home')}
-                                    variant="ghost">
-                                    <div className="flex flex-col items-center gap-8">
-                                        <div className="text-6xl text-white/70">
-                                            <Globe size={128}
-                                                strokeWidth={1} />
+                            <div className="col-span-full">
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-12 shadow-xl">
+                                    <div className="flex flex-col items-center gap-6 text-center">
+                                        <div className="w-24 h-24 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center">
+                                            <Ticket className="w-12 h-12 text-white/40" strokeWidth={1.5} />
                                         </div>
-                                        <p className="text-xl tracking-wide text-white/50 font-medium">Discover Events</p>
+                                        <div className="space-y-2">
+                                            <h2 className="text-2xl font-bold text-white/80">No Active Tickets</h2>
+                                            <p className="text-white/50">You don't have any tickets for upcoming events</p>
+                                        </div>
+                                        <Button
+                                            className="mt-4 bg-white/10 hover:bg-white/20 border-white/20 text-white font-medium px-8"
+                                            onClick={() => router.push('/home')}
+                                            variant="outline">
+                                            <Globe className="w-4 h-4 mr-2" />
+                                            Discover Events
+                                        </Button>
                                     </div>
-                                </Button>
+                                </div>
                             </div>
                         )}
 
                         {currentActiveItems?.map((ticket) => (
-                            <div key={ticket?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
-                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-fit aspect-square">
-                                    {ticket?.id && ticket.event_id && memoizedImageUrls[ticket.event_id] ? (
-                                        <Image
-                                            src={memoizedImageUrls[ticket.event_id]}
-                                            alt={ticket.event_title || ""}
-                                            width={200}
-                                            height={200}
-                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-xl">
-                                            <p className="text-center font-medium">No image available 😔</p>
+                            <div
+                                key={ticket?.id}
+                                className="group relative flex flex-col w-[280px] h-[360px] rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02]"
+                            >
+                                <div className="relative flex flex-col h-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:border-white/20 transition-all duration-300">
+                                    <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-3 py-1.5 bg-green-500/20 backdrop-blur-md border border-green-400/30 rounded-full">
+                                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                                        <span className="text-xs font-semibold text-green-300 tracking-wide">ACTIVE</span>
+                                    </div>
+
+                                    <div className="relative w-full h-40 overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60 z-10" />
+                                        {ticket?.id && ticket.event_id && memoizedImageUrls[ticket.event_id] ? (
+                                            <Image
+                                                src={memoizedImageUrls[ticket.event_id]}
+                                                alt={ticket.event_title || ""}
+                                                fill
+                                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800/50 to-slate-900/50">
+                                                <Sparkles className="w-12 h-12 text-white/20" />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="relative flex flex-col flex-1 p-4 gap-3">
+                                        <h1 className="text-base font-bold tracking-wide line-clamp-2 text-white/90 group-hover:text-white transition-colors">
+                                            {ticket.event_title}
+                                        </h1>
+
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex items-center gap-3 text-white/70">
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 border border-white/10 group-hover:bg-white/15 transition-colors">
+                                                    <Calendar className="w-4 h-4 text-white/70" strokeWidth={1.5} />
+                                                </div>
+                                                <span className="text-sm font-medium">
+                                                    {format(parseISO(ticket.event_starts_at as string), 'MMM dd, yyyy • HH:mm')}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-start gap-3 text-white/70">
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 border border-white/10 shrink-0 group-hover:bg-white/15 transition-colors">
+                                                    <MapPin className="w-4 h-4 text-white/70" strokeWidth={1.5} />
+                                                </div>
+                                                <span className="text-sm font-medium line-clamp-2">
+                                                    {ticket.event_address}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 border border-white/10 group-hover:bg-white/15 transition-colors">
+                                                    <Ticket className="w-4 h-4 text-white/70" strokeWidth={1.5} />
+                                                </div>
+                                                {ticket?.ticket_price === "FREE" ? (
+                                                    <span className="text-lg font-bold tracking-wider text-green-400">
+                                                        FREE
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-lg font-bold tracking-wider text-white/90">
+                                                        ${ticket.ticket_price}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
-                                    )}
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <h1 className="text-lg font-bold tracking-wider line-clamp-2">{ticket.event_title}</h1>
-                                    <div className="flex flex-col gap-1">
-                                        <p className="text-sm text-white/70">{format(parseISO(ticket.event_starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                                        <p className="text-sm text-white/60">{ticket.event_address}</p>
-                                        <div className="flex gap-2 mt-1 items-center">
-                                            <Ticket className="h-4 w-4" />
-                                            {ticket?.ticket_price === "FREE" ? (
-                                                <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
-                                            ) : (
-                                                <p className="text-sm text-white/60 font-bold tracking-wide">{ticket.ticket_price}$</p>
-                                            )}
+
+                                        <div className="mt-auto pt-2">
+                                            <TicketDialog ticketsData={activeTicketData} isTicketExpired={false} />
                                         </div>
                                     </div>
-                                    <TicketDialog ticketsData={activeTicketData}
-                                        isTicketExpired={false} />
                                 </div>
                             </div>
                         ))}
@@ -202,50 +265,105 @@ export const Ticketsection = () => {
                 )}
             </div>
 
-            <div className="flex flex-wrap max-[800px]:justify-center gap-8">
+            <div className="flex flex-wrap gap-6">
                 {!activeTickets && (
-                    currentExpiredItems?.map((ticket) => (
-                        <div key={ticket?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
-                            <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
-                                {ticket?.id && ticket.event_id && memoizedImageUrls[ticket.event_id] ? (
-                                    <Image
-                                        src={memoizedImageUrls[ticket.event_id]}
-                                        alt={ticket.event_title || ""}
-                                        width={200}
-                                        height={200}
-                                        className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-xl">
-                                        <p className="text-center font-medium">No image available 😔</p>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <h1 className="text-lg font-bold tracking-wider line-clamp-2">{ticket.event_title}</h1>
-                                <div className="flex flex-col gap-1">
-                                    <p className="text-sm text-white/70">{format(parseISO(ticket.event_starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                                    <p className="text-sm text-white/60">{ticket.event_address}</p>
-                                    <div className="flex gap-2 mt-1 items-center">
-                                        <Ticket className="h-4 w-4" />
-                                        {ticket?.ticket_price === "FREE" ? (
-                                            <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
-                                        ) : (
-                                            <p className="text-sm text-white/60 font-bold tracking-wide">{ticket.ticket_price}$</p>
-                                        )}
+                    <>
+                        {currentExpiredItems.length === 0 && (
+                            <div className="col-span-full">
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-12 shadow-xl">
+                                    <div className="flex flex-col items-center gap-6 text-center">
+                                        <div className="w-24 h-24 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                                            <Ticket className="w-12 h-12 text-white/30" strokeWidth={1.5} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <h2 className="text-2xl font-bold text-white/80">No Expired Tickets</h2>
+                                            <p className="text-white/50">You don't have any expired tickets</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <TicketDialog ticketsData={expiredTicketData}
-                                    isTicketExpired={true} />
                             </div>
-                        </div>
-                    )))
-                }
-            </div>
+                        )}
+                        {currentExpiredItems?.map((ticket) => (
+                            <div
+                                key={ticket?.id}
+                                className="group relative flex flex-col w-[280px] h-[360px] rounded-2xl overflow-hidden transition-all duration-300 opacity-60 hover:opacity-80"
+                            >
+                                <div className="relative flex flex-col h-full bg-white/5 backdrop-blur-sm border border-white/5 rounded-2xl overflow-hidden shadow-xl">
+                                    <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-3 py-1.5 bg-red-500/20 backdrop-blur-md border border-red-400/30 rounded-full">
+                                        <div className="w-2 h-2 bg-red-400 rounded-full" />
+                                        <span className="text-xs font-semibold text-red-300 tracking-wide">EXPIRED</span>
+                                    </div>
 
+                                    <div className="relative w-full h-40 overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60 z-10" />
+                                        {ticket?.id && ticket.event_id && memoizedImageUrls[ticket.event_id] ? (
+                                            <Image
+                                                src={memoizedImageUrls[ticket.event_id]}
+                                                alt={ticket.event_title || ""}
+                                                fill
+                                                className="object-cover grayscale"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800/30 to-slate-900/30">
+                                                <Sparkles className="w-12 h-12 text-white/10" />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="relative flex flex-col flex-1 p-4 gap-3">
+                                        <h1 className="text-lg font-bold tracking-wide line-clamp-2 text-white/50">
+                                            {ticket.event_title}
+                                        </h1>
+
+                                        <div className="flex flex-col gap-3">
+                                            <div className="flex items-center gap-3 text-white/40">
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 border border-white/5">
+                                                    <Calendar className="w-4 h-4 text-white/40" strokeWidth={1.5} />
+                                                </div>
+                                                <span className="text-sm font-medium">
+                                                    {format(parseISO(ticket.event_starts_at as string), 'MMM dd, yyyy • HH:mm')}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-start gap-3 text-white/40">
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 border border-white/5 shrink-0">
+                                                    <MapPin className="w-4 h-4 text-white/40" strokeWidth={1.5} />
+                                                </div>
+                                                <span className="text-sm font-medium line-clamp-2">
+                                                    {ticket.event_address}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 border border-white/5">
+                                                    <Ticket className="w-4 h-4 text-white/40" strokeWidth={1.5} />
+                                                </div>
+                                                {ticket?.ticket_price === "FREE" ? (
+                                                    <span className="text-lg font-bold tracking-wider text-white/40">
+                                                        FREE
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-lg font-bold tracking-wider text-white/40">
+                                                        ${ticket.ticket_price}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-auto pt-2">
+                                            <TicketDialog ticketsData={expiredTicketData} isTicketExpired={true} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </>
+                )}
+            </div>
+                    
             {(activeTickets && currentActiveItems.length > 0) || (!activeTickets && currentExpiredItems.length > 0) ? (
                 <Pagination>
-                    <PaginationContent className="flex gap-8">
+                    <PaginationContent className="flex gap-2">
                         <PaginationItem>
                             <PaginationPrevious
                                 onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
@@ -271,6 +389,6 @@ export const Ticketsection = () => {
                     </PaginationContent>
                 </Pagination>
             ) : null}
-        </div >
+        </div>
     )
 }

@@ -72,22 +72,29 @@ export const RevenueSection = ({ connectedAccountId }: RevenueSectionProps) => {
 
     return (
         <>
-            <div className="col-span-1 flex flex-col gap-4 p-4 bg-[#1a1a1a] rounded-lg shadow-md">
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 hover:bg-white/5 rounded-lg transition cursor-pointer">
-                        <p className="text-sm text-white/70">All Time</p>
-                        <p className="text-2xl font-bold">{analytics?.currency} {analytics?.allTime.revenue.toFixed(2) || 0}</p>
-                        <p className="text-sm text-white/70">{analytics?.allTime.ticketsSold || 0} tickets</p>
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
+                <h2 className="text-xl font-semibold text-white/90">Revenue Analytics</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all duration-300 cursor-pointer">
+                        <p className="text-xs font-medium text-white/60 uppercase tracking-wide mb-2">All Time</p>
+                        <p className="text-3xl font-bold text-white/90 mb-1">
+                            {analytics?.currency} {analytics?.allTime.revenue.toFixed(2) || '0.00'}
+                        </p>
+                        <p className="text-sm text-white/60">{analytics?.allTime.ticketsSold || 0} tickets sold</p>
                     </div>
-                    <div className="p-4 hover:bg-white/5 rounded-lg transition cursor-pointer">
-                        <p className="text-sm text-white/70">This Month</p>
-                        <p className="text-2xl font-bold">{analytics?.currency} {analytics?.currentMonth.revenue.toFixed(2) || 0}</p>
-                        <p className="text-sm text-white/70">{analytics?.currentMonth.ticketsSold || 0} tickets</p>
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all duration-300 cursor-pointer">
+                        <p className="text-xs font-medium text-white/60 uppercase tracking-wide mb-2">This Month</p>
+                        <p className="text-3xl font-bold text-white/90 mb-1">
+                            {analytics?.currency} {analytics?.currentMonth.revenue.toFixed(2) || '0.00'}
+                        </p>
+                        <p className="text-sm text-white/60">{analytics?.currentMonth.ticketsSold || 0} tickets sold</p>
                     </div>
-                    <div className="p-4 hover:bg-white/5 rounded-lg transition cursor-pointer">
-                        <p className="text-sm text-white/70">Last Month</p>
-                        <p className="text-2xl font-bold">{analytics?.currency} {analytics?.previousMonth.revenue.toFixed(2) || 0}</p>
-                        <p className="text-sm text-white/70">{analytics?.previousMonth.ticketsSold || 0} tickets</p>
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all duration-300 cursor-pointer md:col-span-2">
+                        <p className="text-xs font-medium text-white/60 uppercase tracking-wide mb-2">Last Month</p>
+                        <p className="text-3xl font-bold text-white/90 mb-1">
+                            {analytics?.currency} {analytics?.previousMonth.revenue.toFixed(2) || '0.00'}
+                        </p>
+                        <p className="text-sm text-white/60">{analytics?.previousMonth.ticketsSold || 0} tickets sold</p>
                     </div>
                 </div>
             </div>

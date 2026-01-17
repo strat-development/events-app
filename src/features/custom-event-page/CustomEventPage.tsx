@@ -17,7 +17,7 @@ export const CustomEventPage = ({
 
     return (
         <>
-            <div className="max-w-[1400px] w-full justify-self-center items-center px-4">
+            <div className="max-w-[1200px] w-full justify-self-center items-center px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 pb-24 mt-24">
                     <div className="lg:col-span-8 flex flex-col gap-8">
                         <EventHero eventId={eventId} />

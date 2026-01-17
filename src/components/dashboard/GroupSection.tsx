@@ -131,75 +131,96 @@ export const GroupSection = () => {
     }
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
-                <Button className={attendingGroups === true ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
-                    variant="ghost"
-                    onClick={() => {
-                        setAttendingGroups(true);
-                        fetchedGroups.refetch();
-                    }}>
-                    Member groups
-                </Button>
-                <Button className={attendingGroups === false ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
-                    variant="ghost"
-                    onClick={() => {
-                        setAttendingGroups(false);
-                        fetchedGroupsByHosts.refetch();
-                    }}>
-                    Owned groups
-                </Button>
+        <div className="flex flex-col gap-6">
+            {/* Header with tabs */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                <h1 className="text-3xl font-bold tracking-wider bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent mb-4">
+                    Your Groups
+                </h1>
+                <div className="flex gap-2">
+                    <Button 
+                        className={attendingGroups === true 
+                            ? "bg-white/20 text-white" 
+                            : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/90"
+                        }
+                        variant="ghost"
+                        onClick={() => {
+                            setAttendingGroups(true);
+                            fetchedGroups.refetch();
+                        }}
+                    >
+                        Member Groups
+                    </Button>
+                    <Button 
+                        className={attendingGroups === false 
+                            ? "bg-white/20 text-white" 
+                            : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/90"
+                        }
+                        variant="ghost"
+                        onClick={() => {
+                            setAttendingGroups(false);
+                            fetchedGroupsByHosts.refetch();
+                        }}
+                    >
+                        Owned Groups
+                    </Button>
+                </div>
             </div>
 
-            <div className="flex flex-wrap max-[800px]:justify-center gap-8">
+            <div className="flex flex-wrap gap-6">
                 {attendingGroups && (
-
                     <>
                         {currentAttendingItems && currentAttendingItems.length === 0 && (
-                            <div className="flex flex-col justify-self-center w-full items-center gap-8 mt-24">
-                                <h2 className="text-white/70 text-center text-2xl font-semibold tracking-wide">You are not a member of any group </h2>
-                                <Button
-                                    className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
-                                    onClick={() => router.push('/home')}
-                                    variant="ghost">
-                                    <div className="flex flex-col items-center gap-8">
-                                        <div className="text-6xl text-white/70">
-                                            <Globe size={128}
-                                                strokeWidth={1} />
-                                        </div>
-                                        <p className="text-xl tracking-wide text-white/50 font-medium">Discover groups and events</p>
+                            <div className="col-span-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-12 shadow-xl">
+                                <div className="flex flex-col items-center gap-6">
+                                    <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-6 rounded-full">
+                                        <Globe size={64} strokeWidth={1.5} className="text-white" />
                                     </div>
-                                </Button>
+                                    <div className="text-center">
+                                        <h2 className="text-2xl font-bold text-white/90 mb-2">No Groups Yet</h2>
+                                        <p className="text-white/60">You're not a member of any group</p>
+                                    </div>
+                                    <Button
+                                        className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                        onClick={() => router.push('/home')}
+                                    >
+                                        Discover Groups
+                                    </Button>
+                                </div>
                             </div>
                         )}
 
                         {currentAttendingItems?.map((group) => (
-                            <div key={group.groups?.id} className="flex flex-col gap-2 w-[280px] h-[384px] border rounded-xl border-white/10 p-4">
-                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
+                            <div key={group.groups?.id} className="group bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl w-[280px] h-[360px] flex flex-col">
+                                <div className="relative h-40 overflow-hidden">
                                     {group.groups?.id && memoizedImageUrls[group.groups?.id] ? (
                                         <Image
                                             src={memoizedImageUrls[group.groups?.id]}
                                             alt={group.groups?.group_name || ""}
-                                            width={200}
-                                            height={200}
-                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
+                                            width={400}
+                                            height={400}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
-                                            <p className="text-center font-medium">No image available 😔</p>
+                                        <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                            <p className="text-center text-sm text-white/50 font-medium">No image</p>
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex flex-col gap-1">
-                                    <h1 className="text-lg font-bold tracking-wider line-clamp-2">{group.groups?.group_name}</h1>
-                                    <div className="flex flex-col gap-1">
-
-                                        <p className="text-sm text-white/60">{group.groups?.group_city}, {group.groups?.group_country}</p>
-
-                                    </div>
-                                    <Button className="rounded-xl mt-2 w-fit text-sm text-white/70"
-                                        variant={"outline"}
-                                        onClick={() => router.push(`/group-page/${group.groups?.id}`)}>View group</Button>
+                                <div className="p-4 flex flex-col gap-2">
+                                    <h2 className="text-base font-bold tracking-wide text-white/90 line-clamp-2 group-hover:text-white transition-colors">
+                                        {group.groups?.group_name}
+                                    </h2>
+                                    <p className="text-sm text-white/60 truncate">
+                                        {group.groups?.group_city}, {group.groups?.group_country}
+                                    </p>
+                                    <Button 
+                                        className="w-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300"
+                                        variant="outline"
+                                        onClick={() => router.push(`/group-page/${group.groups?.id}`)}
+                                    >
+                                        View Group
+                                    </Button>
                                 </div>
                             </div>
                         ))}
@@ -207,41 +228,44 @@ export const GroupSection = () => {
                 )}
             </div>
 
-            <div className="flex flex-wrap max-[800px]:justify-center gap-8">
+            <div className="flex flex-wrap gap-6">
                 {!attendingGroups && (
                     <>
                         <CreateGroupDialog />
 
                         {currentHostItems?.map((group) => (
-                            <div key={group.id} className="flex flex-col gap-2 w-[280px] h-[384px] border rounded-xl border-white/10 p-4">
-                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
+                            <div key={group.id} className="group bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl w-[280px] h-[360px] flex flex-col">
+                                <div className="relative h-40 overflow-hidden">
                                     {group.id && imageUrls[group.id] ? (
                                         <Image
                                             src={imageUrls[group.id]}
                                             alt={group.group_name || ""}
-                                            width={200}
-                                            height={200}
-                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
+                                            width={400}
+                                            height={400}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
-                                            <p className="text-center font-medium">No image available 😔</p>
+                                        <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                            <p className="text-center text-sm text-white/50 font-medium">No image</p>
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex flex-col gap-1">
-                                    <h1 className="text-lg font-bold tracking-wider line-clamp-2">{group.group_name}</h1>
-                                    <div className="flex flex-col gap-1">
-                                        <p className="text-sm text-white/60">{group.group_city}, {group.group_country}</p>
-                                    </div>
-                                    <div className="flex justify-between gap-4 items-center w-full">
-                                        <div className="flex mt-2 items-center gap-2">
-                                            <Button className="rounded-xl w-fit text-sm text-white/70"
-                                                variant={"outline"}
-                                                onClick={() => router.push(`/dashboard/group-page/${group.id}`)}>View group</Button>
-                                            <EditGroupDialog groupId={group.id} />
-                                        </div>
-
+                                <div className="p-4 flex flex-col gap-3">
+                                    <h2 className="text-lg font-bold tracking-wide text-white/90 line-clamp-2 group-hover:text-white transition-colors">
+                                        {group.group_name}
+                                    </h2>
+                                    <p className="text-sm text-white/60 truncate">
+                                        {group.group_city}, {group.group_country}
+                                    </p>
+                                    <div className="flex gap-2">
+                                        <Button 
+                                            className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300"
+                                            variant="outline"
+                                            onClick={() => router.push(`/dashboard/group-page/${group.id}`)}
+                                        >
+                                            View
+                                        </Button>
+                                        <EditGroupDialog groupId={group.id} />
                                         <DeleteGroupDialog groupId={group.id} />
                                     </div>
                                 </div>
@@ -250,34 +274,42 @@ export const GroupSection = () => {
                     </>
                 )}
             </div>
-
-            {(attendingGroups && currentAttendingItems.length > 20) || (!attendingGroups && currentHostItems.length > 20) && (
-                <Pagination>
-                    <PaginationContent className="flex gap-8">
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
-                                aria-disabled={currentPage === 1}
-                            />
-                        </PaginationItem>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                            <PaginationItem key={page}>
-                                <PaginationLink
-                                    isActive={page === currentPage}
-                                    onClick={() => handlePageChange(page)}
-                                >
-                                    {page}
-                                </PaginationLink>
+                    
+            {((attendingGroups && currentAttendingItems.length > 20) || (!attendingGroups && currentHostItems.length > 20)) && totalPages > 1 && (
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 shadow-xl">
+                    <Pagination>
+                        <PaginationContent className="flex gap-2">
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                    aria-disabled={currentPage === 1}
+                                    className="hover:bg-white/10 transition-colors"
+                                />
                             </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
-                                aria-disabled={currentPage === totalPages}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                <PaginationItem key={page}>
+                                    <PaginationLink
+                                        isActive={page === currentPage}
+                                        onClick={() => handlePageChange(page)}
+                                        className={page === currentPage 
+                                            ? "bg-white/10 text-white hover:bg-white/15" 
+                                            : "hover:bg-white/10 transition-colors"
+                                        }
+                                    >
+                                        {page}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                    aria-disabled={currentPage === totalPages}
+                                    className="hover:bg-white/10 transition-colors"
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>
             )}
         </div>
     );

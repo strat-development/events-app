@@ -36,14 +36,15 @@ export default function GroupPage({
     }
 
     return (
-        <div className="max-w-[1200px] w-full flex justify-self-center justify-center items-center min-h-screen">
-            <div className="self-start sticky top-24">
+        <>
+            <div className="flex gap-8 items-start pt-24 px-6 max-w-[1200px] w-full justify-self-center">
                 <Navbar />
+                {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
+                    <div className="flex-1 w-full">
+                        <CustomGroupPage groupId={groupId} />
+                    </div>
+                )}
             </div>
-
-            {ownerId === userId && ownerId.length > 0 && userId.length > 0 && (
-                <CustomGroupPage groupId={groupId} />
-            )}
-        </div>
+        </>
     );
 }

@@ -40,9 +40,9 @@ export default function EventPhotosPage({
     return (
         <>
             {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
-                <div className="flex justify-self-center items-start min-h-screen w-full">
+                <div className="flex gap-8 items-start pt-24 px-6 max-w-[1200px] w-full justify-self-center">
                     <Navbar />
-                    <div className="flex flex-col gap-12 max-w-[1400px] w-full min-h-screen relative top-24 px-4 md:px-6">
+                    <div className="flex-1 w-full flex flex-col gap-12">
                         <EventHero eventId={eventId} />
                         
                         {pathname.includes("/dashboard") && (

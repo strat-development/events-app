@@ -29,9 +29,11 @@ export default function ManageGroupPage() {
 
     return (
         <>
-            <div className="flex justify-between items-start pt-24 max-w-[1200px] w-full justify-self-center">
+            <div className="flex gap-8 items-start pt-24 px-6 max-w-[1200px] w-full justify-self-center">
                 <Navbar />
-                <ManagementSection />
+                <div className="flex-1 w-full">
+                    <ManagementSection />
+                </div>
             </div>
         </>
     )

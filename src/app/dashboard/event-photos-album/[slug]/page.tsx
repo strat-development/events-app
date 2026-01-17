@@ -217,7 +217,7 @@ export default function EventPhotosAlbumPage({
 
     return (
         <>
-            <div className="flex flex-col gap-12 items-center max-w-[1400px] w-full justify-self-center px-4 md:px-6">
+            <div className="flex flex-col gap-12 items-center max-w-[1200px] w-full justify-self-center px-4 md:px-6">
                 {eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
                     <div className="min-h-screen mt-24 flex flex-col gap-10 items-center w-full">
                         <EventHero eventId={eventId} />

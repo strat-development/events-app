@@ -26,13 +26,15 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="flex justify-between items-start pt-24 max-w-[1200px] w-full justify-self-center">
-            <Navbar />
-            {userId.length > 0 && (
-                <div className="justify-self-center overflow-x-hidden w-full">
-                    <CustomUserPage userId={userId} />
-                </div>
-            )}
-        </div>
+        <>
+            <div className="flex gap-8 items-start pt-24 px-6 max-w-[1200px] w-full justify-self-center">
+                <Navbar />
+                {userId.length > 0 && (
+                    <div className="flex-1 w-full overflow-x-hidden">
+                        <CustomUserPage userId={userId} />
+                    </div>
+                )}
+            </div>
+        </>
     )
 }

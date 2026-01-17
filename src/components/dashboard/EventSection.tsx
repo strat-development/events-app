@@ -134,89 +134,121 @@ export const EventSection = () => {
     }
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
-                <Button className={attendingEvents === "attending" ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
-                    variant="ghost"
-                    onClick={() => {
-                        setAttendingEvents("attending");
-                        fetchedEventsByAttendees.refetch();
-                    }}>
-                    Attending
-                </Button>
-                <Button className={attendingEvents === "hosting" ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
-                    variant="ghost"
-                    onClick={() => {
-                        setAttendingEvents("hosting");
-                        fetchedEventsByHosts.refetch();
-                    }}>
-                    Hosting
-                </Button>
-                <Button className={attendingEvents === "past" ? "border-b-[1px] border-white/70 text-white/70 rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
-                    variant="ghost"
-                    onClick={() => {
-                        setAttendingEvents("past");
-                        fetchedEventsByHosts.refetch();
-                    }}>
-                    Past
-                </Button>
+        <div className="flex flex-col gap-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                <h1 className="text-3xl font-bold tracking-wider bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent mb-4">
+                    Your Events
+                </h1>
+                <div className="flex gap-2">
+                    <Button 
+                        className={attendingEvents === "attending" 
+                            ? "bg-white/20 text-white" 
+                            : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/90"
+                        }
+                        variant="ghost"
+                        onClick={() => {
+                            setAttendingEvents("attending");
+                            fetchedEventsByAttendees.refetch();
+                        }}
+                    >
+                        Attending
+                    </Button>
+                    <Button 
+                        className={attendingEvents === "hosting" 
+                            ? "bg-white/20 text-white" 
+                            : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/90"
+                        }
+                        variant="ghost"
+                        onClick={() => {
+                            setAttendingEvents("hosting");
+                            fetchedEventsByHosts.refetch();
+                        }}
+                    >
+                        Hosting
+                    </Button>
+                    <Button 
+                        className={attendingEvents === "past" 
+                            ? "bg-white/20 text-white" 
+                            : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/90"
+                        }
+                        variant="ghost"
+                        onClick={() => {
+                            setAttendingEvents("past");
+                            fetchedEventsByHosts.refetch();
+                        }}
+                    >
+                        Past
+                    </Button>
+                </div>
             </div>
 
-            <div className="flex flex-wrap max-[800px]:justify-between gap-8">
+            <div className="flex flex-wrap gap-6">
                 {attendingEvents === "attending" && (
                     <>
-                        {attendingEvents && currentAttendingItems.length === 0 && (
-                            <div className="flex flex-col justify-self-center items-center w-full gap-8 mt-24">
-                                <h2 className="text-white/70 text-center text-2xl font-semibold tracking-wide">You have no upcoming events to attend.</h2>
-                                <Button
-                                    className="flex flex-col items-center max-w-[280px] w-full p-4 justify-center rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
-                                    onClick={() => router.push('/home')}
-                                    variant="ghost">
-                                    <div className="flex flex-col items-center gap-8">
-                                        <div className="text-6xl text-white/70">
-                                            <Globe size={128}
-                                                strokeWidth={1} />
-                                        </div>
-                                        <p className="text-xl tracking-wide text-white/50 font-medium">Discover events</p>
+                        {currentAttendingItems.length === 0 && (
+                            <div className="col-span-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-12 shadow-xl">
+                                <div className="flex flex-col items-center gap-6">
+                                    <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-6 rounded-full">
+                                        <Globe size={64} strokeWidth={1.5} className="text-white" />
                                     </div>
-                                </Button>
+                                    <div className="text-center">
+                                        <h2 className="text-2xl font-bold text-white/90 mb-2">No Upcoming Events</h2>
+                                        <p className="text-white/60">You have no events to attend</p>
+                                    </div>
+                                    <Button
+                                        className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                        onClick={() => router.push('/home')}
+                                    >
+                                        Discover Events
+                                    </Button>
+                                </div>
                             </div>
                         )}
 
                         {currentAttendingItems?.map((event) => (
-                            <div key={event.events?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
-                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
+                            <div key={event.events?.id} className="group bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl w-[280px] h-[360px] flex flex-col">
+                                <div className="relative h-40 overflow-hidden">
                                     {event.events?.id && memoizedImageUrls[event.events?.id] ? (
                                         <Image
                                             src={memoizedImageUrls[event.events?.id]}
                                             alt={event.events?.event_title || ""}
-                                            width={200}
-                                            height={200}
-                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
+                                            width={400}
+                                            height={400}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-xl">
-                                            <p className="text-center font-medium">No image available 😔</p>
+                                        <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                            <p className="text-center text-sm text-white/50 font-medium">No image</p>
                                         </div>
                                     )}
+                                    <div className="absolute top-3 right-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl px-3 py-1.5 shadow-lg">
+                                        <p className="text-xs font-bold text-white">
+                                            {format(parseISO(event.events?.starts_at as string), 'MMM dd')}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex flex-col gap-1">
-                                    <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.events?.event_title}</h1>
-                                    <div className="flex flex-col gap-1">
-                                        <p className="text-sm text-white/70">{format(parseISO(event.events?.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                                        <p className="text-sm text-white/60">{event.events?.event_address}</p>
-                                        <div className="flex gap-2 mt-1 items-center">
-                                            <Ticket className="h-4 w-4" />
+                                <div className="p-4 flex flex-col gap-2">
+                                    <h2 className="text-base font-bold tracking-wide text-white/90 line-clamp-2 group-hover:text-white transition-colors">
+                                        {event.events?.event_title}
+                                    </h2>
+                                    <div className="flex flex-col gap-1.5 text-sm">
+                                        <p className="text-white/60 text-xs truncate">{event.events?.event_address}</p>
+                                        <div className="bg-white/5 rounded-lg px-3 py-1.5 flex items-center gap-2 w-fit">
+                                            <Ticket className="h-4 w-4 text-white/70" />
                                             {event.events?.ticket_price === "FREE" ? (
-                                                <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
+                                                <span className="text-sm font-semibold text-green-400">FREE</span>
                                             ) : (
-                                                <p className="text-sm text-white/60 font-bold tracking-wide">{event.events?.ticket_price}$</p>
+                                                <span className="text-sm font-semibold text-white/90">${event.events?.ticket_price}</span>
                                             )}
                                         </div>
                                     </div>
-                                    <Button className="rounded-xl w-fit text-sm text-white/70"
-                                        variant={"outline"}
-                                        onClick={() => router.push(`/event-page/${event.events?.id}`)}>View event</Button>
+                                    <Button 
+                                        className="w-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300"
+                                        variant="outline"
+                                        onClick={() => router.push(`/event-page/${event.events?.id}`)}
+                                    >
+                                        View Event
+                                    </Button>
                                 </div>
                             </div>
                         ))}
@@ -224,51 +256,57 @@ export const EventSection = () => {
                 )}
             </div>
 
-            <div className="flex flex-wrap max-[800px]:justify-between gap-8">
+            <div className="flex flex-wrap gap-6">
                 {attendingEvents === "hosting" && (
                     <>
                         <CreateEventDialog ownerId={ownerId} />
 
                         {currentHostItems?.map((event) => (
-                            <div key={event.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
-
-                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
+                            <div key={event.id} className="group bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl w-[280px] h-[360px] flex flex-col">
+                                <div className="relative h-40 overflow-hidden">
                                     {event.id && imageUrls[event.id] ? (
                                         <Image
                                             src={imageUrls[event.id]}
                                             alt={event.event_title || ""}
-                                            width={200}
-                                            height={200}
-                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
+                                            width={400}
+                                            height={400}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
-                                            <p className="text-center font-medium">No image available 😔</p>
+                                        <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                            <p className="text-center text-sm text-white/50 font-medium">No image</p>
                                         </div>
                                     )}
+                                    <div className="absolute top-3 right-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl px-3 py-1.5 shadow-lg">
+                                        <p className="text-xs font-bold text-white">
+                                            {format(parseISO(event.starts_at as string), 'MMM dd')}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex flex-col gap-1">
-                                    <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.event_title}</h1>
-                                    <div className="flex flex-col gap-1">
-                                        <p className="text-sm text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                                        <p className="text-sm text-white/60">{event.event_address}</p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <Ticket className="h-4 w-4" />
+                                <div className="p-4 flex flex-col gap-3">
+                                    <h2 className="text-lg font-bold tracking-wide text-white/90 line-clamp-2 group-hover:text-white transition-colors">
+                                        {event.event_title}
+                                    </h2>
+                                    <div className="flex flex-col gap-2 text-sm">
+                                        <p className="text-white/60 text-xs truncate">{event.event_address}</p>
+                                        <div className="bg-white/5 rounded-lg px-3 py-1.5 flex items-center gap-2 w-fit">
+                                            <Ticket className="h-4 w-4 text-white/70" />
                                             {event?.ticket_price === "FREE" ? (
-                                                <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
+                                                <span className="text-sm font-semibold text-green-400">FREE</span>
                                             ) : (
-                                                <p className="text-sm text-white/60 font-bold tracking-wide">{event?.ticket_price}$</p>
+                                                <span className="text-sm font-semibold text-white/90">${event?.ticket_price}</span>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-center gap-4 mt-2">
-                                        <div className="flex gap-4">
-                                            <Button className="rounded-xl w-fit text-sm text-white/70"
-                                                variant={"outline"}
-                                                onClick={() => router.push(`/dashboard/event-page/${event.id}`)}>View event</Button>
-                                            <EditEventDialog eventId={event.id} />
-                                        </div>
-
+                                    <div className="flex gap-2">
+                                        <Button 
+                                            className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300"
+                                            variant="outline"
+                                            onClick={() => router.push(`/dashboard/event-page/${event.id}`)}
+                                        >
+                                            View
+                                        </Button>
+                                        <EditEventDialog eventId={event.id} />
                                         <DeleteEventDialog eventId={event.id} />
                                     </div>
                                 </div>
@@ -278,48 +316,54 @@ export const EventSection = () => {
                 )}
             </div>
 
-            <div className="flex flex-wrap max-[800px]:justify-between gap-8">
+            <div className="flex flex-wrap gap-6">
                 {attendingEvents === "past" && (
                     <>
                         {currentPastAttendingItems?.map((event) => (
-                            <div key={event.events?.id} className="flex flex-col gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4 opacity-50">
-
-                                <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
+                            <div key={event.events?.id} className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden opacity-60 hover:opacity-80 transition-all duration-300 w-[280px] h-[360px] flex flex-col">
+                                <div className="relative h-40 overflow-hidden">
                                     {event.events?.id && imageUrls[event.events?.id] ? (
                                         <Image
                                             src={imageUrls[event.events?.id]}
                                             alt={event.events?.event_title || ""}
-                                            width={200}
-                                            height={200}
-                                            className="object-cover aspect-square rounded-xl w-full max-h-[240px]"
+                                            width={400}
+                                            height={400}
+                                            className="w-full h-full object-cover grayscale"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
-                                            <p className="text-center font-medium">No image available 😔</p>
+                                        <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                            <p className="text-center text-sm text-white/50 font-medium">No image</p>
                                         </div>
                                     )}
+                                    <div className="absolute top-3 right-3 bg-white/10 rounded-xl px-3 py-1.5">
+                                        <p className="text-xs font-bold text-white/70">
+                                            {format(parseISO(event.events?.starts_at as string), 'MMM dd')}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex flex-col gap-1">
-                                    <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.events?.event_title}</h1>
-                                    <div className="flex flex-col gap-1">
-                                        <p className="text-sm text-white/70">{format(parseISO(event.events?.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                                        <p className="text-sm text-white/60">{event.events?.event_address}</p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <Ticket className="h-4 w-4" />
+                                <div className="p-4 flex flex-col gap-3">
+                                    <h2 className="text-lg font-bold tracking-wide text-white/70 line-clamp-2">
+                                        {event.events?.event_title}
+                                    </h2>
+                                    <div className="flex flex-col gap-2 text-sm">
+                                        <p className="text-white/50 text-xs truncate">{event.events?.event_address}</p>
+                                        <div className="bg-white/5 rounded-lg px-3 py-1.5 flex items-center gap-2 w-fit">
+                                            <Ticket className="h-4 w-4 text-white/50" />
                                             {event.events?.ticket_price === "FREE" ? (
-                                                <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
+                                                <span className="text-sm font-semibold text-white/60">FREE</span>
                                             ) : (
-                                                <p className="text-sm text-white/60 font-bold tracking-wide">{event.events?.ticket_price}$</p>
+                                                <span className="text-sm font-semibold text-white/60">${event.events?.ticket_price}</span>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-center gap-4 mt-2">
-                                        <div className="flex gap-4">
-                                            <Button className="rounded-xl w-fit text-sm text-white/70"
-                                                variant={"outline"}
-                                                onClick={() => router.push(`/dashboard/event-page/${event.events?.id}`)}>View event</Button>
-                                        </div>
-
+                                    <div className="flex gap-2">
+                                        <Button 
+                                            className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300"
+                                            variant="outline"
+                                            onClick={() => router.push(`/dashboard/event-page/${event.events?.id}`)}
+                                        >
+                                            View
+                                        </Button>
                                         <DeleteEventDialog eventId={event.events?.id as string} />
                                     </div>
                                 </div>
@@ -329,14 +373,15 @@ export const EventSection = () => {
                 )}
             </div>
 
-            {
-                (attendingEvents && currentAttendingItems.length > 20) || (!attendingEvents && currentHostItems.length > 20) ? (
+            {((attendingEvents && currentAttendingItems.length > 20) || (!attendingEvents && currentHostItems.length > 20)) && totalPages > 1 && (
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 shadow-xl">
                     <Pagination>
-                        <PaginationContent className="flex gap-8">
+                        <PaginationContent className="flex gap-2">
                             <PaginationItem>
                                 <PaginationPrevious
                                     onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
                                     aria-disabled={currentPage === 1}
+                                    className="hover:bg-white/10 transition-colors"
                                 />
                             </PaginationItem>
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -344,6 +389,10 @@ export const EventSection = () => {
                                     <PaginationLink
                                         isActive={page === currentPage}
                                         onClick={() => handlePageChange(page)}
+                                        className={page === currentPage 
+                                            ? "bg-white/10 text-white hover:bg-white/15" 
+                                            : "hover:bg-white/10 transition-colors"
+                                        }
                                     >
                                         {page}
                                     </PaginationLink>
@@ -353,12 +402,13 @@ export const EventSection = () => {
                                 <PaginationNext
                                     onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
                                     aria-disabled={currentPage === totalPages}
+                                    className="hover:bg-white/10 transition-colors"
                                 />
                             </PaginationItem>
                         </PaginationContent>
                     </Pagination>
-                ) : null
-            }
-        </div >
+                </div>
+            )}
+        </div>
     )
 }

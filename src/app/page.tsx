@@ -64,15 +64,6 @@ export default function Home() {
                 height={2000}
               />
             </div>
-            {/* <div className="absolute left-0 top-[85%] min-[900px]:left-[45%] transform -translate-x-1/2 min-[900px]:top-1/2 -translate-y-1/2 opacity-0 animate-slideInFromTopWithOpacity z-10 max-[900px]:w-[700px] w-[100%] h-auto">
-              <Image
-                src="/landing-images/hero_image.png"
-                alt="Huddle."
-                width={800}
-                height={800}
-                className="object-contain"
-              />
-            </div> */}
           </div>
         </AuroraBackground>
       </div>

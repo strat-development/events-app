@@ -287,7 +287,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
                         </div>
                     </div>
                 ))}
-                S
+                
                 <div className="sticky top-20 z-10 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 shadow-xl">
                     <div className="flex gap-2">
                         {isEventAlbum ? (

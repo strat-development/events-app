@@ -1,7 +1,7 @@
 "use client"
 
 import { Navbar } from "@/components/dashboard/Navbar";
-import { Ticketsection } from "@/components/dashboard/TicketsSection";
+import { TicketsSection } from "@/components/dashboard/TicketsSection";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -27,11 +27,11 @@ export default function TicketsPage() {
 
     return (
         <>
-            <div className="flex justify-between items-start pt-24 max-w-[1200px] w-full justify-self-center">
+            <div className="flex gap-8 pt-24 max-w-[1200px] w-full justify-self-center px-6">
                 <Navbar />
                 {userId.length > 0 && (
-                    <div className="justify-self-center overflow-x-hidden w-full">
-                        <Ticketsection />
+                    <div className="flex-1 w-full">
+                        <TicketsSection />
                     </div>
                 )}
             </div>

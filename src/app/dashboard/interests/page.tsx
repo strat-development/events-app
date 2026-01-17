@@ -27,10 +27,10 @@ export default function InterestsPage() {
 
     return (
         <>
-            <div className="flex justify-between items-start pt-24 max-w-[1200px] w-full justify-self-center">
+            <div className="flex gap-8 items-start pt-24 px-6 max-w-[1200px] w-full justify-self-center">
                 <Navbar />
                 {userId.length > 0 && (
-                    <div className="justify-self-center overflow-x-hidden w-full">
+                    <div className="flex-1 w-full overflow-x-hidden">
                         <InterestsSection />
                     </div>
                 )}

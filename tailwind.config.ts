@@ -138,6 +138,22 @@ const config = {
 					"100%": {
 						transform: "translateY(-50%)",
 					},
+				},
+				scan: {
+					"0%": {
+						transform: "translateY(0)",
+					},
+					"100%": {
+						transform: "translateY(480px)",
+					},
+				},
+				shimmer: {
+					"0%": {
+						transform: "translateX(-100%)",
+					},
+					"100%": {
+						transform: "translateX(100%)",
+					},
 				}
 			},
 			animation: {
@@ -149,6 +165,8 @@ const config = {
 				third: "moveInCircle 40s linear infinite",
 				fourth: "moveHorizontal 40s ease infinite",
 				fifth: "moveInCircle 20s ease infinite",
+				scan: "scan 2s ease-in-out infinite",
+				shimmer: "shimmer 2s infinite",
 			}
 		}
 	},

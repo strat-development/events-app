@@ -156,7 +156,7 @@ export const CreateGroupDialog = () => {
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
                     <Button
-                        className="flex flex-col items-center justify-center w-[280px] h-[440px] rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
+                        className="flex flex-col items-center justify-center w-[280px] h-[360px] rounded-xl bg-transparent hover:bg-white/5 transition-all duration-300"
                         variant="ghost">
                         <div className="flex flex-col items-center">
                             <div className="text-6xl text-white/70">

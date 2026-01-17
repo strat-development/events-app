@@ -110,7 +110,7 @@ export const UserGroupsSection = () => {
                 <h3 className="text-xl font-bold tracking-wider mb-4 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
                     Your Groups
                 </h3>
-                <div className="flex flex-col gap-4 overflow-y-auto max-h-[500px]">
+                <div className="flex flex-col gap-4 overflow-y-auto overflow-x-hidden max-h-[500px]">
                     {memoizedGroupsData && memoizedGroupsData.length > 0 ? (
                         memoizedGroupsData.map((group) => (
                             <div 
@@ -128,7 +128,7 @@ export const UserGroupsSection = () => {
                                     }
                                 }}
                                 key={group.id}
-                                className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 cursor-pointer rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                                className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 cursor-pointer rounded-xl transition-all duration-300 hover:shadow-lg"
                             >
                                 <div className="flex gap-4 p-4">
                                     <div className="flex-shrink-0 w-24 h-16 overflow-hidden rounded-lg ring-2 ring-white/10 group-hover:ring-white/30 transition-all">

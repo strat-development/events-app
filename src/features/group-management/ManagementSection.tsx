@@ -16,7 +16,7 @@ export const ManagementSection = () => {
 
     return (
         <>
-            <div className="max-w-[1400px] w-full min-h-[80vh] flex flex-col gap-6">
+            <div className="max-w-[1200px] w-full min-h-[80vh] flex flex-col gap-6">
                 <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div className="flex flex-col gap-2">
