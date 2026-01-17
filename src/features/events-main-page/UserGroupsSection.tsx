@@ -106,7 +106,7 @@ export const UserGroupsSection = () => {
 
     return (
         <>
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
                 <h3 className="text-xl font-bold tracking-wider mb-4 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
                     Your Groups
                 </h3>

@@ -377,7 +377,7 @@ export const GroupHero = ({
                             </div>
                         </div>
 
-                        <div className="sticky top-20 z-10 mt-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 shadow-xl">
+                        <div className="sticky top-20 z-10 mt-6 bg-white/5 border border-white/10 rounded-2xl p-4 shadow-xl">
                             <div className="flex flex-wrap items-center justify-between gap-4">
                                 <div className="flex flex-wrap gap-2">
                                     {isGroupAlbum ? (

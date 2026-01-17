@@ -182,7 +182,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
         <>
             <div className="flex flex-col gap-6 w-full">
                 {memoizedEventData?.map((event) => (
-                    <div key={event.id} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                    <div key={event.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
                         <div className="flex flex-col gap-4">
                             {!eventNameToEdit ? (
                                 <div className="flex items-start gap-3">
