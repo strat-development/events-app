@@ -88,7 +88,7 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
         }
     })
 
-    const { data: images, isLoading } = useQuery(
+    const { data: images } = useQuery(
         ['event-pictures', eventId],
         async () => {
             const { data, error } = await supabase
@@ -179,130 +179,155 @@ export const EventHero = ({ eventId }: EventHeroProps) => {
     const memoizedGroupImages = useMemo(() => groupImageUrls, [groupImageUrls])
 
     return (
-        <div className="flex flex-col gap-4 max-w-[1200px] w-full justify-self-center">
-            {memoizedEventData?.map((event) => (
-                <div key={event.id} className="rounded-xl flex justify-between relative">
-                    <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-2">
-                            <div className="flex flex-col gap-2">
-                                <div className="flex gap-4">
-                                    <h1 className="text-3xl tracking-wider font-semibold">{event.event_title}</h1>
-
-                                    {pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !eventNameToEdit && (
-                                        <Button className="text-white/70"
+        <>
+            <div className="flex flex-col gap-6 w-full">
+                {memoizedEventData?.map((event) => (
+                    <div key={event.id} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                        <div className="flex flex-col gap-4">
+                            {!eventNameToEdit ? (
+                                <div className="flex items-start gap-3">
+                                    <h1 className="text-3xl font-bold tracking-wider bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                                        {event.event_title}
+                                    </h1>
+                                    {pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
+                                        <Button 
+                                            className="text-white/70 hover:text-white transition-colors"
                                             variant="ghost"
-                                            onClick={() => setEventNameToEdit(true)}>
-                                            <Edit size={20} />
+                                            onClick={() => setEventNameToEdit(true)}
+                                        >
+                                            <Edit size={18} />
                                         </Button>
                                     )}
-
                                 </div>
-                                <div className="flex flex-col gap-1 min-[900px]:hidden">
-                                    <div className="flex gap-1">
-                                        <p className="text-lg text-white/70 font-medium">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')} - {format(parseISO(event.ends_at as string), 'HH:mm')}</p>
-                                    </div>
-
-                                    <p className="text-white/60">{event.event_address}</p>
-                                </div>
-                                <div className="min-[900px]:hidden">
-                                    <EventReportDialog eventId={eventId} />
-                                </div>
-                            </div>
-                            {pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && eventNameToEdit && (
-                                <div className="flex gap-4">
-                                    <Input placeholder="New event name"
+                            ) : (
+                                <div className="flex gap-2">
+                                    <Input 
+                                        placeholder="New event name"
                                         value={newEventName}
                                         onChange={(e) => setNewEventName(e.target.value)}
+                                        className="flex-1"
                                     />
-                                    <Button onClick={() => setEventNameToEdit(false)}>Cancel</Button>
-                                    <Button variant="ghost"
-                                        className="w-fit text-blue-500"
+                                    <Button 
+                                        variant="ghost"
+                                        onClick={() => setEventNameToEdit(false)}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button 
+                                        variant="ghost"
+                                        className="text-blue-500 hover:text-blue-400"
                                         onClick={() => {
                                             editEventNameMutation.mutateAsync(newEventName)
-
                                             setEventNameToEdit(false)
-                                        }}><Save size={20} /></Button>
+                                        }}
+                                    >
+                                        <Save size={18} />
+                                    </Button>
                                 </div>
                             )}
 
-                            <Link className="min-[900px]:hidden"
-                                href={`/group-page/${groupId}`}>
-                                <div className='flex gap-4 items-start'>
+                            <div className="flex flex-col gap-3 lg:hidden">
+                                <div>
+                                    <p className="text-base text-white/70">
+                                        {format(parseISO(event.starts_at as string), 'MMM dd, yyyy HH:mm')} - {format(parseISO(event.ends_at as string), 'HH:mm')}
+                                    </p>
+                                    <p className="text-white/60 mt-1">{event.event_address}</p>
+                                </div>
+                                <EventReportDialog eventId={eventId} />
+                            </div>
+
+                            <Link className="lg:hidden" href={`/group-page/${groupId}`}>
+                                <div className='flex gap-3 items-start transition-all'>
                                     {memoizedGroupImages?.map((image) => (
-                                        <Image className="max-w-[48px] min-[900px]:max-w-[72px] rounded-xl"
-                                            key={image.publicUrl}
-                                            src={image.publicUrl}
-                                            alt=""
-                                            width={200}
-                                            height={200}
-                                        />
+                                        <div key={image.publicUrl} className="flex-shrink-0">
+                                            <Image 
+                                                className="w-12 h-12 rounded-lg object-cover ring-2 ring-white/10"
+                                                src={image.publicUrl}
+                                                alt=""
+                                                width={200}
+                                                height={200}
+                                            />
+                                        </div>
                                     ))}
-                                    <div className="flex flex-col">
-                                        <h3 className="text-xl font-semibold tracking-wide">{memoizedGroupInfo.data?.[0].group_name}</h3>
-                                        <p className="text-white/70">{memoizedGroupInfo.data?.[0].group_country}, {memoizedGroupInfo.data?.[0].group_city}</p>
+                                    <div className="flex flex-col gap-1 min-w-0">
+                                        <h3 className="text-base font-semibold tracking-wide truncate">{memoizedGroupInfo.data?.[0].group_name}</h3>
+                                        <p className="text-sm text-white/70 truncate">{memoizedGroupInfo.data?.[0].group_country}, {memoizedGroupInfo.data?.[0].group_city}</p>
                                     </div>
                                 </div>
                             </Link>
                         </div>
 
-                        <div className="flex gap-4">
+                        <div className="mt-6">
                             <div className="flex flex-col gap-4">
                                 {memoizedImageUrls.map((image) => (
-                                    <Image className="aspect-square min-[768px]:aspect-video rounded-xl object-contain border border-white/10"
-                                        key={image.publicUrl}
-                                        src={image.publicUrl}
-                                        alt=""
-                                        width={2000}
-                                        height={2000}
-                                    />
+                                    <div key={image.publicUrl} className="relative group overflow-hidden rounded-xl">
+                                        <Image 
+                                            className="w-full aspect-video rounded-xl object-cover ring-2 ring-white/10 transition-all duration-300 group-hover:ring-white/30"
+                                            src={image.publicUrl}
+                                            alt=""
+                                            width={2000}
+                                            height={2000}
+                                        />
+                                    </div>
                                 ))}
 
                                 {pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && (
-                                    images?.length ?? 0) > 0 && (
-                                        <div className="flex items-start gap-4">
-                                            <DeleteEventPictureDialog images={images} />
-
+                                    <div className="flex gap-3">
+                                        {(images?.length ?? 0) > 0 ? (
+                                            <>
+                                                <DeleteEventPictureDialog images={images} />
+                                                <UpdateEventHeroImageDialog eventId={eventId} />
+                                            </>
+                                        ) : (
                                             <UpdateEventHeroImageDialog eventId={eventId} />
-                                        </div>
-                                    )}
-
-                                {pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && images?.length === 0 && (
-                                    <UpdateEventHeroImageDialog eventId={eventId} />
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         </div>
                     </div>
-                </div>
-            ))
-            }
-
-            {isEventAlbum && (
-                <div className="flex gap-4 text-white/70">
-                    <Button variant="ghost"
-                        onClick={() => {
-                            router.push(`/event-page/${eventId}`)
-                        }}>
-                        About
-                    </Button>
-                    <Button variant="ghost"
-                        onClick={() => {
-                            router.push(`/event-page/${eventId}`)
-                        }}>
-                        Photos
-                    </Button>
-                </div>
-            ) || (
-                    <div className="flex gap-4 text-white/70">
-                        <Button variant="ghost"
-                            onClick={() => setView("about")}>
-                            About
-                        </Button>
-                        <Button variant="ghost"
-                            onClick={() => setView("photos")}>
-                            Photos
-                        </Button>
+                ))}
+                S
+                <div className="sticky top-20 z-10 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 shadow-xl">
+                    <div className="flex gap-2">
+                        {isEventAlbum ? (
+                            <>
+                                <Button 
+                                    variant="ghost"
+                                    className="text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium"
+                                    onClick={() => router.push(`/event-page/${eventId}`)}
+                                >
+                                    About
+                                </Button>
+                                <Button 
+                                    variant="ghost"
+                                    className="text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium"
+                                    onClick={() => router.push(`/event-page/${eventId}`)}
+                                >
+                                    Photos
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button 
+                                    variant="ghost"
+                                    className="text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium"
+                                    onClick={() => setView("about")}
+                                >
+                                    About
+                                </Button>
+                                <Button 
+                                    variant="ghost"
+                                    className="text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium"
+                                    onClick={() => setView("photos")}
+                                >
+                                    Photos
+                                </Button>
+                            </>
+                        )}
                     </div>
-                )}
-        </div>
+                </div>
+            </div>
+        </>
     )
 }

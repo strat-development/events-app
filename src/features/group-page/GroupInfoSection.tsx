@@ -124,11 +124,12 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
         })
 
     return (
-        <>
-            <div className="flex flex-col gap-8 max-w-[1200px] w-full justify-self-center">
-                <div className="flex flex-col gap-4 px-8">
-                    <h2 className='text-xl font-bold tracking-wider'>Little bit about us</h2>
-                    <div className='relative'>
+        <>  
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                <h2 className='text-2xl font-bold tracking-wider mb-6 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent'>
+                    Little bit about us
+                </h2>
+                <div className='relative'>
                         {isSetToEdit === false && (
                             <>
                                 {!translatedGroupDescription && (
@@ -205,18 +206,15 @@ export const GroupInfoSection = ({ groupId }: GroupInfoSectionProps) => {
                             )}
                     </div>
                     {pathname.includes("/dashboard") && userId === ownerId && !isSetToEdit && (
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 mt-4 pt-4 border-t border-white/10">
                             <Button variant="ghost"
-                                className="w-fit text-white/70"
+                                className="w-fit text-white/70 hover:text-white transition-colors"
                                 onClick={() => setIsSetToEdit(true)}>
                                 <Edit size={20} />
                             </Button>
                         </div>
                     )}
                 </div>
-            </div>
-
-            
         </>
     )
 }

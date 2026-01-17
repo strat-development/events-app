@@ -1,7 +1,7 @@
 import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 
 interface UserInterestsProps {
     userId: string;
@@ -35,18 +35,28 @@ export const UserInterestsSection = ({ userId }: UserInterestsProps) => {
     const memoizedUserInterests = useMemo(() => userInterests, [userInterests])
 
     return (
-        <div className="flex flex-col gap-4 items-start w-fit">
-            <h1 className="text-xl font-semibold tracking-wider">Interests</h1>
-            <div className="flex flex-wrap gap-4">
-                {memoizedUserInterests && (
-                    memoizedUserInterests.map((interest, index) => (
-                        <div key={index}
-                            className="border border-white/10 bg-gradient-to-br text-white/70 hover:text-white/80 text-sm py-1 px-2 transition duration-300 rounded-xl cursor-pointer hover:shadow-lg hover:shadow-white/5 max-w-[148px] w-fit">
-                            <p className="tracking-wide font-medium truncate"
-                                key={index}>{interest}</p>
-                        </div>
-                    )))}
+        <>
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                <h2 className="text-2xl font-bold tracking-wider mb-6 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                    Interests
+                </h2>
+                <div className="flex flex-wrap gap-3">
+                    {memoizedUserInterests && memoizedUserInterests.length > 0 ? (
+                        memoizedUserInterests.map((interest, index) => (
+                            <div 
+                                key={index}
+                                className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                            >
+                                <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors tracking-wide">
+                                    {interest}
+                                </p>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-white/50">No interests added yet</p>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     )
 }

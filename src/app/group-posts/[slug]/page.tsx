@@ -4,7 +4,6 @@ import { Navbar } from "@/components/dashboard/Navbar";
 import { GroupHero } from "@/features/group-page/GroupHero";
 import { GroupMembersSidebar } from "@/features/group-page/GroupMembersSidebar";
 import { GroupPostsSection } from "@/features/group-page/GroupPostsSection";
-import { useGroupOwnerContext } from "@/providers/GroupOwnerProvider";
 import { useUserContext } from "@/providers/UserContextProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";

@@ -110,44 +110,56 @@ export const GroupMembersSidebar = ({ groupId }: GroupMembersSidebarProps) => {
 
     return (
         <>
-            <div className="flex flex-col gap-4 sticky top-24 w-full">
-                <h2 className='text-2xl tracking-wider font-bold'>Group members</h2>
-                <div className="flex flex-col gap-4">
-                    <div className='grid grid-cols-3 gap-4'>
+            <div className="flex flex-col gap-6 sticky top-24 w-full">
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                    <h2 className='text-2xl tracking-wider font-bold mb-6 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent'>
+                        Group members
+                    </h2>
+                    
+                    <div className="grid grid-cols-2 lg:grid-cols-2 gap-4">
                         {memoizedGroupMembers.slice(0, 4).map((member) => (
-                            <div className='flex flex-col cursor-pointer items-center border border-white/10 p-4 rounded-xl text-center w-fit justify-between'
+                            <div 
+                                key={member?.id}
+                                className='group flex flex-col cursor-pointer items-center bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 p-4 rounded-xl text-center transition-all duration-300 hover:scale-105 hover:shadow-lg'
                                 onClick={() => {
                                     setIsSidebarOpen(true);
                                     setIsOpen(true);
                                     setSelectedUser(member as UserData);
                                     setSelectedUserImageUrl(member ? memoizedProfileImages[member.id] : null);
                                 }}>
-                                {member?.id && memoizedProfileImages[member.id] ? (
-                                    <Image
-                                        className="rounded-full aspect-square object-cover"
-                                        src={memoizedProfileImages[member.id]}
-                                        width={48}
-                                        height={48}
-                                        alt="Profile image"
-                                    />
-                                ) : (
-                                    <div className="flex h-[48px] w-[48px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
-                                        <IconGhost2Filled className="w-6 h-6 text-white/70" strokeWidth={1} />
-                                    </div>
-                                )}
-                                <span className='font-medium w-full text-white/70 truncate text-sm'>{member?.full_name}</span>
+                                <div className="relative mb-3">
+                                    {member?.id && memoizedProfileImages[member.id] ? (
+                                        <Image
+                                            className="rounded-full aspect-square object-cover ring-2 ring-white/10 group-hover:ring-white/30 transition-all"
+                                            src={memoizedProfileImages[member.id]}
+                                            width={64}
+                                            height={64}
+                                            alt="Profile image"
+                                        />
+                                    ) : (
+                                        <div className="flex h-[64px] w-[64px] flex-col gap-2 items-center justify-center rounded-full bg-white/5 ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
+                                            <IconGhost2Filled className="w-8 h-8 text-white/70" strokeWidth={1} />
+                                        </div>
+                                    )}
+                                </div>
+                                <span className='font-medium w-full text-white/90 group-hover:text-white truncate text-sm transition-colors'>
+                                    {member?.full_name}
+                                </span>
                             </div>
                         ))}
-                        {memoizedGroupMembers && memoizedGroupMembers.length > 1 && (
-                            <GroupMembersDialog membersData={memoizedGroupMembers}
-                                groupData={groupData}
-                                imageUrls={memoizedProfileImages} />
-                        )}
                     </div>
+                        
+                    {memoizedGroupMembers && memoizedGroupMembers.length > 4 && (
+                        <div className="mt-4 pt-4 border-t border-white/10">
+                            <GroupMembersDialog 
+                                membersData={memoizedGroupMembers}
+                                groupData={groupData}
+                                imageUrls={memoizedProfileImages} 
+                            />
+                        </div>
+                    )}
                 </div>
-            </div >
-
-
+            </div>
 
             <SidebarProvider>
                 {isSidebarOpen && (

@@ -121,55 +121,79 @@ export const EventInfoSidebar = ({ eventId }: EventInfoSidebarProps) => {
 
     return (
         <>
-            <div className="w-full sticky top-24 flex flex-col gap-4 border border-white/10 p-4 rounded-xl">
-                <div onClick={() => {
-                    setIsSidebarOpen(true);
-                    setSelectedGroup(memoizedGroupInfo.data?.[0] || null);
-                    setSelectedGroupImageUrl(memoizedGroupImages[0]?.publicUrl || null);
-                }}
-                    className='flex cursor-pointer gap-4 items-start w-full'>
-                    {memoizedGroupImages?.map((image) => (
-                        <Image className="max-w-[72px] rounded-xl"
-                            key={image.publicUrl}
-                            src={image.publicUrl}
-                            alt=""
-                            width={200}
-                            height={200}
-                        />
+            <div className="w-full sticky top-24 flex flex-col gap-6">
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                    <div 
+                        onClick={() => {
+                            setIsSidebarOpen(true);
+                            setSelectedGroup(memoizedGroupInfo.data?.[0] || null);
+                            setSelectedGroupImageUrl(memoizedGroupImages[0]?.publicUrl || null);
+                        }}
+                        className='flex cursor-pointer gap-4 items-start w-full p-3 rounded-xl hover:bg-white/5 transition-all duration-300 -m-3 mb-3 group'
+                    >
+                        {memoizedGroupImages?.map((image) => (
+                            <div key={image.publicUrl} className="flex-shrink-0">
+                                <Image 
+                                    className="w-20 h-20 rounded-xl object-cover ring-2 ring-white/10 group-hover:ring-white/30 transition-all"
+                                    src={image.publicUrl}
+                                    alt=""
+                                    width={200}
+                                    height={200}
+                                />
+                            </div>
+                        ))}
+                        <div className="flex flex-col gap-1 flex-1 min-w-0">
+                            <h3 className="text-lg font-bold tracking-wide text-white/90 group-hover:text-white transition-colors truncate">
+                                {memoizedGroupInfo.data?.[0].group_name}
+                            </h3>
+                            <p className="text-sm text-white/70 truncate">
+                                {memoizedGroupInfo.data?.[0].group_country}, {memoizedGroupInfo.data?.[0].group_city}
+                            </p>
+                        </div>
+                    </div>
+
+                    {eventData?.map((event, index) => (
+                        <div 
+                            key={index}
+                            className="flex flex-col gap-4 pt-4 border-t border-white/10"
+                        >
+                            <div className="flex gap-3 items-start bg-white/5 p-3 rounded-lg">
+                                <Clock className="text-white/70 flex-shrink-0 mt-0.5"
+                                    size={20}
+                                    strokeWidth={1.5} />
+                                <div className="flex flex-col gap-1">
+                                    <p className="text-xs text-white/50 uppercase tracking-wider">When</p>
+                                    <p className="text-base font-medium text-white/90">
+                                        {format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex gap-3 items-start bg-white/5 p-3 rounded-lg">
+                                <MapPin className="text-white/70 flex-shrink-0 mt-0.5"
+                                    size={20}
+                                    strokeWidth={1.5} />
+                                <div className="flex flex-col gap-1">
+                                    <p className="text-xs text-white/50 uppercase tracking-wider">Where</p>
+                                    <p className="text-base text-white/70">
+                                        {event.event_address}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     ))}
-                    <div className="flex flex-col">
-                        <h3 className="text-xl font-bold tracking-wide">{memoizedGroupInfo.data?.[0].group_name}</h3>
-                        <p className="text-white/70">{memoizedGroupInfo.data?.[0].group_country}, {memoizedGroupInfo.data?.[0].group_city}</p>
-                    </div>
-                </div>
 
-                {eventData?.map((event, index) => (
-                    <div key={index}
-                        className="flex flex-col gap-2">
-                        <div className="flex gap-2 items-center">
-                            <Clock className="text-white/70"
-                                size={18}
-                                strokeWidth={1} />
-                            <p className="text-lg font-medium">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                        </div>
-                        <div className="flex gap-2 items-center">
-                            <MapPin className="text-white/70"
-                                size={18}
-                                strokeWidth={1} />
-                            <p className="text-white/70">{event.event_address}</p>
-                        </div>
-                    </div>
-                ))}
-
-                <div>
                     {(eventData && eventData[0] && Number(eventData[0].ticket_price) > 0) && (
-                        <div className="text-white/70 text-sm">
+                        <div className="mt-4 pt-4 border-t border-white/10">
                             <ShowRefundPolicyDialog refundPolicy={refundPolicy.data as string} />
                         </div>
                     )}
+                    
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                        <EventReportDialog eventId={eventId} />
+                    </div>
                 </div>
-                <EventReportDialog eventId={eventId} />
-            </div >
+            </div>
 
             <SidebarProvider>
                 {isSidebarOpen && <GroupSidebar imageUrl={selectedGroupImageUrl}

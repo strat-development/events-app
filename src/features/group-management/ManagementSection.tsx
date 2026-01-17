@@ -15,40 +15,57 @@ export const ManagementSection = () => {
     };
 
     return (
-        <div className="max-w-[1200px] w-full min-h-[80vh] flex flex-col gap-8 max-[768px]:flex-wrap">
-            <div className="flex justify-between gap-8">
-                <Input className="max-w-[180px] placeholder:text-white/50"
-                    id="search-input"
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                />
+        <>
+            <div className="max-w-[1400px] w-full min-h-[80vh] flex flex-col gap-6">
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div className="flex flex-col gap-2">
+                            <h1 className="text-2xl font-bold tracking-wider bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                                Management
+                            </h1>
+                            <p className="text-white/60 text-sm">Manage your groups and events</p>
+                        </div>
+                        
+                        <Input 
+                            className="max-w-[240px] bg-white/5 border-white/10 focus:border-white/30 placeholder:text-white/50 transition-all"
+                            id="search-input"
+                            type="text"
+                            placeholder="Search users..."
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                        />
+                    </div>
 
-                <div className="flex gap-4">
-                    <Button className={tableMode === true ? "border-b-[1px] border-white/70 text-white rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
-                        variant="ghost"
-                        onClick={() => {
-                            setTableMode(true);
-                        }}>
-                        Groups Table
-                    </Button>
-                    <Button className={tableMode === false ? "border-b-[1px] border-white/70 text-white rounded-none hover:bg-transparent" : "text-white/50 hover:bg-transparent"}
-                        variant="ghost"
-                        onClick={() => {
-                            setTableMode(false);
-                        }}>
-                        Events Table
-                    </Button>
+                    <div className="flex gap-2 mt-6 p-1 bg-white/5 rounded-xl w-fit">
+                        <Button 
+                            className={tableMode === true 
+                                ? "bg-white/10 text-white hover:bg-white/15 transition-all duration-300" 
+                                : "text-white/70 hover:text-white hover:bg-white/5 transition-all duration-300"
+                            }
+                            variant="ghost"
+                            onClick={() => setTableMode(true)}
+                        >
+                            Groups Table
+                        </Button>
+                        <Button 
+                            className={tableMode === false 
+                                ? "bg-white/10 text-white hover:bg-white/15 transition-all duration-300" 
+                                : "text-white/70 hover:text-white hover:bg-white/5 transition-all duration-300"
+                            }
+                            variant="ghost"
+                            onClick={() => setTableMode(false)}
+                        >
+                            Events Table
+                        </Button>
+                    </div>
                 </div>
 
-            </div>
-
-            {tableMode === true && (
-                <GroupManagementTable searchQuery={searchQuery} />
-            ) || (
+                {tableMode === true ? (
+                    <GroupManagementTable searchQuery={searchQuery} />
+                ) : (
                     <EventsManagementTable searchQuery={searchQuery} />
                 )}
-        </div>
+            </div>
+        </>
     )
 }

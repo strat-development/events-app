@@ -106,7 +106,7 @@ export default function GroupPhotosAlbumPage({ params }: { params: { slug: strin
 
     return (
         <div className="flex flex-col gap-8 items-center max-w-[1200px] w-full justify-self-center">
-            <div className="min-h-screen mt-24 flex flex-col gap-8 items-center justify-center w-full">
+            <div className=" mt-24 flex flex-col gap-8 items-center justify-center w-full">
                 <GroupHero groupId={groupId} />
                 <div className="flex flex-col gap-8 w-full">
                     {currentItems.map((album, index) => (

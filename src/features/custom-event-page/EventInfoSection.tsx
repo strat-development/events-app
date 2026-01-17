@@ -184,9 +184,11 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
 
     return (
         <>
-            <div className="flex flex-col gap-8 max-w-[1200px] w-full justify-self-center">
-                <div className="flex flex-col gap-4 px-8">
-                    <h2 className='text-xl font-bold tracking-wider'>Little bit about us</h2>
+                <div className="flex flex-col gap-8 w-full">
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                    <h2 className='text-2xl font-bold tracking-wider mb-6 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent'>
+                        Little bit about us
+                    </h2>
                     <div className='relative'>
                         {isSetToEdit === false && (
                             <>
@@ -265,54 +267,72 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                             )}
                     </div>
                     {pathname.includes("dashboard") && eventCreatorId === userId && eventCreatorId.length > 0 && userId.length > 0 && !isSetToEdit &&
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 mt-4 pt-4 border-t border-white/10">
                             <Button variant="ghost"
-                                className="w-fit text-white/70"
+                                className="w-fit text-white/70 hover:text-white transition-colors"
                                 onClick={() => setIsSetToEdit(true)}>
                                 <Edit size={20} />
                             </Button>
                         </div>
                     }
                 </div>
-                <div className="flex flex-col gap-4">
-                    <h2 className='text-2xl font-bold tracking-wider'>Event attendees</h2>
-                    <div className="grid grid-cols-3 gap-4 w-full overflow-x-auto">
-                        <div className='flex gap-4'>
-                            {memoizedEventAttendeesData?.slice(0, 3).map((attendee) => (
-                                <div className="cursor-pointer"
-                                    onClick={() => {
-                                        setIsSidebarOpen(true)
-                                        setIsOpen(true)
-                                        setSelectedUser(attendee as UserData)
-                                        setSelectedUserImageUrl(attendee ? memoizedProfileImages[attendee.id] : null)
-                                    }}
-                                    key={attendee?.id}>
-                                    <div key={attendee?.id}
-                                        className='flex flex-col items-center border border-white/10 p-4 rounded-xl text-center w-fit h-full'>
+                
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                    <h2 className='text-2xl font-bold tracking-wider mb-6 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent'>
+                        Event attendees
+                    </h2>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {memoizedEventAttendeesData?.slice(0, 3).map((attendee) => (
+                            <div 
+                                className="group cursor-pointer"
+                                onClick={() => {
+                                    setIsSidebarOpen(true)
+                                    setIsOpen(true)
+                                    setSelectedUser(attendee as UserData)
+                                    setSelectedUserImageUrl(attendee ? memoizedProfileImages[attendee.id] : null)
+                                }}
+                                key={attendee?.id}
+                            >
+                                <div className='flex flex-col items-center bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 p-4 rounded-xl text-center transition-all duration-300 hover:scale-105 hover:shadow-lg'>
+                                    <div className="relative mb-3">
                                         {attendee?.id && memoizedProfileImages[attendee.id] && (
-                                            <Image className="rounded-full aspect-square object-cover"
-                                                src={memoizedProfileImages[attendee?.id]} width={50} height={50} alt="" />
+                                            <Image 
+                                                className="rounded-full aspect-square object-cover ring-2 ring-white/10 group-hover:ring-white/30 transition-all"
+                                                src={memoizedProfileImages[attendee?.id]} 
+                                                width={64} 
+                                                height={64} 
+                                                alt="" 
+                                            />
                                         ) || (
-                                                <div className="flex h-[48px] w-[48px] flex-col gap-2 items-center justify-center rounded-full bg-white/5">
-                                                    <IconGhost2Filled className="w-6 h-6 text-white/70"
-                                                        strokeWidth={1} />
-                                                </div>
-                                            )}
-                                        <span className='font-medium w-full'>{attendee?.full_name}</span>
+                                            <div className="flex h-[64px] w-[64px] flex-col gap-2 items-center justify-center rounded-full bg-white/5 ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
+                                                <IconGhost2Filled className="w-8 h-8 text-white/70"
+                                                    strokeWidth={1} />
+                                            </div>
+                                        )}
                                         {attendee?.id === eventHostId && (
-                                            <span className='text-sm text-red-500'>Host</span>
+                                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-red-500/90 rounded-full">
+                                                <span className='text-xs text-white font-medium'>Host</span>
+                                            </div>
                                         )}
                                     </div>
+                                    <span className='font-medium w-full text-white/90 group-hover:text-white truncate text-sm transition-colors'>
+                                        {attendee?.full_name}
+                                    </span>
                                 </div>
-                            ))}
-                        </div>
-
-                        {memoizedEventAttendeesData && memoizedEventAttendeesData.length > 3 && (
-                            <EventAttendeesDialog attendeesData={memoizedEventAttendeesData}
-                                eventData={eventData}
-                                imageUrls={memoizedProfileImages} />
-                        )}
+                            </div>
+                        ))}
                     </div>
+
+                    {memoizedEventAttendeesData && memoizedEventAttendeesData.length > 3 && (
+                        <div className="mt-4 pt-4 border-t border-white/10">
+                            <EventAttendeesDialog 
+                                attendeesData={memoizedEventAttendeesData}
+                                eventData={eventData}
+                                imageUrls={memoizedProfileImages} 
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 

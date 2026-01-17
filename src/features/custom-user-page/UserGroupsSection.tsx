@@ -131,84 +131,103 @@ export const UserGroupsSection = ({ userId }: UserGroupsSectionProps) => {
 
     return (
         <>
-            <div className="flex flex-col gap-4 w-full">
-                <div className="flex flex-col gap-4 w-full">
-                    {memoizedOwnedGroups.length > 0 && (
-                        <h2 className='text-xl tracking-wider font-semibold w-fit'>Owned Groups</h2>
-                    )}
-                    <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-auto min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
-                        {memoizedOwnedGroups?.map((group) => (
-                            <div onClick={() => {
-                                setIsSidebarOpen(true);
-                                setSelectedGroup(group);
-                                setSelectedGroupImageUrl(memoizedImageUrls[group.id]);
-                            }}
-                                key={group.id}
-                                className="border cursor-pointer rounded-xl border-white/10 min-[1200px]:w-fit">
-                                <div className="flex w-full gap-4 p-4 h-[124px]">
-                                    <div className="flex flex-col items-center aspect-square justify-center gap-4 border rounded-xl border-white/10">
-                                        {memoizedImageUrls[group.id] ? (
-                                            <Image
-                                                className="rounded-xl aspect-square object-cover"
-                                                src={memoizedImageUrls[group.id]}
-                                                alt={`Group ${group.group_name}`}
-                                                width={1920}
-                                                height={1080}
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-xl bg-white/5">
-                                                <p className="text-white/50 text-lg">No picture available 😔</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <h1 className="text-xl font-semibold line-clamp-2 tracking-wider">{group.group_name}</h1>
-                                        <p>{group.group_country}, {group.group_city}</p>
+            <div className="flex flex-col gap-8 w-full">
+                {memoizedOwnedGroups.length > 0 && (
+                    <div className="flex flex-col gap-4 w-full">
+                        <h2 className='text-2xl tracking-wider font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent'>
+                            Owned Groups
+                        </h2>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                            {memoizedOwnedGroups?.map((group) => (
+                                <div 
+                                    onClick={() => {
+                                        setIsSidebarOpen(true);
+                                        setSelectedGroup(group);
+                                        setSelectedGroupImageUrl(memoizedImageUrls[group.id]);
+                                    }}
+                                    key={group.id}
+                                    className="group bg-white/5 backdrop-blur-sm hover:bg-white/10 border border-white/10 hover:border-white/20 cursor-pointer rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
+                                >
+                                    <div className="flex w-full gap-4 p-4">
+                                        <div className="flex-shrink-0 w-24 h-24 overflow-hidden rounded-xl ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
+                                            {memoizedImageUrls[group.id] ? (
+                                                <Image
+                                                    className="w-full h-full object-cover"
+                                                    src={memoizedImageUrls[group.id]}
+                                                    alt={`Group ${group.group_name}`}
+                                                    width={200}
+                                                    height={200}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                                    <p className="text-white/50 text-xs text-center px-2">No image</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-col gap-2 flex-1 min-w-0 justify-center">
+                                            <h1 className="text-lg font-semibold line-clamp-2 tracking-wider text-white/90 group-hover:text-white transition-colors">
+                                                {group.group_name}
+                                            </h1>
+                                            <p className="text-sm text-white/70 truncate">
+                                                {group.group_country}, {group.group_city}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
-                <div className="flex flex-col gap-4 w-full">
-                    {memoizedMemberGroups.length > 0 && (
-                        <h2 className='text-xl tracking-wider font-semibold w-fit'>Member Groups</h2>
-                    )}
-                    <div className="flex gap-4 max-[768px]:pr-24 max-[900px]:max-w-[100vw] min-[900px]:w-full max-[1200px]:overflow-x-auto min-[1200px]:overflow-x-hidden max-h-[416px] min-[800px]:grid max-[900px]:grid-cols-1 min-[1200px]:grid-cols-2">
-                        {memoizedMemberGroups?.map((group) => (
-                            <div onClick={() => {
-                                setIsSidebarOpen(true);
-                                setSelectedGroup(group);
-                                setSelectedGroupImageUrl(memoizedImageUrls[group.id]);
-                            }}
-                                key={group.id} className="border cursor-pointer rounded-xl border-white/10 min-[1200px]:w-fit">
-                                <div className="flex w-full gap-4 p-4 h-[124px]">
-                                    <div className="flex flex-col aspect-square items-center justify-center gap-4 border rounded-xl border-white/10">
-                                        {memoizedImageUrls[group.id] ? (
-                                            <Image
-                                                className="rounded-xl aspect-square object-cover"
-                                                src={memoizedImageUrls[group.id]}
-                                                alt={`Group ${group.group_name}`}
-                                                width={1920}
-                                                height={1080}
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex flex-col gap-2 items-center justify-center rounded-xl bg-white/5">
-                                                <p className="text-white/50 text-lg">No picture available 😔</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <h1 className="text-xl font-semibold line-clamp-2 tracking-wider">{group.group_name}</h1>
-                                        <p>{group.group_country}, {group.group_city}</p>
+                {memoizedMemberGroups.length > 0 && (
+                    <div className="flex flex-col gap-4 w-full">
+                        <h2 className='text-2xl tracking-wider font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent'>
+                            Member Groups
+                        </h2>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                            {memoizedMemberGroups?.map((group) => (
+                                <div 
+                                    onClick={() => {
+                                        setIsSidebarOpen(true);
+                                        setSelectedGroup(group);
+                                        setSelectedGroupImageUrl(memoizedImageUrls[group.id]);
+                                    }}
+                                    key={group.id}
+                                    className="group bg-white/5 backdrop-blur-sm hover:bg-white/10 border border-white/10 hover:border-white/20 cursor-pointer rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
+                                >
+                                    <div className="flex w-full gap-4 p-4">
+                                        <div className="flex-shrink-0 w-24 h-24 overflow-hidden rounded-xl ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
+                                            {memoizedImageUrls[group.id] ? (
+                                                <Image
+                                                    className="w-full h-full object-cover"
+                                                    src={memoizedImageUrls[group.id]}
+                                                    alt={`Group ${group.group_name}`}
+                                                    width={200}
+                                                    height={200}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                                    <p className="text-white/50 text-xs text-center px-2">No image</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-col gap-2 flex-1 min-w-0 justify-center">
+                                            <h1 className="text-lg font-semibold line-clamp-2 tracking-wider text-white/90 group-hover:text-white transition-colors">
+                                                {group.group_name}
+                                            </h1>
+                                            <p className="text-sm text-white/70 truncate">
+                                                {group.group_country}, {group.group_city}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
-        </div >
 
             <SidebarProvider>
                 {isSidebarOpen && <GroupSidebar imageUrl={selectedGroupImageUrl}

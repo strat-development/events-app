@@ -8,7 +8,6 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { format, parseISO } from "date-fns"
 import { Ticket } from "lucide-react"
 import Image from "next/image"
-import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { useQuery } from "react-query"
 
@@ -21,8 +20,6 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
     const [groupEvents, setGroupEvents] = useState<{ [date: string]: EventData[] }>({});
     const eventIds = Object.values(groupEvents).flat().map((event) => event.id);
     const [imageUrls, setImageUrls] = useState<{ [eventId: string]: string }>({});
-    const router = useRouter();
-    const pathname = usePathname();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
     const [selectedEventImageUrl, setSelectedEventImageUrl] = useState<string | null>(null);
@@ -52,7 +49,7 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
             cacheTime: 10 * 60 * 1000,
         })
 
-    const { data: images, isLoading } = useQuery(
+    const { data: images } = useQuery(
         ['event-pictures', eventIds],
         async () => {
             const { data, error } = await supabase
@@ -96,63 +93,83 @@ export const EventsSection = ({ groupId }: EventsSectionProps) => {
 
     return (
         <>
-            {events.isLoading && <p>Loading...</p>}
+            {events.isLoading && (
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+                    <p className="text-white/70 text-center">Loading events...</p>
+                </div>
+            )}
 
             {events.isSuccess && (
-                <div className='flex flex-col gap-4 mt-8 w-full'>
-                    <h2 className='text-2xl tracking-wider font-bold'>Upcoming events</h2>
-                    {memoizedEvents?.map((event: EventData) => (
-                        <div onClick={() => {
-                            setIsSidebarOpen(true);
-                            setSelectedEvent(event);
-                            setSelectedEventImageUrl(memoizedImageUrls[event.id]);
-                        }}
-                            key={event.id}
-                            className="flex flex-col cursor-pointer w-full gap-8">
-                            <div className="flex flex-col gap-2">
-                                <h2 className="text-xl font-semibold text-white/70 tracking-wider">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd')}</h2>
-                                <hr />
-                            </div>
-                            <div className="flex gap-4 border border-white/10 p-4 rounded-xl h-[240px]">
-                                <div className="flex flex-col items-center justify-center gap-4 border rounded-xl border-white/10 aspect-square">
-                                    {memoizedImageUrls[event.id] && (
-                                        <Image
-                                            src={memoizedImageUrls[event.id]}
-                                            alt=""
-                                            width={200}
-                                            height={200}
-                                            objectFit="cover"
-                                            className="rounded-xl aspect-square object-cover"
-                                        />
-                                    ) || (
-                                            <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
-                                                <p className="text-center font-medium">No image available 😔</p>
+                <div className='bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl'>
+                    <h2 className='text-2xl tracking-wider font-bold mb-6 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent'>
+                        Upcoming events
+                    </h2>
+                    
+                    <div className="flex flex-col gap-6">
+                        {memoizedEvents?.map((event: EventData) => (
+                            <div 
+                                key={event.id}
+                                onClick={() => {
+                                    setIsSidebarOpen(true);
+                                    setSelectedEvent(event);
+                                    setSelectedEventImageUrl(memoizedImageUrls[event.id]);
+                                }}
+                                className="group cursor-pointer bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl p-4 transition-all duration-300 hover:scale-[1.01] hover:shadow-lg"
+                            >
+                                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-white/10">
+                                    <div className="bg-blue-500/20 px-3 py-1 rounded-lg">
+                                        <h3 className="text-sm font-semibold text-blue-400">
+                                            {format(parseISO(event.starts_at as string), 'MMM dd, yyyy')}
+                                        </h3>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-4">
+                                    <div className="flex-shrink-0 w-32 h-32 sm:w-40 sm:h-40 overflow-hidden rounded-xl ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
+                                        {memoizedImageUrls[event.id] ? (
+                                            <Image
+                                                src={memoizedImageUrls[event.id]}
+                                                alt=""
+                                                width={200}
+                                                height={200}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                                <p className="text-center text-xs text-white/50 px-2">No image</p>
                                             </div>
                                         )}
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <h1 className="text-2xl font-bold tracking-wider line-clamp-2 text-white/70">{event.event_title}</h1>
-                                    <div className="flex flex-col gap-1">
-                                        <div className="flex gap-1">
-                                            <p className="text-lg text-white/50 font-medium">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')} - {format(parseISO(event.ends_at as string), 'HH:mm')}</p>
-                                        </div>
+                                    </div>
 
-                                        <p className="text-white/60">{event.event_address}</p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <Ticket size={20} />
-                                            {event?.ticket_price === "FREE" ? (
-                                                <p className="text-sm text-white/60 font-bold">FREE</p>
-                                            ) : (
-                                                <p className="text-sm text-white/60">{event?.ticket_price}$</p>
-                                            )}
+                                    <div className="flex flex-col gap-2 flex-1 min-w-0">
+                                        <h1 className="text-xl font-bold tracking-wider line-clamp-2 text-white/90 group-hover:text-white transition-colors">
+                                            {event.event_title}
+                                        </h1>
+                                        
+                                        <div className="flex flex-col gap-2 text-sm">
+                                            <p className="text-white/70">
+                                                {format(parseISO(event.starts_at as string), 'HH:mm')} - {format(parseISO(event.ends_at as string), 'HH:mm')}
+                                            </p>
+                                            
+                                            <p className="text-white/60 line-clamp-1">{event.event_address}</p>
+                                            
+                                            <div className="flex items-center gap-2 mt-1 bg-white/5 w-fit px-3 py-1 rounded-lg">
+                                                <Ticket size={16} className="text-white/70" />
+                                                {event?.ticket_price === "FREE" ? (
+                                                    <p className="text-sm text-green-400 font-bold">FREE</p>
+                                                ) : (
+                                                    <p className="text-sm text-white/70 font-medium">${event?.ticket_price}</p>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             )}
+            
             <SidebarProvider>
                 {isSidebarOpen && <EventSidebar imageUrl={selectedEventImageUrl}
                     selectedEvent={selectedEvent}

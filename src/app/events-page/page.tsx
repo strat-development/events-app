@@ -158,10 +158,20 @@ export default function EventsPage() {
 
     return (
         <>
-            <div className="max-w-[1200px] w-full justify-self-center pt-24 flex flex-col gap-4">
-                <div className="flex flex-wrap max-[800px]:justify-center gap-8">
-                    {currentItems.length === 0 && (
-                        <div className="flex flex-col items-center justify-center gap-4 w-full h-[70vh]">
+            <div className="max-w-[1200px] w-full justify-self-center pt-24 px-6 flex flex-col gap-8">
+
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                    <h1 className="text-3xl font-bold tracking-wider bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                        {eventInterestFromUrl ? `${eventInterestFromUrl} Events` : 'Discover Events'}
+                    </h1>
+                    <p className="text-white/60 mt-2">
+                        {eventCityFromUrl || city ? `in ${eventCityFromUrl || city}` : 'Find events near you'}
+                    </p>
+                </div>
+
+                {currentItems.length === 0 ? (
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-12 shadow-xl">
+                        <div className="flex flex-col items-center justify-center gap-6 w-full min-h-[50vh]">
                             <div className="metallic-icon-container">
                                 <div className="metallic-icon-container">
                                     <svg className="metallic-gradient">
@@ -184,89 +194,125 @@ export default function EventsPage() {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <p className="text-center text-xl text-white/60 font-medium">No events found</p>
+                                <p className="text-center text-2xl text-white/70 font-semibold">No events found</p>
                                 <p className="text-center text-lg text-white/50">It's a great opportunity to create one</p>
                             </div>
-                            <Button className="flex gap-4 w-fit text-lg px-4 text-white/70"
-                                variant="outline"
-                                onClick={() => router.push('/dashboard/events')}>
+                            <Button
+                                className="flex gap-2 w-fit px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                onClick={() => router.push('/dashboard/events')}
+                            >
+                                <Plus className="h-5 w-5" />
                                 Create Event
-                                <Plus className="h-4 w-4" />
                             </Button>
                         </div>
-                    ) || (
-
-                            currentItems.map((event) => (
-                                <div onClick={() => {
-                                    setIsSidebarOpen(true);
-                                    setSelectedEvent(event);
-                                    setSelectedEventImageUrl(memoizedImageUrls[event.id]);
-                                }}
+                    </div>
+                ) : (
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {currentItems.map((event) => (
+                                <div
+                                    onClick={() => {
+                                        setIsSidebarOpen(true);
+                                        setSelectedEvent(event);
+                                        setSelectedEventImageUrl(memoizedImageUrls[event.id]);
+                                    }}
                                     key={event.id}
-                                    className="flex flex-col cursor-pointer gap-2 w-[280px] h-[440px]  border rounded-xl border-white/10 p-4">
-                                    <div className="flex items-center justify-center border rounded-xl border-white/10 w-full aspect-square">
-                                        {memoizedImageUrls[event.id] && (
+                                    className="group bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer"
+                                >
+                                    <div className="relative aspect-square overflow-hidden">
+                                        {memoizedImageUrls[event.id] ? (
                                             <Image
                                                 src={memoizedImageUrls[event.id]}
                                                 alt={event.event_title || ""}
-                                                width={2000}
-                                                height={2000}
-                                                objectFit="cover"
+                                                width={400}
+                                                height={400}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                             />
-                                        ) || (
-                                                <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
-                                                    <p className="text-center font-medium">No image available 😔</p>
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                                <div className="text-center flex flex-col items-center gap-2">
+                                                    <CalendarIcon className="w-12 h-12 text-white/30" />
+                                                    <p className="text-sm text-white/50 font-medium">No image</p>
                                                 </div>
-                                            )}
+                                            </div>
+                                        )}
+                                        <div className="absolute top-3 right-3 bg-gradient-to-r from-purple-500 to-blue-500 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg">
+                                            <p className="text-xs font-bold text-white">
+                                                {format(parseISO(event?.starts_at as string), 'MMM dd')}
+                                            </p>
+                                        </div>
                                     </div>
 
-                                    <div className="flex flex-col gap-1">
-                                        <h1 className="text-lg font-bold tracking-wider line-clamp-2">{event.event_title}</h1>
-                                        <div className="flex flex-col gap-1">
-                                            <p className="text-sm text-white/70">{format(parseISO(event?.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                                            <p className="text-sm text-white/60">{event?.event_address}</p>
-                                            <div className="flex gap-2 mt-1 items-center">
-                                                <Ticket className="h-4 w-4" />
-                                                {event.ticket_price === "FREE" ? (
-                                                    <p className="text-sm text-white/60">FREE</p>
-                                                ) : (
-                                                    <p className="text-sm text-white/60">{event?.ticket_price}$</p>
-                                                )}
+                                    <div className="p-4 flex flex-col gap-3">
+                                        <h2 className="text-lg font-bold tracking-wide text-white/90 line-clamp-2 group-hover:text-white transition-colors">
+                                            {event.event_title}
+                                        </h2>
+
+                                        <div className="flex flex-col gap-2 text-sm">
+                                            <div className="flex items-center gap-2 text-white/60">
+                                                <CalendarRange className="h-4 w-4 flex-shrink-0" />
+                                                <span className="truncate">
+                                                    {format(parseISO(event?.starts_at as string), 'HH:mm')}
+                                                </span>
+                                            </div>
+
+                                            <p className="text-white/60 truncate text-xs">
+                                                {event?.event_address}
+                                            </p>
+
+                                            <div className="flex items-center gap-2 pt-1">
+                                                <div className="bg-white/5 rounded-lg px-3 py-1.5 flex items-center gap-2">
+                                                    <Ticket className="h-4 w-4 text-white/70" />
+                                                    {event.ticket_price === "FREE" ? (
+                                                        <span className="text-sm font-semibold text-green-400">FREE</span>
+                                                    ) : (
+                                                        <span className="text-sm font-semibold text-white/90">${event?.ticket_price}</span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            ))
-                        )}
-                </div>
-
-                {currentItems.length > 0 && (
-                    <Pagination>
-                        <PaginationContent className="flex gap-8">
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
-                                    aria-disabled={currentPage === 1}
-                                />
-                            </PaginationItem>
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                <PaginationItem key={page}>
-                                    <PaginationLink
-                                        isActive={page === currentPage}
-                                        onClick={() => handlePageChange(page)}
-                                    >
-                                        {page}
-                                    </PaginationLink>
-                                </PaginationItem>
                             ))}
-                            <PaginationItem>
-                                <PaginationNext
-                                    onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
-                                    aria-disabled={currentPage === totalPages}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
+                        </div>
+
+                        {totalPages > 1 && (
+                            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 shadow-xl">
+                                <Pagination>
+                                    <PaginationContent className="flex gap-2">
+                                        <PaginationItem>
+                                            <PaginationPrevious
+                                                onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                                aria-disabled={currentPage === 1}
+                                                className="hover:bg-white/10 transition-colors"
+                                            />
+                                        </PaginationItem>
+                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                            <PaginationItem key={page}>
+                                                <PaginationLink
+                                                    isActive={page === currentPage}
+                                                    onClick={() => handlePageChange(page)}
+                                                    className={page === currentPage
+                                                        ? "bg-white/10 text-white hover:bg-white/15"
+                                                        : "hover:bg-white/10 transition-colors"
+                                                    }
+                                                >
+                                                    {page}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        ))}
+                                        <PaginationItem>
+                                            <PaginationNext
+                                                onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                                aria-disabled={currentPage === totalPages}
+                                                className="hover:bg-white/10 transition-colors"
+                                            />
+                                        </PaginationItem>
+                                    </PaginationContent>
+                                </Pagination>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 

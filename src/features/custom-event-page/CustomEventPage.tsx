@@ -17,9 +17,9 @@ export const CustomEventPage = ({
 
     return (
         <>
-            <div className="max-w-[1200px] w-full justify-self-center items-center">
-                <div className="flex justify-center gap-8 pb-24">
-                    <div className="flex flex-col gap-8 items-center w-full relative top-24">
+            <div className="max-w-[1400px] w-full justify-self-center items-center px-4">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 pb-24 mt-24">
+                    <div className="lg:col-span-8 flex flex-col gap-8">
                         <EventHero eventId={eventId} />
                         {view == "about" && (
                             <EventInfoSection eventId={eventId} />
@@ -27,10 +27,12 @@ export const CustomEventPage = ({
                                 <EventGallerySection eventId={eventId} />
                             )}
                     </div>
-                    <div className="w-[30%] max-[900px]:hidden">
+                    
+                    <div className="lg:col-span-4">
                         <EventInfoSidebar eventId={eventId} />
                     </div>
                 </div>
+                
                 <div className="sticky bottom-0">
                     <EventNavbar eventId={eventId} />
                 </div>

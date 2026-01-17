@@ -181,108 +181,146 @@ export const EventsSection = () => {
 
     return (
         <>
-            <div className="flex flex-col gap-16 items-center w-full min-[1200px]:flex-row min-[1200px]:items-start">
-                <div className="flex flex-col gap-8 min-[1200px]:w-fit min-[1200px]:sticky min-[1200px]:top-24">
-                    <Calendar className="z-[2] hidden border border-white/10 w-full min-[1200px]:flex min-[1200px]:items-center min-[1200px]:justify-center rounded-xl"
-                        onDayClick={handleDateChange}
-                    />
-                    <div className="fixed z-[99999] bg-white p-2 rounded-full bottom-[10%] right-[5%] min-[1200px]:hidden">
-                        <CalendarDialog onDayClick={handleDateChange} />
+            <div className="flex flex-col lg:flex-row gap-8 items-start w-full">
+                <div className="flex flex-col gap-6 lg:w-80 lg:sticky lg:top-24 w-full">
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 shadow-xl hidden lg:block">
+                        <Calendar 
+                            className="border-none w-full"
+                            onDayClick={handleDateChange}
+                        />
+                    </div>
+                    <div className="fixed z-[99999] bottom-[5%] right-[5%] lg:hidden">
+                        <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-3 rounded-full shadow-2xl">
+                            <CalendarDialog onDayClick={handleDateChange} />
+                        </div>
                     </div>
                     <UserGroupsSection />
                 </div>
-                <div className="flex flex-col gap-8 w-full">
-                    <div className="flex gap-4">
-                        <Button className="text-white/70"
+
+                <div className="flex flex-col gap-6 flex-1 w-full">
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-2 shadow-xl flex gap-2 w-fit">
+                        <Button 
+                            className={view === "events"
+                                ? "bg-white/10 text-white hover:bg-white/15 transition-all duration-300"
+                                : "text-white/70 hover:text-white hover:bg-white/5 transition-all duration-300"
+                            }
+                            variant="ghost"
                             onClick={() => setView("events")}
-                            variant="link">
+                        >
                             Upcoming Events
                         </Button>
-                        <Button className="text-white/70"
+                        <Button 
+                            className={view === "groups"
+                                ? "bg-white/10 text-white hover:bg-white/15 transition-all duration-300"
+                                : "text-white/70 hover:text-white hover:bg-white/5 transition-all duration-300"
+                            }
+                            variant="ghost"
                             onClick={() => setView("groups")}
-                            variant="link">
+                        >
                             Groups Feed
                         </Button>
                     </div>
-                    {view === "events" && (
-                        currentItems.map((event: EventData) => (
-                            <div onClick={() => {
-                                setIsSidebarOpen(true);
-                                setSelectedEvent(event);
-                                setSelectedEventImageUrl(memoizedImageUrls[event.id]);
-                            }}
-                                key={event.id}
-                                className="flex flex-col cursor-pointer w-full gap-8">
-                                <div className="flex flex-col gap-2">
-                                    <h2 className="text-xl font-semibold text-white/70 tracking-wider">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd')}</h2>
-                                    <hr />
-                                </div>
-                                <div className="flex gap-4 border border-white/10 p-4 rounded-xl h-[240px]">
-                                    <div className="flex flex-col items-center justify-center gap-4 border rounded-xl border-white/10 aspect-square h-fit">
-                                        {memoizedImageUrls[event.id] && (
-                                            <Image
-                                                src={memoizedImageUrls[event.id]}
-                                                alt=""
-                                                width={200}
-                                                height={200}
-                                                objectFit="cover"
-                                                className="rounded-xl aspect-square object-cover"
-                                            />
-                                        ) || (
-                                                <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-xl">
-                                                    <p className="text-center font-medium">No image available 😔</p>
+                    {view === "events" ? (
+                        currentItems.length > 0 ? (
+                            currentItems.map((event: EventData) => (
+                                <div 
+                                    key={event.id}
+                                    onClick={() => {
+                                        setIsSidebarOpen(true);
+                                        setSelectedEvent(event);
+                                        setSelectedEventImageUrl(memoizedImageUrls[event.id]);
+                                    }}
+                                    className="group bg-white/5 backdrop-blur-sm hover:bg-white/10 border border-white/10 hover:border-white/20 cursor-pointer rounded-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-xl overflow-hidden"
+                                >
+                                    <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 px-6 py-3 border-b border-white/10">
+                                        <p className="text-sm font-semibold text-white/90">
+                                            {format(parseISO(event.starts_at as string), 'EEEE, MMMM dd, yyyy')}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex gap-4 p-6">
+                                        <div className="flex-shrink-0 w-32 h-32 sm:w-40 sm:h-40 overflow-hidden rounded-xl ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
+                                            {memoizedImageUrls[event.id] ? (
+                                                <Image
+                                                    src={memoizedImageUrls[event.id]}
+                                                    alt=""
+                                                    width={200}
+                                                    height={200}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                                    <p className="text-center text-xs text-white/50 px-2">No image</p>
                                                 </div>
                                             )}
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <h1 className="text-2xl font-bold tracking-wider line-clamp-2">{event.event_title}</h1>
-                                        <div className="flex flex-col gap-1">
-                                            <p className="text-lg text-white/70">{format(parseISO(event.starts_at as string), 'yyyy-MM-dd HH:mm')}</p>
-                                            <p className="text-white/60">{event.event_address}</p>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <Ticket className="text-white/70 h-6 w-6" />
-                                                {event?.ticket_price === "FREE" && (
-                                                    <p className="text-sm text-white/60 font-bold tracking-wide">FREE</p>
-                                                ) || (
-                                                        <p className="text-sm text-white/60 font-bold tracking-wide">{event?.ticket_price}$</p>
+                                        </div>
+
+                                        <div className="flex flex-col gap-2 flex-1 min-w-0">
+                                            <h2 className="text-xl sm:text-2xl font-bold tracking-wider line-clamp-2 text-white/90 group-hover:text-white transition-colors">
+                                                {event.event_title}
+                                            </h2>
+                                            <div className="flex flex-col gap-2 text-sm">
+                                                <p className="text-white/70">
+                                                    {format(parseISO(event.starts_at as string), 'HH:mm')} - {format(parseISO(event.ends_at as string), 'HH:mm')}
+                                                </p>
+                                                <p className="text-white/60 line-clamp-1">{event.event_address}</p>
+                                                <div className="flex items-center gap-2 mt-1 bg-white/5 w-fit px-3 py-1 rounded-lg">
+                                                    <Ticket size={16} className="text-white/70" />
+                                                    {event?.ticket_price === "FREE" ? (
+                                                        <p className="text-sm text-green-400 font-bold">FREE</p>
+                                                    ) : (
+                                                        <p className="text-sm text-white/70 font-medium">${event?.ticket_price}</p>
                                                     )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-12 shadow-xl">
+                                <p className="text-center text-white/50">No upcoming events found</p>
                             </div>
-                        ))
-                    ) || (
-                            <GroupPostsSection groupId={groupId as any} />
-                        )}
+                        )
+                    ) : (
+                        <GroupPostsSection groupId={groupId as any} />
+                    )}
 
                     {totalItems > 20 && (
-                        <Pagination>
-                            <PaginationContent className="flex gap-8">
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
-                                        aria-disabled={currentPage === 1}
-                                    />
-                                </PaginationItem>
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                    <PaginationItem key={page}>
-                                        <PaginationLink
-                                            isActive={page === currentPage}
-                                            onClick={() => handlePageChange(page)}
-                                        >
-                                            {page}
-                                        </PaginationLink>
+                        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 shadow-xl">
+                            <Pagination>
+                                <PaginationContent className="flex gap-2">
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            onClick={currentPage === 1 ? undefined : () => handlePageChange(currentPage - 1)}
+                                            aria-disabled={currentPage === 1}
+                                            className="hover:bg-white/10 transition-colors"
+                                        />
                                     </PaginationItem>
-                                ))}
-                                <PaginationItem>
-                                    <PaginationNext
-                                        onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
-                                        aria-disabled={currentPage === totalPages}
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                        <PaginationItem key={page}>
+                                            <PaginationLink
+                                                isActive={page === currentPage}
+                                                onClick={() => handlePageChange(page)}
+                                                className={page === currentPage 
+                                                    ? "bg-white/10 text-white hover:bg-white/15" 
+                                                    : "hover:bg-white/10 transition-colors"
+                                                }
+                                            >
+                                                {page}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    ))}
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            onClick={currentPage === totalPages ? undefined : () => handlePageChange(currentPage + 1)}
+                                            aria-disabled={currentPage === totalPages}
+                                            className="hover:bg-white/10 transition-colors"
+                                        />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
+                        </div>
                     )}
                 </div>
             </div>
