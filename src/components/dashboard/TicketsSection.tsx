@@ -14,6 +14,8 @@ import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, Pagi
 import { TicketsData } from "@/types/types"
 import { TicketDialog } from "./modals/events/TicketDialog"
 import { twMerge } from "tailwind-merge"
+import { getTickets } from "@/fetchers/tickets/getTickets"
+import { getEventPictures } from "@/fetchers/events/getEventPictures"
 
 
 export const TicketsSection = () => {
@@ -31,32 +33,10 @@ export const TicketsSection = () => {
     const fetchTickets = useQuery(
         ['tickets', userId],
         async () => {
-            const { data: activeData, error: activeError } = await supabase
-                .from('event-tickets')
-                .select('*')
-                .gte('event_starts_at', today.toISOString())
-                .eq('user_id', userId);
-
-            const { data: expiredData, error: expiredError } = await supabase
-                .from('event-tickets')
-                .select('*')
-                .lt('event_starts_at', today.toISOString())
-                .eq('user_id', userId);
-
-            if (activeError || expiredError) {
-                console.error("Error fetching tickets:", activeError?.message || expiredError?.message);
-                throw new Error(activeError?.message || expiredError?.message);
-            }
-
-            if (activeData) {
-                setActiveTicketData(activeData);
-            }
-
-            if (expiredData) {
-                setExpiredTicketData(expiredData);
-            }
-
-            return { activeData, expiredData };
+            const { active, expired } = await getTickets(userId);
+            setActiveTicketData(active);
+            setExpiredTicketData(expired);
+            return { activeData: active, expiredData: expired };
         },
         {
             enabled: !!userId,
@@ -68,20 +48,7 @@ export const TicketsSection = () => {
 
     const { data: images } = useQuery(
         ['event-pictures', eventIds],
-        async () => {
-            if (eventIds.length === 0) return [];
-
-            const { data, error } = await supabase
-                .from('event-pictures')
-                .select('*')
-                .in('event_id', eventIds);
-
-            if (error) {
-                throw error;
-            }
-
-            return data || [];
-        },
+        () => getEventPictures(eventIds as string[]),
         {
             enabled: eventIds.length > 0,
             cacheTime: 10 * 60 * 1000,

@@ -14,6 +14,8 @@ import { SavedEventsSection } from "@/components/event-searcher/SavedEventsSecti
 import { Navbar } from "@/components/dashboard/Navbar";
 import GridLoader from "react-spinners/GridLoader";
 import Link from "next/link";
+import { scrapeEvents } from "@/fetchers/api/scrapeEvents";
+import { saveEvent } from "@/fetchers/events/saveEvent";
 
 interface Event {
     name: string;
@@ -49,37 +51,43 @@ export default function EventSearcher() {
     }
 
     async function handleOnClick() {
+        if (eventType === "Saved") return;
+        
         setLoading(true);
-        const results = await fetch(apiPaths[eventType], {
-            method: 'POST',
-            body: JSON.stringify({
-                siteUrl: siteUrls[eventType],
-                inputValue: inputValue,
-                city: eventCity || ""
-            })
-        }).then(r => r.json())
-        setResults(results.results);
-        setLoading(false);
+        try {
+            const results = await scrapeEvents(
+                eventType as "Tickets" | "Other",
+                {
+                    siteUrl: siteUrls[eventType],
+                    inputValue: inputValue,
+                    city: eventCity || ""
+                }
+            );
+            setResults(results.results as Event[]);
+        } catch (error) {
+            console.error("Error scraping events:", error);
+            toast({
+                title: "Error",
+                description: "Failed to search for events",
+                variant: "destructive"
+            });
+        } finally {
+            setLoading(false);
+        }
     }
 
-    const saveEventMutation = useMutation(async (eventData: any) => {
-        const { name, city, place, link, date, time } = eventData;
-        const { data, error } = await supabase
-            .from("saved-events")
-            .upsert({
-                user_id: userId,
-                event_name: name,
-                event_city: city,
-                event_place: place,
-                event_link: link,
-                event_date: date,
-                event_time: time
-            })
-
-        if (error) {
-            throw error
-        }
-    },
+    const saveEventMutation = useMutation(
+        async (eventData: Event) => {
+            await saveEvent({
+                user_id: userId!,
+                event_name: eventData.name,
+                event_city: eventData.city,
+                event_place: eventData.place,
+                event_link: eventData.link,
+                event_date: eventData.date,
+                event_time: eventData.time
+            });
+        },
         {
             onSuccess: () => {
                 toast({
@@ -87,13 +95,14 @@ export default function EventSearcher() {
                     description: "You can now view this event in your saved events",
                 })
             },
-            onError: (error) => {
+            onError: () => {
                 toast({
                     title: "Error",
                     description: "There was an error saving this event",
                 })
             }
-        });
+        }
+    );
 
     return (
         <>

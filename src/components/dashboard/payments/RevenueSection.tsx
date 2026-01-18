@@ -1,31 +1,6 @@
+
 import { useEffect, useState } from "react";
-
-type Payments = {
-    id: string;
-    amount: number;
-    status: string;
-    created: number;
-    description?: string;
-};
-
-type Analytics = {
-    allTime: {
-        revenue: number;
-        platformFees: number;
-        ticketsSold: number;
-    };
-    currentMonth: {
-        revenue: number;
-        platformFees: number;
-        ticketsSold: number;
-    };
-    previousMonth: {
-        revenue: number;
-        platformFees: number;
-        ticketsSold: number;
-    };
-    currency: string;
-};
+import { getStripeRevenue, StripeRevenueResponse } from "@/fetchers/payments/getStripeRevenue";
 
 interface RevenueSectionProps {
     connectedAccountId: string;
@@ -33,41 +8,29 @@ interface RevenueSectionProps {
 }
 
 export const RevenueSection = ({ connectedAccountId }: RevenueSectionProps) => {
-    const [analytics, setAnalytics] = useState<Analytics | null>(null);
-    const [payments, setPayments] = useState<Payments[] | null>(null);
+    const [analytics, setAnalytics] = useState<StripeRevenueResponse['analytics']>(null);
+    const [payments, setPayments] = useState<StripeRevenueResponse['payments']>(null);
     const [loadingPayments, setLoadingPayments] = useState(false);
     const [stripeError, setStripeError] = useState<string | null>(null);
 
-    const fetchPayments = async () => {
-        if (!connectedAccountId) return;
-
-        setLoadingPayments(true);
-        try {
-            const response = await fetch("/api/get-stripe-revenue", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ accountId: connectedAccountId }),
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                if (data.analytics) setAnalytics(data.analytics);
-                if (data.payments) setPayments(data.payments);
-            } else {
-                throw new Error(data.error || "Failed to fetch data");
-            }
-        } catch (err) {
-            console.error("Data fetch failed:", err);
-            setStripeError((err instanceof Error ? err.message : 'An error occurred while fetching data.'));
-        } finally {
-            setLoadingPayments(false);
-        }
-    };
-
     useEffect(() => {
-        if (connectedAccountId) {
-            fetchPayments();
+        async function fetchPaymentsData() {
+            if (!connectedAccountId) return;
+
+            setLoadingPayments(true);
+            try {
+                const data = await getStripeRevenue(connectedAccountId);
+                setAnalytics(data.analytics);
+                setPayments(data.payments);
+            } catch (err) {
+                console.error("Data fetch failed:", err);
+                setStripeError((err instanceof Error ? err.message : 'An error occurred while fetching data.'));
+            } finally {
+                setLoadingPayments(false);
+            }
         }
+
+        fetchPaymentsData();
     }, [connectedAccountId]);
 
     return (

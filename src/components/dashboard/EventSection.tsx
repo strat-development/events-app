@@ -1,4 +1,4 @@
-"use state"
+"use client"
 
 import { useUserContext } from "@/providers/UserContextProvider"
 import { Database } from "@/types/supabase"
@@ -15,6 +15,9 @@ import { DeleteEventDialog } from "./modals/events/DeleteEventDialog"
 import { CreateEventDialog } from "./modals/events/CreateEventDialog"
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink } from "@/components/ui/pagination"
 import { EditEventDialog } from "./modals/events/EditEventDialog"
+import { getEventsByAttendee } from "@/fetchers/events/getEventsByAttendee"
+import { getEventsByHost } from "@/fetchers/events/getEventsByHost"
+import { getEventPictures } from "@/fetchers/events/getEventPictures"
 
 export const EventSection = () => {
     const supabase = createClientComponentClient<Database>()
@@ -28,23 +31,7 @@ export const EventSection = () => {
 
     const fetchedEventsByAttendees = useQuery(
         ['eventsByAttendees', userId],
-        async () => {
-            const { data, error } = await supabase
-                .from("event-attendees")
-                .select(`
-                    events (
-                        *
-                    )
-                `)
-                .eq('user_id', userId) 
-
-            if (error) {
-                console.error("Error fetching events:", error.message);
-                throw new Error(error.message);
-            }
-
-            return data;
-        },
+        () => getEventsByAttendee(userId!),
         {
             enabled: !!userId,
             cacheTime: 10 * 60 * 1000,
@@ -52,23 +39,10 @@ export const EventSection = () => {
     );
 
     const fetchedEventsByHosts = useQuery(
-        ['eventsByHosts', userId],
-        async () => {
-            const { data, error } = await supabase
-                .from("events")
-                .select(`*`)
-                .eq('created_by', eventCreatorId)
-                .order('starts_at', { ascending: false });
-
-            if (error) {
-                console.error("Error fetching events:", error.message);
-                throw new Error(error.message);
-            }
-
-            return data;
-        },
+        ['eventsByHosts', eventCreatorId],
+        () => getEventsByHost(eventCreatorId!),
         {
-            enabled: !!userId,
+            enabled: !!userId && !!eventCreatorId,
             cacheTime: 10 * 60 * 1000,
         }
     );
@@ -79,20 +53,7 @@ export const EventSection = () => {
 
     const { data: images } = useQuery(
         ['event-pictures', eventIds],
-        async () => {
-            if (eventIds.length === 0) return [];
-
-            const { data, error } = await supabase
-                .from('event-pictures')
-                .select('*')
-                .in('event_id', eventIds)
-
-            if (error) {
-                throw error;
-            }
-
-            return data || [];
-        },
+        () => getEventPictures(eventIds as string[]),
         {
             enabled: eventIds.length > 0,
             cacheTime: 10 * 60 * 1000,

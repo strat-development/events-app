@@ -1,3 +1,4 @@
+
 import { GroupSidebar } from "@/components/GroupSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useUserContext } from "@/providers/UserContextProvider";
@@ -7,6 +8,8 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
+import { getGroupsByIds } from "@/fetchers/groups/getGroupsByIds";
+import { getGroupPictures } from "@/fetchers/groups/getGroupPictures";
 
 export const UserGroupsSection = () => {
     const supabase = createClientComponentClient<Database>();
@@ -46,24 +49,12 @@ export const UserGroupsSection = () => {
     const fetchGroups = useQuery(
         ['user-groups-data', groupId],
         async () => {
-            const { data, error } = await supabase
-                .from('groups')
-                .select('*')
-                .in('id', groupId);
-
-            if (error) {
-                console.error('Error fetching groups:', error);
-                throw new Error(error.message);
-            }
-
-            if (data) {
-                setGroupData(data);
-            }
-
+            const data = await getGroupsByIds(groupId);
+            setGroupData(data);
             return data;
         },
         {
-            enabled: !!groupId,
+            enabled: !!groupId && groupId.length > 0,
             cacheTime: 10 * 60 * 1000,
         }
     );
@@ -71,18 +62,8 @@ export const UserGroupsSection = () => {
     const { data: images, isLoading } = useQuery(
         ['group-pictures', groupId],
         async () => {
-            const { data, error } = await supabase
-                .from('group-pictures')
-                .select('*')
-                .in('group_id', groupId);
-            if (error) {
-                throw error;
-            }
-            return data || [];
-        },
-        {
-            enabled: !!groupId && groupId.length > 0,
-            cacheTime: 10 * 60 * 1000,
+            const data = await getGroupPictures(groupId as string[]);
+            return data;
         }
     );
 

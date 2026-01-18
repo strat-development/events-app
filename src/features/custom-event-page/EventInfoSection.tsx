@@ -1,8 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Database } from "@/types/supabase"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { TextEditor } from "../TextEditor"
@@ -20,13 +18,17 @@ import { EventData, UserData } from "@/types/types"
 import { GenerateDescriptionDialog } from "@/components/dashboard/modals/events/GenerateDescriptionDialog"
 import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation"
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
+import { getEventById } from "@/fetchers/events/getEventById"
+import { getEventAttendees } from "@/fetchers/events/getEventAttendees"
+import { updateEventDescription } from "@/fetchers/events/updateEventDescription"
+import { getProfilePictures } from "@/fetchers/users/getProfilePictures"
+import { translateText } from "@/fetchers/api/translateText"
 
 interface EventInfoSectionProps {
     eventId: string
 }
 
 export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
-    const supabase = createClientComponentClient<Database>()
     const [eventDescription, setEventDescription] = useState<string>()
     const [translatedEventDescription, setTranslatedEventDescription] = useState<string>()
     const [showTranslatedDescription, setShowTranslatedDescription] = useState(false)
@@ -47,21 +49,12 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     const [eventData, setEventData] = useState<EventData | null>(null);
     const [isTranslating, setIsTranslating] = useState(false)
 
-    useQuery(['events-description'], async () => {
-        const { data, error } = await supabase
-            .from("events")
-            .select("*")
-            .eq("id", eventId)
-
-        if (error) {
-            throw error
-        }
-
-        if (data) {
-            setEventDescription(data[0].event_description as string)
-            setEventHostId(data[0].created_by as string)
-            setEventData(data[0])
-        }
+    useQuery(['events-description', eventId], async () => {
+        const event = await getEventById(eventId);
+        setEventDescription(event.event_description as string);
+        setEventHostId(event.created_by as string);
+        setEventData(event);
+        return event;
     },
         {
             cacheTime: 10 * 60 * 1000,
@@ -69,20 +62,11 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
 
     const translateRequest = async (description: string) => {
         try {
-            setIsTranslating(true)
-            const response = await fetch("/api/text-translate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ description }),
-            });
-
-            if (!response.ok) throw new Error("Translation request failed");
-
-            const data = await response.json();
-            setTranslatedEventDescription(data.translatedText);
+            setIsTranslating(true);
+            const translatedText = await translateText(description);
+            setTranslatedEventDescription(translatedText);
             setShowTranslatedDescription(true);
-
-            return data.translatedText;
+            return translatedText;
         } catch (error) {
             console.error("Error in translateRequest:", error);
         } finally {
@@ -91,28 +75,13 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
     };
 
     const eventAttendees = useQuery(
-        ['attendees-data'],
+        ['attendees-data', eventId],
         async () => {
-            const { data, error } = await supabase
-                .from("event-attendees")
-                .select(`
-                users (
-                    *
-                )`)
-                .eq("event_id", eventId)
-                .limit(4)
-
-            if (error) {
-                throw new Error(error.message)
-            }
-
-            if (data) {
-                setAttendeesId(data.map((attendee) => attendee?.users?.id as string))
-                setAttendeesData(data.map(attendee => attendee.users) as UserData[])
-            }
-
-
-            return data
+            const data = await getEventAttendees(eventId, 4);
+            const userIds = data.map((attendee) => attendee?.users?.id as string).filter(Boolean);
+            setAttendeesId(userIds);
+            setAttendeesData(data.map(attendee => attendee.users).filter(Boolean) as UserData[]);
+            return data;
         },
         {
             enabled: !!eventId,
@@ -121,22 +90,13 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
 
     const editEventDescriptionMutation = useMutation(
         async (newEventDescription: string) => {
-            const { data, error } = await supabase
-                .from("events")
-                .update({ event_description: newEventDescription })
-                .eq("id", eventId)
-
-            if (error) {
-                throw error
-            }
-
-            if (data) {
-                setIsSetToEdit(false)
-            }
+            await updateEventDescription(eventId, newEventDescription);
+            setIsSetToEdit(false);
         },
         {
             onSuccess: () => {
-                queryClient.invalidateQueries('events')
+                queryClient.invalidateQueries('events');
+                queryClient.invalidateQueries(['events-description', eventId]);
                 toast({
                     title: "Success",
                     description: "Description updated successfully",
@@ -151,33 +111,18 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
             }
         })
 
-    const { data: profileImages } = useQuery(['profile-pictures', attendeesId], async () => {
-        const { data, error } = await supabase
-            .from('profile-pictures')
-            .select('user_id, image_url')
-            .in('user_id', attendeesId);
-
-        if (error) {
-            throw error;
-        }
-
-        const urlMap: Record<string, string> = {};
-        if (data) {
-            await Promise.all(
-                data.map(async (image) => {
-                    const { data: publicURL } = await supabase.storage
-                        .from('profile-pictures')
-                        .getPublicUrl(image.image_url);
-                    if (publicURL && image.user_id) urlMap[image.user_id] = publicURL.publicUrl;
-                })
-            );
+    const { data: profileImages } = useQuery(
+        ['profile-pictures', attendeesId],
+        async () => {
+            const urlMap = await getProfilePictures(attendeesId);
             setProfileImageUrls(urlMap);
+            return urlMap;
+        },
+        {
+            enabled: attendeesId.length > 0,
+            cacheTime: 10 * 60 * 1000,
         }
-        return urlMap;
-    }, {
-        enabled: attendeesId.length > 0,
-        cacheTime: 10 * 60 * 1000,
-    });
+    );
 
     const memoizedEventAttendeesData = useMemo(() => attendeesData, [attendeesData])
     const memoizedProfileImages = useMemo(() => profileImageUrls, [profileImageUrls])
@@ -277,7 +222,7 @@ export const EventInfoSection = ({ eventId }: EventInfoSectionProps) => {
                     }
                 </div>
                 
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
                     <h2 className='text-2xl font-bold tracking-wider mb-6 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent'>
                         Event attendees
                     </h2>

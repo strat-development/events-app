@@ -13,35 +13,24 @@ import { Database } from "@/types/supabase";
 import { toast } from "@/components/ui/use-toast";
 import { supabaseAdmin } from "@/lib/admin";
 import { Input } from "@/components/ui/input";
+import { createPost } from "@/fetchers/posts/createPost";
 
 export const CreatePostDialog = () => {
     const { userId } = useUserContext();
     const supabase = createClientComponentClient<Database>();
     const queryClient = useQueryClient();
-    const [modalStepCount, setModalStepCount] = useState(1);
     const [isOpen, setIsOpen] = useState(false);
     const [editorContent, setEditorContent] = useState("");
     const [title, setTitle] = useState("");
     const [files, setFiles] = useState<File[]>([]);
 
-    const createPost = useMutation(
+    const createPostMutation = useMutation(
         async () => {
-            const { data, error } = await supabase
-                .from("posts")
-                .insert([
-                    {
-                        post_content: editorContent,
-                        user_id: userId,
-                        post_title: title
-                    },
-                ])
-                .select("id")
-                .single();
-
-            if (error) {
-                throw error;
-            }
-
+            const data = await createPost({
+                post_content: editorContent,
+                user_id: userId!,
+                post_title: title
+            });
             return data;
         },
         {
@@ -188,7 +177,7 @@ export const CreatePostDialog = () => {
                                                 });
                                                 return;
                                             } else {
-                                                createPost.mutate();
+                                                createPostMutation.mutate();
                                             }
                                         }}
                                     >
